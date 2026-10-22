@@ -24,14 +24,19 @@ Step 4c of `.specs/migration-kmp.md`. Unblocks `FilesTest`, `FileExtensionsTest`
 4. Importers may show iOS-only problems once they can run; fix if small, otherwise re-block with the exact reason.
 
 ## Checklist
-- [ ] TASK-1: task doc and Engram mirror — criterio: this file committed
-- [ ] TASK-2: `AppleUserFile` core IO — criterio: AppleFilesTest (write/read, lines, delete, readBytes) green
-- [ ] TASK-3: directory API (`mkdirs`, `resolve`, `listFiles`) — criterio: tests green
-- [ ] TASK-4: `AppleResourceFile`, `AppleFileOpener`, `createDefault()` — criterio: tests green on the simulator
-- [ ] TASK-5: real `createTestFileOpener()`, shared `FilesTest`, unblock tests — criterio: iOS and JVM suites green
-- [ ] TASK-6: docs and changelog — criterio: ktlint, assembleDebug, CI green
+- [x] TASK-1: task doc and Engram mirror — criterio: this file committed
+- [x] TASK-2: `AppleUserFile` core IO — criterio: AppleFilesTest (write/read, lines, delete, readBytes) green
+- [x] TASK-3: directory API (`mkdirs`, `resolve`, `listFiles`) — criterio: tests green
+- [x] TASK-4: `AppleResourceFile`, `AppleFileOpener`, `createDefault()` — criterio: tests green on the simulator
+- [x] TASK-5: real `createTestFileOpener()`, shared `FilesTest`, unblock tests — criterio: iOS and JVM suites green
+- [x] TASK-6: docs and changelog — criterio: ktlint, assembleDebug, CI green (CI pending)
 
 ## Estrategia de entrega
 `single-pr`, base `feat/ios-strings` until #14 and #15 merge, then retarget to `develop`.
 
 ## Evidencia
+- AppleFilesTest: 24 tests green on the iOS simulator (RED observed first: unresolved references, then `NotImplementedError` for the directory API).
+- `iosSimulatorArm64Test`: 288 tests, 0 failures; `jvmTest`: 292 tests, 0 failures; `ktlintCheck` ok.
+- Unblocked: `FilesTest`, `FileExtensionsTest`, `ImportTest`, `Version22Test` (except four cases), `Version23Test`. `ShowHabitMenuPresenterTest.testOnExport` moved to the Zip section.
+- Incertidumbre 4 resolved: four `Version22Test` cases expect "constraint" in the message of a failed insert; sqliter throws `SQLiteExceptionErrorCode("sqlite3_step failed")` with a private error code, so they are re-blocked with that reason.
+- Not verified: the default opener (`createDefault()`) on a real device, and the app bundle `assets` folder (step 7).
