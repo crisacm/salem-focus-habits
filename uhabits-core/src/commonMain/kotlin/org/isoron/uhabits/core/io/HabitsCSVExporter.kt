@@ -20,7 +20,7 @@ package org.isoron.uhabits.core.io
 
 import org.isoron.platform.io.ZipWriter
 import org.isoron.platform.io.csvLine
-import org.isoron.platform.io.format
+import org.isoron.platform.io.formatInvariant
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.EntryList
@@ -52,7 +52,7 @@ class HabitsCSVExporter(
 
     private fun habitDirName(h: Habit): String {
         val sane = sanitizeFilename(h.name)
-        return format("%03d", allHabits.indexOf(h) + 1) + " " + sane.trim() + "/"
+        return formatInvariant("%03d", allHabits.indexOf(h) + 1) + " " + sane.trim() + "/"
     }
 
     private fun sanitizeFilename(name: String): String {
@@ -68,7 +68,7 @@ class HabitsCSVExporter(
         if (known.isNotEmpty()) oldest = known[known.size - 1].date
         sb.append(csvLine(arrayOf("Date", "Score")))
         for (s in habit.scores.getByInterval(oldest, today)) {
-            sb.append(csvLine(arrayOf(s.date.toCSVString(), format("%.4f", s.value))))
+            sb.append(csvLine(arrayOf(s.date.toCSVString(), formatInvariant("%.4f", s.value))))
         }
         return sb.toString()
     }
@@ -94,7 +94,7 @@ class HabitsCSVExporter(
             val date = newest.minus(i).toCSVString()
             sb.append(date).append(delimiter)
             for (j in selectedHabits.indices) {
-                val score = format("%.4f", scores[j][i].value)
+                val score = formatInvariant("%.4f", scores[j][i].value)
                 sb.append(score).append(delimiter)
             }
             sb.append("\n")

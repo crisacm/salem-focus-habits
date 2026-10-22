@@ -19,6 +19,8 @@
 
 package org.isoron.platform.io
 
+import java.util.Locale
+
 actual fun format(format: String, arg: String): String =
     String.format(format, arg)
 
@@ -27,3 +29,9 @@ actual fun format(format: String, arg: Int): String =
 
 actual fun format(format: String, arg: Double): String =
     String.format(format, arg)
+
+actual fun formatInvariant(format: String, arg: Int): String =
+    String.format(Locale.ROOT, format, arg)
+
+actual fun formatInvariant(format: String, arg: Double): String =
+    String.format(Locale.ROOT, format, arg)

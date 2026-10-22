@@ -19,7 +19,7 @@
 package org.isoron.uhabits.core.models
 
 import org.isoron.platform.io.csvLine
-import org.isoron.platform.io.format
+import org.isoron.platform.io.formatInvariant
 
 /**
  * An ordered collection of [Habit]s.
@@ -184,7 +184,7 @@ abstract class HabitList : Iterable<Habit> {
         for (habit in this) {
             val (numerator, denominator) = habit.frequency
             val cols = arrayOf(
-                format("%03d", indexOf(habit) + 1),
+                formatInvariant("%03d", indexOf(habit) + 1),
                 habit.name,
                 habit.type.name,
                 habit.question,
@@ -194,7 +194,7 @@ abstract class HabitList : Iterable<Habit> {
                 habit.color.toCsvColor(),
                 if (habit.isNumerical) habit.unit else "",
                 if (habit.isNumerical) habit.targetType.name else "",
-                if (habit.isNumerical) format("%.1f", habit.targetValue) else "",
+                if (habit.isNumerical) formatInvariant("%.1f", habit.targetValue) else "",
                 habit.isArchived.toString()
             )
             sb.append(csvLine(cols))
