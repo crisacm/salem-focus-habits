@@ -56,7 +56,7 @@ sudo apt-get install -y git openjdk-17-jdk-headless
 
 ### Step 2: Install Android SDK tools
 
-The Android SDK tools contain many of the necessary tools for developing and debugging Android applications. They can be obtained as part of Android Studio, but, for simple command line usage, it is recommended to install the **command-line tools** directly, since that is what `build.sh` and the CI pipeline expect.
+The Android SDK tools contain many of the necessary tools for developing and debugging Android applications. They can be obtained as part of Android Studio, but, for simple command line usage, it is recommended to install the **command-line tools** directly, since that is what `build.sh` expects. The CI workflow (`.github/workflows/ci.yml`) uses the SDK preinstalled on the GitHub runner instead.
 
 1. Download the latest `commandlinetools-linux-*.zip` from <https://developer.android.com/studio#command-line-tools-only>, and extract it to `/opt/android-sdk/cmdline-tools/latest` so that the script `/opt/android-sdk/cmdline-tools/latest/bin/sdkmanager` exists.
 

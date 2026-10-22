@@ -7,6 +7,10 @@ attribution.
 
 ## [Unreleased]
 
+### Added
+
+- Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
+
 ### Changed
 
 - Rebrand the README as "Salem - Focus & Habit Tracker" and credit the original Loop Habit Tracker project
