@@ -40,7 +40,8 @@ jobs:
         run: ./gradlew ktlintCheck
 
   ios-compile:
-    runs-on: macos-latest
+    # Pinned: macos-latest is a moving label and Kotlin/Native depends on the Xcode version
+    runs-on: macos-26
     timeout-minutes: 45
     steps:
       - name: Check out
