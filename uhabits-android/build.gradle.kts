@@ -108,6 +108,7 @@ mokkery {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.appIntro)
+    implementation(libs.annotation)
     implementation(libs.jsr305)
     implementation(libs.kotlin.inject.runtime)
     implementation(libs.guava)

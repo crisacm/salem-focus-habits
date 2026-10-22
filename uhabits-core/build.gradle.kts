@@ -17,16 +17,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.android.build.api.variant.HasHostTestsBuilder
+import com.android.build.api.variant.HostTestBuilder
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     kotlin("multiplatform")
+    alias(libs.plugins.agp.library)
     alias(libs.plugins.ktlint.plugin)
     alias(libs.plugins.mokkery)
 }
 
 kotlin {
-    jvm().withJava()
+    jvm()
+    androidTarget()
     jvmToolchain(17)
 
     // Code that only needs java.* APIs and is shared by the jvm and android targets
@@ -35,6 +39,7 @@ kotlin {
         common {
             group("jvmAndroid") {
                 withJvm()
+                withAndroidTarget()
             }
         }
     }
@@ -78,6 +83,22 @@ kotlin {
                 implementation(libs.junit.jupiter)
             }
         }
+    }
+}
+
+android {
+    namespace = "org.isoron.uhabits.core"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 28
+    }
+}
+
+androidComponents {
+    // Core tests run on the jvm target: they need java.awt and JDBC, which Android does not have
+    beforeVariants { variant ->
+        (variant as HasHostTestsBuilder).hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
     }
 }
 
