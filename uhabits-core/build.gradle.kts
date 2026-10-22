@@ -27,16 +27,6 @@ kotlin {
     jvm().withJava()
     jvmToolchain(17)
 
-    js(IR) {
-        browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                }
-            }
-        }
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -74,20 +64,6 @@ kotlin {
                 implementation(libs.hamcrest)
                 implementation(libs.commons.io)
                 implementation(libs.junit.jupiter)
-            }
-        }
-
-        val jsMain by getting {
-            dependencies {
-                implementation(npm("sql.js", "1.11.0"))
-                implementation(npm("sprintf-js", "1.1.3"))
-                implementation(npm("jszip", "3.10.1"))
-            }
-        }
-
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
             }
         }
     }

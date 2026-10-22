@@ -132,7 +132,6 @@ core_build() {
     log_info "Formatting code..."
     gradle_run ktlintFormat || fail
     log_info "Building uhabits-core..."
-    gradle_run kotlinUpgradeYarnLock || fail
     gradle_run :uhabits-core:build || fail
 }
 

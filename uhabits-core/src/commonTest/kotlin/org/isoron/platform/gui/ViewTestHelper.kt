@@ -2,7 +2,6 @@ package org.isoron.platform.gui
 
 import org.isoron.platform.io.createTestCanvas
 import org.isoron.platform.io.createTestFileOpener
-import org.isoron.platform.io.ensureFontsLoaded
 import kotlin.test.fail
 
 suspend fun assertRenders(
@@ -38,7 +37,6 @@ suspend fun assertRenders(
     expectedPath: String,
     view: View
 ) {
-    ensureFontsLoaded()
     val canvas = createTestCanvas(width, height)
     view.draw(canvas)
     assertRenders(expectedPath, canvas)
