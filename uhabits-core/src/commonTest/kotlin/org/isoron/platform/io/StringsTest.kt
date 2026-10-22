@@ -30,9 +30,11 @@ class StringsTest {
         assertEquals("005", format("%03d", 5))
         assertEquals(" 45", format("%3d", 45))
         assertEquals("145", format("%3d", 145))
-        assertEquals("   13.42", format("%8.2f", 13.419187263))
-        assertEquals("00013.42", format("%08.2f", 13.419187263))
-        assertEquals("13.42   ", format("%-8.2f", 13.419187263))
+        // format follows the device locale, so take the decimal separator from the platform.
+        val d = format("%.1f", 1.5)[1]
+        assertEquals("   13${d}42", format("%8.2f", 13.419187263))
+        assertEquals("00013${d}42", format("%08.2f", 13.419187263))
+        assertEquals("13${d}42   ", format("%-8.2f", 13.419187263))
     }
 
     @Test

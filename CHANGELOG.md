@@ -12,6 +12,7 @@ attribution.
 - Add an iOS preferences storage (`UserDefaultsStorage`) to `uhabits-core`, tested on the iOS simulator
 - Add an iOS database (`SqliterDatabase`, on sqliter) to `uhabits-core`; the database contract tests and the real migrations run on the iOS simulator
 - Add the iOS first-weekday and "today" calculation (`NSCalendar`/`NSTimeZone`) to `uhabits-core`, which unblocks the numerical score and streak tests on the iOS simulator
+- Add iOS `format`/`formatInvariant` to `uhabits-core` through a small printf implementation that rounds like the Android one (checked against `String.format` on the JVM)
 - Run the shared tests on the iOS simulator in CI: 193 of 275 pass, the rest wait for the iOS platform implementations (listed in `uhabits-core/ios-blocked-tests.txt`)
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 
