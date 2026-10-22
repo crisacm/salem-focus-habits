@@ -55,5 +55,8 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 
 ## Release and CI
 
-- [ ] Add CI workflows (there are none in `.github/` yet)
+- [x] Add CI workflow (`.github/workflows/ci.yml`: assemble, core JVM tests, Android unit tests and ktlint on PRs to `develop`)
+- [ ] Confirm the first GitHub Actions run of `ci.yml` is green
+- [ ] Fix locale-dependent decimal formatting in CSV export (`0,0000` and `"2,0"` under es-ES). Affects `HabitsCSVExporterTest`, `HabitListTest`, `StringsTest`, which fail on machines with a comma-decimal locale. CI passes only because the GitHub runner uses an English locale.
+- [ ] `jsBrowserTest` needs a Chrome binary (set `CHROME_BIN`). It is not in CI and goes away with the JS target (migration step 2)
 - [ ] Set up signing and publishing for Google Play and the App Store

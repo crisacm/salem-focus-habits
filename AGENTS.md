@@ -63,7 +63,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 | `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
 | `docs/` | Developer docs (see above). |
-| `.github/` | Issue templates and PR template. No CI workflows exist. |
+| `.github/` | Issue templates, PR template and `workflows/ci.yml` (assemble, core JVM tests, Android unit tests, ktlint on PRs to `develop`). |
 | `gradle/` | Version catalog `libs.versions.toml`, `translators.gradle.kts`, wrapper (Gradle 8.11.1). |
 | `build.sh` | Legacy CI/emulator helper script (still Loop-branded). |
 | `tools/parseInstrument.py` | Parses `adb shell am instrument -r` logs. |
@@ -164,7 +164,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 8. Known limitations and gotchas
 
-- No Compose, no iOS target, no CI workflows (the "automated pipeline" mentioned in `docs/GUIDELINES.md` is inherited from upstream and does not exist here).
+- No Compose, no iOS target. CI is limited to `.github/workflows/ci.yml` (no instrumented tests, no `jsBrowserTest`). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
 - `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
 - Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
 - `HabitsApplication.isTestMode()` detects tests by `Class.forName("org.isoron.uhabits.BaseAndroidTest")`.
