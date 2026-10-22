@@ -24,7 +24,7 @@ import org.isoron.platform.io.DatabaseOpener
 import org.isoron.platform.io.FileOpener
 import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.io.UserFile
-import org.isoron.platform.io.createTestDatabaseOpenerSuspend
+import org.isoron.platform.io.createTestDatabaseOpener
 import org.isoron.platform.io.createTestFileOpener
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.setToday
@@ -47,7 +47,7 @@ open class BaseUnitTest {
     private var _databaseOpener: DatabaseOpener? = null
     protected suspend fun databaseOpener(): DatabaseOpener {
         if (_databaseOpener == null) {
-            _databaseOpener = createTestDatabaseOpenerSuspend()
+            _databaseOpener = createTestDatabaseOpener()
         }
         return _databaseOpener!!
     }

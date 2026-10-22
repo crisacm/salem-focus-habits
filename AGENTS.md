@@ -58,7 +58,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 
 | Path | Purpose |
 |---|---|
-| `uhabits-core/` | Kotlin Multiplatform library (targets `jvm` + `js(IR)` browser): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
+| `uhabits-core/` | Kotlin Multiplatform library (target `jvm`; Android and iOS targets are planned, see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
 | `uhabits-android/` | Android application module (depends on `project(":uhabits-core")`). 189 Kotlin files + 26 vendored Java files (AOSP pickers under `src/main/java/com/android/`). |
 | `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
@@ -90,7 +90,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `ui/` — presenters/behaviors (`screens/habits/list`, `screens/habits/show` + `show/views` cards, `views/` chart data and themes, `callbacks/`, `widgets/WidgetBehavior`), `NotificationTray`, `ThemeSwitcher`.
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
-- `jvmMain` only: `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, JDBC `JavaDatabase`, `JavaCanvas`, `JavaFiles`, date helpers. `jsMain`: `JsDatabase` (sql.js), `JsCanvas`, `JsFiles`, `JsDates`, `Zip`.
+- `jvmMain` only: `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, JDBC `JavaDatabase`, `JavaCanvas`, `JavaFiles`, date helpers. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
 - `LocalDate(daysSince2000: Int)`; "today" and first weekday are global and overridable (`setToday`, `resetToday`) — tests rely on this.
@@ -100,7 +100,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 - `EntryList`/`ScoreList`/`StreakList` are `@Synchronized`.
 
 ### 3.4 Persistence
-- `Database`/`DatabaseOpener`/`PreparedStatement` abstraction (`platform/io/Database.kt`); schema version via `PRAGMA user_version`. Migrations are numbered SQL files run in order up to `DATABASE_VERSION`. JVM = JDBC (sqlite-jdbc, test dependency), JS = sql.js, Android = `AndroidDatabase`/`AndroidDatabaseOpener`.
+- `Database`/`DatabaseOpener`/`PreparedStatement` abstraction (`platform/io/Database.kt`); schema version via `PRAGMA user_version`. Migrations are numbered SQL files run in order up to `DATABASE_VERSION`. JVM = JDBC (sqlite-jdbc, test dependency), Android = `AndroidDatabase`/`AndroidDatabaseOpener`.
 - No sync code, no JSON export. Backups: `HabitsBackupAgent` (Google backup), `AutoBackup` (daily, keeps 5, optional SAF folder), CSV zip export, DB export/import tasks.
 
 ### 3.5 uhabits-android (`src/main/java/org/isoron/uhabits`)
@@ -120,8 +120,8 @@ Versions come from `gradle/libs.versions.toml` — **add or bump dependencies on
 - DI: kotlin-inject 0.9.0 (runtime `compileOnly` in core; compiler via KSP in android).
 - Async: kotlinx-coroutines 1.10.1. Network: ktor 1.6.8 (android/core/jackson/json; mock in tests).
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
-- Data/utils: Guava, OpenCSV, commons-codec, commons-lang3, JSR305; JS: npm `sql.js` 1.11.0, `jszip` 3.10.1, `sprintf-js` 1.1.3.
-- Tests: kotlin.test, JUnit 4/Jupiter, Hamcrest, Mokkery 3.3.0 (autofill mocks, class inheritance and concrete instantiation allowed), Espresso, UiAutomator, `androidx.test` rules, sqlite-jdbc, Karma + ChromeHeadless for JS.
+- Data/utils: Guava, OpenCSV, commons-codec, commons-lang3, JSR305.
+- Tests: kotlin.test, JUnit 4/Jupiter, Hamcrest, Mokkery 3.3.0 (autofill mocks, class inheritance and concrete instantiation allowed), Espresso, UiAutomator, `androidx.test` rules, sqlite-jdbc.
 - Lint/format: ktlint-gradle plugin 11.6.1 with defaults (no `.editorconfig`), Android lint (`abortOnError = false`, large `lint-baseline.xml`), ProGuard `-dontobfuscate` with `-keep class org.isoron.** {*;}`.
 
 ## 5. Commands
@@ -133,7 +133,6 @@ All run from the repo root. Add `--offline` when dependencies are already cached
 | Debug APK | `./gradlew :uhabits-android:assembleDebug` |
 | Compile Kotlin only (fast check) | `./gradlew :uhabits-android:compileDebugKotlin` |
 | Core JVM tests | `./gradlew :uhabits-core:jvmTest` |
-| Core JS tests (browser) | `./gradlew :uhabits-core:jsBrowserTest` (also `jsTest`, `allTests`) |
 | Android JVM unit tests | `./gradlew :uhabits-android:testDebugUnitTest` |
 | Instrumented tests (device/emulator) | `./gradlew :uhabits-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
 | Compile instrumented sources | `./gradlew :uhabits-android:compileDebugAndroidTestKotlin` |
@@ -157,14 +156,14 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 7. Testing
 
-- **Core** (`uhabits-core/src/commonTest`): kotlin.test + `kotlinx-coroutines-test` (`runTest`). Base class `BaseUnitTest` fixes today to 2015-01-25, builds the in-memory model factory and `HabitFixtures`. Platform-specific helpers via `expect/actual` (`TestDatabaseHelper`, `TestPlatformHelper`) in `jvmTest`/`jsTest`. Mokkery is used for presenter/UI tests. JS tests need the async `...Suspend()` helpers because sql.js initializes asynchronously. Migration tests follow `database/migrations/Version22Test`/`Version23Test`.
+- **Core** (`uhabits-core/src/commonTest`): kotlin.test + `kotlinx-coroutines-test` (`runTest`). Base class `BaseUnitTest` fixes today to 2015-01-25, builds the in-memory model factory and `HabitFixtures`. Platform-specific helpers via `expect/actual` (`TestDatabaseHelper`, `TestPlatformHelper`) in `jvmTest`. Mokkery is used for presenter/UI tests. Migration tests follow `database/migrations/Version22Test`/`Version23Test`.
 - **Android JVM** (`uhabits-android/src/test`): `BaseAndroidJVMTest`, `ReminderControllerTest`.
 - **Instrumented** (`uhabits-android/src/androidTest`): bases `BaseAndroidTest`, `BaseViewTest`, `BaseUserInterfaceTest`; DI test components `HabitsApplicationTestComponent`/`HabitsActivityTestComponent`; suites for acceptance, views, widgets, database, intents, regression, performance. View tests render a View/widget to a bitmap and compare to PNGs in `src/androidTest/assets/views/**` (`assertRenders`, `similarityCutoff = 0.00018`); accept new images with `./build.sh android-accept-images`. They require a clean emulator (Nexus 4 profile, en-US, animations off) — see `docs/TEST.md`.
 - **Rule:** put new logic in core where possible and cover it with a core test; every bug fix gets a regression test when feasible. Finish a change by running the build, ktlint and the tests relevant to the touched module.
 
 ## 8. Known limitations and gotchas
 
-- No Compose, no iOS target. CI is limited to `.github/workflows/ci.yml` (no instrumented tests, no `jsBrowserTest`). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
+- No Compose, no iOS target. CI is limited to `.github/workflows/ci.yml` (no instrumented tests). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
 - `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
 - Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
 - `HabitsApplication.isTestMode()` detects tests by `Class.forName("org.isoron.uhabits.BaseAndroidTest")`.
@@ -176,7 +175,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 9. Task playbooks
 
-- **Add a DB migration:** new `uhabits-core/assets/main/migrations/26.sql`, bump `DATABASE_VERSION`, update repositories/importers if columns change, add `Version26Test` modelled on `Version23Test`, run `:uhabits-core:jvmTest` and `jsBrowserTest`.
+- **Add a DB migration:** new `uhabits-core/assets/main/migrations/26.sql`, bump `DATABASE_VERSION`, update repositories/importers if columns change, add `Version26Test` modelled on `Version23Test`, run `:uhabits-core:jvmTest`.
 - **Add a habit command:** implement `Command` in `core/commands`, run it through `CommandRunner`, test with `BaseUnitTest`, wire it from a `*Behavior`/Android screen.
 - **Add a setting:** key + accessor in core `Preferences`, entry in `res/xml/preferences.xml` and `strings.xml`, handle in `SettingsFragment`; no hardcoded user-visible strings.
 - **Add a widget type:** follow an existing pair (`*Widget` + `*WidgetProvider`), register in the manifest with its `res/xml/widget_*_info.xml`, add widget view tests.

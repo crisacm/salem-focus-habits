@@ -13,6 +13,7 @@ attribution.
 
 ### Changed
 
+- Remove the JavaScript (browser) target from `uhabits-core`; the focus is Android and iOS
 - Rebrand the README as "Salem - Focus & Habit Tracker" and credit the original Loop Habit Tracker project
 - Adapt the issue templates, developer guidelines, build and test documentation to the Salem fork
 - Remove the original screenshots
