@@ -28,25 +28,30 @@ Explorer briefs (persistence layer, Database contract) plus the spike on `spike/
 - commonTest classes runnable on iOS without `FileOpener`: `DatabaseTest` (6), `DatabaseQueryHelpersTest` (8), `MigrationTest` (2), `HabitRepositoryTest`, `EntryRepositoryTest`, `SQLiteEntryListTest`.
 
 ## Incertidumbre
-Resolved:
-- U1: persistent statements exist (`createStatement` + `query()` + `resetStatement` + `finalizeStatement`); two live statements still to be proven by a test.
-Open (record the answer here):
-- U2: `inMemory` behaviour for `:memory:`; fallback: temp file removed on close.
-- U3: opening a file with `user_version` 0 without rewriting it (config `version` 0 allowed? else restore with `PRAGMA user_version`).
-- U4: foreign database in WAL mode opened with `JournalMode.DELETE` (conversion side effect).
-- U5: how appleTest reads `assets/main/migrations` and the test DBs (Gradle `environment` vs a generated `TestPaths` source).
-- U6: `close()` with live statements; `COMMIT`/`ROLLBACK` at depth 0 (decision: no-op, documented and tested).
+All resolved:
+- U1: persistent statements exist (`createStatement`, `query()`, `resetStatement`, `finalizeStatement`); two live statements work (`testTwoStatementsCanBeAliveAtTheSameTime`).
+- U2: `DatabaseConfiguration.inMemory = true` with a unique name per open gives independent databases (`testInMemoryDatabasesAreIndependent`).
+- U3: a file with `user_version` 0 is opened with config version 1 and restored to 0 afterwards (`testFileWithVersionZeroStaysAtZero`).
+- U4: a database in WAL mode opens fine with `JournalMode.DELETE`, keeps its data and ends as a single file (`testDatabaseInWalModeIsOpenedAndConvertedToASingleFile`). The journal mode of the file changes; importers open temporary copies.
+- U5: Gradle `environment("SIMCTL_CHILD_SALEM_ASSETS_DIR", ...)` on `KotlinNativeSimulatorTest` reaches the test as `SALEM_ASSETS_DIR`; without the prefix it does not. No generated source needed.
+- U6: closing with a live statement works (statements are finalized on `close()`); `COMMIT` at depth 0 is ignored (`testCommitWithoutBeginIsIgnored`).
+Other findings: opening a second connection to a file that has an open write transaction fails with "database is locked" (sqliter sets the journal mode on open), which does not happen in production because importers open other files; a statement without result columns is executed by the first `next()` and must not be stepped again (the adapter resets it instead); `sqliter` does not end up in the Android APK.
 
 ## Checklist
 TDD mode: red/green. Red: appleTest sources reference classes that do not exist yet; then the existing contract tests fail on the iOS `TODO` stubs.
-- [ ] TASK-1: sqliter dependency (catalog `sqliter = "1.3.3"`), `-lsqlite3` kept — criterio: `compileKotlinIosSimulatorArm64` green
-- [ ] TASK-2: RED tests (header peek, opener semantics, statements, transactions) — criterio: they fail to compile / fail before the implementation
-- [ ] TASK-3: `SqliteFileHeader`, `SqliterDatabase`, `SqliterPreparedStatement`, `SqliterDatabaseOpener` — criterio: TASK-2 tests green on the simulator
-- [ ] TASK-4: real appleTest actuals and the contract tests on iOS — criterio: `DatabaseTest`, `DatabaseQueryHelpersTest`, `MigrationTest` green on the simulator
-- [ ] TASK-5: CI filters, docs, spec decision, CHANGELOG — criterio: `ktlintCheck` green, PR CI green (ubuntu and macOS)
+- [x] TASK-1: sqliter dependency (catalog `sqliter = "1.3.3"`), `-lsqlite3` kept — criterio: `compileKotlinIosSimulatorArm64` green
+- [x] TASK-2: RED tests (header peek, opener semantics, statements, transactions) — criterio: they fail to compile / fail before the implementation
+- [x] TASK-3: `SqliteFileHeader`, `SqliterDatabase`, `SqliterPreparedStatement`, `SqliterDatabaseOpener` — criterio: TASK-2 tests green on the simulator
+- [x] TASK-4: real appleTest actuals and the contract tests on iOS — criterio: `DatabaseTest`, `DatabaseQueryHelpersTest`, `MigrationTest` green on the simulator
+- [x] TASK-5: CI filters, docs, spec decision, CHANGELOG — criterio: `ktlintCheck` green, PR CI green (ubuntu and macOS)
 
 ## Estrategia de entrega
 Chosen with the user: two chained PRs (3d-1 foundation, 3d-2 repositories). One commit per task, PR to `develop`; CI read via `gh api .../jobs`.
 
 ## Evidencia
-(pending)
+macOS arm64, Xcode 27.1, iOS 27.1 simulator, Gradle run from the repo root.
+- RED: with the tests in place and no implementation, `compileTestKotlinIosSimulatorArm64` failed with unresolved references to `peekUserVersion` and `SqliterDatabaseOpener`.
+- GREEN on the simulator (the exact CI command, 37 tests, 0 failures): `SqliteFileHeaderTest` 2, `SqliterDatabaseTest` 13, `UserDefaultsStorageTest` 6, and the common contract tests `DatabaseTest` 6, `DatabaseQueryHelpersTest` 8, `MigrationTest` 2 (this one runs migrations 09-25 from the real `assets/main/migrations` on iOS).
+- Regression: `:uhabits-core:jvmTest` (277 tests), `compileDebugKotlinAndroid`, `compileKotlinIosArm64`, `:uhabits-android:assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `ktlintCheck` pass; the release APK has no sqliter classes.
+- Not run: the rest of the commonTest suite on iOS (needs step 4 and PR 3d-2), instrumented tests.
+- CI: see the PR checks.
