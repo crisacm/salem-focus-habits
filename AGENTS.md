@@ -58,7 +58,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 
 | Path | Purpose |
 |---|---|
-| `uhabits-core/` | Kotlin Multiplatform library (target `jvm`; Android and iOS targets are planned, see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
+| `uhabits-core/` | Kotlin Multiplatform library (targets `jvm` and `android`; iOS is planned, see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
 | `uhabits-android/` | Android application module (depends on `project(":uhabits-core")`). 189 Kotlin files + 26 vendored Java files (AOSP pickers under `src/main/java/com/android/`). |
 | `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
@@ -78,7 +78,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 ### 3.1 Modules
 `uhabits-android` → `uhabits-core`. Core is platform-agnostic: it talks to the platform only through interfaces and `expect/actual` declarations. The Android module implements those interfaces and owns all UI, Android services and DI wiring.
 
-### 3.2 uhabits-core (`src/<set>/kotlin/org/isoron/...`; jvm sets use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
+### 3.2 uhabits-core (`src/<set>/kotlin/org/isoron/...`; `jvmMain` and `jvmTest` use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
 - `commonMain/platform/` — platform abstractions: `gui` (Canvas, Color, Image, View, FontAwesome), `io` (Database, Files, Strings `format`, Zip), `time` (`LocalDate`, `DayOfWeek`, `LocalDateFormatter`, `getToday/setToday`), `utils`. `JvmAnnotations.kt` declares `expect` `Synchronized`/`JvmStatic`.
 - `commonMain/uhabits/core/`:
   - `models/` — domain model; `models/memory/` (in-memory) and `models/sqlite/` (SQLite-backed) implementations behind `ModelFactory`.
@@ -90,7 +90,8 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `ui/` — presenters/behaviors (`screens/habits/list`, `screens/habits/show` + `show/views` cards, `views/` chart data and themes, `callbacks/`, `widgets/WidgetBehavior`), `NotificationTray`, `ThemeSwitcher`.
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
-- `jvmMain` only: `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, JDBC `JavaDatabase`, `JavaCanvas`, `JavaFiles`, date helpers. The `js` target was removed.
+- `jvmAndroidMain` (group shared by the jvm and android targets, `java.*` APIs only): `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, `JavaStrings`, `Zip`, `JavaUserFile`, date helpers, `JvmAnnotations`.
+- `jvmMain` only (desktop APIs: `java.awt`, JDBC): `JavaCanvas`, `JavaImage`, `JavaDatabase`, `JavaResourceFile`, `JavaFileOpener`. They back the `jvmTest` helpers; the Android app does not use them. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
 - `LocalDate(daysSince2000: Int)`; "today" and first weekday are global and overridable (`setToday`, `resetToday`) — tests rely on this.
@@ -133,6 +134,7 @@ All run from the repo root. Add `--offline` when dependencies are already cached
 | Debug APK | `./gradlew :uhabits-android:assembleDebug` |
 | Compile Kotlin only (fast check) | `./gradlew :uhabits-android:compileDebugKotlin` |
 | Core JVM tests | `./gradlew :uhabits-core:jvmTest` |
+| Compile core for Android | `./gradlew :uhabits-core:compileDebugKotlinAndroid` (core tests run only on `jvm`: the Android unit-test variant is disabled) |
 | Android JVM unit tests | `./gradlew :uhabits-android:testDebugUnitTest` |
 | Instrumented tests (device/emulator) | `./gradlew :uhabits-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
 | Compile instrumented sources | `./gradlew :uhabits-android:compileDebugAndroidTestKotlin` |
@@ -163,6 +165,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 8. Known limitations and gotchas
 
+- Core is an Android library (`namespace org.isoron.uhabits.core`, `androidTarget` with `com.android.library`). Its `jvmMain` dependencies no longer reach the app at runtime, so the app declares what it uses (e.g. `androidx.annotation`). D8 (R8 8.9.35 in AGP 8.9.2) prints `Unexpected error during rewriting of Kotlin metadata` warnings for Kotlin 2.3 classes; they existed before and are harmless.
 - No Compose, no iOS target. CI is limited to `.github/workflows/ci.yml` (no instrumented tests). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
 - `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
 - Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
