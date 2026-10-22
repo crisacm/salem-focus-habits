@@ -15,6 +15,7 @@ attribution.
 - Add iOS `format`/`formatInvariant` to `uhabits-core` through a small printf implementation that rounds like the Android one (checked against `String.format` on the JVM)
 - Add iOS file access (`AppleFileOpener`, user files in Application Support) to `uhabits-core`; the file, import and migration tests run on the iOS simulator
 - Add an iOS date formatter (`AppleLocalDateFormatter`, on `NSDateFormatter`) to `uhabits-core` for weekday and month names
+- Add an iOS zip reader and writer (raw DEFLATE through the system zlib) to `uhabits-core`, so the CSV export runs on iOS; archives are checked against the JDK
 - Run the shared tests on the iOS simulator in CI: 193 of 275 pass, the rest wait for the iOS platform implementations (listed in `uhabits-core/ios-blocked-tests.txt`)
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 

@@ -23,14 +23,19 @@ Step 4e of `.specs/migration-kmp.md`. Unblocks `ZipTest`, `HabitsCSVExporterTest
 - Non-zip input: iOS throws `IllegalArgumentException`; the JVM returns an empty list for non-zip bytes.
 
 ## Checklist
-- [ ] TASK-1: branch, task doc, spike recorded — criterio: this file committed
-- [ ] TASK-2: CRC-32, DOS date and raw deflate/inflate helpers — criterio: helper tests green
-- [ ] TASK-3: `ZipWriter` — criterio: structure tests and common `ZipTest` writer cases green
-- [ ] TASK-4: `ZipReader` — criterio: round trips, JDK fixture, error cases green
-- [ ] TASK-5: interop fixtures and extended common `ZipTest` — criterio: iOS and JVM suites green
-- [ ] TASK-6: unblock tests, docs, changelog — criterio: ktlint, assembleDebug, CI green
+- [x] TASK-1: branch, task doc, spike recorded — criterio: this file committed
+- [x] TASK-2: CRC-32, DOS date and raw deflate/inflate helpers — criterio: helper tests green
+- [x] TASK-3: `ZipWriter` — criterio: structure tests and common `ZipTest` writer cases green
+- [x] TASK-4: `ZipReader` — criterio: round trips, JDK fixture, error cases green
+- [x] TASK-5: interop fixtures and extended common `ZipTest` — criterio: iOS and JVM suites green
+- [x] TASK-6: unblock tests, docs, changelog — criterio: ktlint, assembleDebug, CI green
 
 ## Estrategia de entrega
 `single-pr`, base `feat/ios-date-formatter` until the parents merge, then retarget to `develop`.
 
 ## Evidencia
+- Spike: Engram `spike/ios-zip` (`platform.zlib` raw deflate, inflate and crc32 on the simulator with no Gradle change).
+- New iOS tests, each written before the code and seen failing: `AppleDeflateTest` (6), `AppleZipWriterTest` (8, header layout byte by byte), `AppleZipReaderTest` (7: JDK-written archive with data descriptors, stored entries, round trip, garbage, truncated, corrupt CRC and data, unsupported method, encryption, bad offset), `AppleZipInteropTest` (writer output equals the committed `ios-written.zip`), two cases added to the shared `ZipTest`.
+- Interop: `ios-written.zip` read by the JDK (`ZipInteropTest`, JVM), by Python `zipfile.testzip()` and by the system `unzip -t`; `jdk-written.zip` (data descriptors) and `stored.zip` (Python) read on iOS.
+- Unblocked: `ZipTest`, `HabitsCSVExporterTest`, `ShowHabitMenuPresenterTest.testOnExport`, `ListHabitsBehaviorTest.testOnExportCSV` and `_fail`. iOS suite 337 tests, 0 failures; `jvmTest` 295, 0 failures; `ktlintCheck`, `compileKotlinIosArm64` and `assembleDebug` pass.
+- Not verified: linking for the device target (only the framework of step 7 links), CI.
