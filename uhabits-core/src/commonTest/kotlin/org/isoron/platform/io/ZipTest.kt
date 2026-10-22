@@ -78,4 +78,20 @@ class ZipTest {
     private suspend fun readZipEntries(bytes: ByteArray): Map<String, String> {
         return ZipReader(bytes).entries().associate { it.name to it.content }
     }
+
+    @Test
+    fun testNonAsciiNamesAndContent() = runTest {
+        val zip = ZipWriter()
+        zip.addEntry("ñandú/日本.csv", "año,día\n😀,1\n")
+        val entries = readZipEntries(zip.toBytes())
+        assertEquals("año,día\n😀,1\n", entries["ñandú/日本.csv"])
+    }
+
+    @Test
+    fun testEntriesKeepTheirOrder() = runTest {
+        val zip = ZipWriter()
+        val names = listOf("z.txt", "a.txt", "m/b.txt", "m/a.txt")
+        for (name in names) zip.addEntry(name, name)
+        assertEquals(names, ZipReader(zip.toBytes()).entries().map { it.name })
+    }
 }
