@@ -15,6 +15,7 @@ attribution.
 
 - Remove the JavaScript (browser) target from `uhabits-core`; the focus is Android and iOS
 - Add an Android target to `uhabits-core` and a source set shared by the jvm and android targets
+- Add iOS targets (`iosArm64`, `iosSimulatorArm64`) to `uhabits-core` with stub implementations, and a macOS CI job that compiles them
 - Rebrand the README as "Salem - Focus & Habit Tracker" and credit the original Loop Habit Tracker project
 - Adapt the issue templates, developer guidelines, build and test documentation to the Salem fork
 - Remove the original screenshots

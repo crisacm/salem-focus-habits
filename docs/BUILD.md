@@ -2,7 +2,7 @@
 
 This page describes how to download and build the app from the source code. If you are having trouble building the project, please do not hesitate to open a new issue.
 
-> **Note:** for now, only the Android build is documented. Instructions for building the Kotlin Multiplatform and iOS targets (which will require macOS and Xcode) will be added as the migration progresses. The Gradle modules still carry the original project's names (for example, `uhabits-android`).
+> **Note:** for now, only the Android build is documented. Instructions for building the iOS app will be added as the migration progresses. To compile the iOS targets of `uhabits-core` you need macOS with Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`) and the license accepted; the first build downloads Kotlin/Native into `~/.konan`: `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64`. The Gradle modules still carry the original project's names (for example, `uhabits-android`).
 
 ## Contents
 
