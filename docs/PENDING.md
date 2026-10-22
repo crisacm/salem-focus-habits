@@ -46,6 +46,7 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 - [ ] Sync server: the default URL is empty; set up a server or remove the setting
 - [ ] Review `versionCode` and `versionName`
 - [ ] Replace the iOS stub actuals in `uhabits-core/src/appleMain` with real implementations (steps 3 and 4) and the `TODO` stubs in `uhabits-core/src/appleTest`, so the whole commonTest suite can run on `iosSimulatorArm64Test`
+- [ ] iOS database: opening a file that is not a SQLite database fails with a cryptic sqliter error (`error while compiling: PRAGMA journal_mode`); wrap it with a clear message. `peekUserVersion` reads the file header, which can be stale for a database in WAL mode whose latest `user_version` is only in the `-wal` file (the app database uses a single journal file, importers open copies)
 - [ ] Upgrade AGP to 8.10 or later and migrate the core Android target from `androidTarget` to the `com.android.kotlin.multiplatform.library` plugin (the upgrade also silences the D8 Kotlin metadata warnings)
 
 ## Documentation

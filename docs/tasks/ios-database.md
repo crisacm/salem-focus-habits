@@ -55,3 +55,7 @@ macOS arm64, Xcode 27.1, iOS 27.1 simulator, Gradle run from the repo root.
 - Regression: `:uhabits-core:jvmTest` (277 tests), `compileDebugKotlinAndroid`, `compileKotlinIosArm64`, `:uhabits-android:assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `ktlintCheck` pass; the release APK has no sqliter classes.
 - Not run: the rest of the commonTest suite on iOS (needs step 4 and PR 3d-2), instrumented tests.
 - CI: see the PR checks.
+
+## Hallazgos de la revisión (rdd-lite de #11)
+- Fixed: two `SqliterDatabaseOpener` instances shared the `:memory:` database because the name came from a per-instance counter and sqliter shares in-memory databases by name within the process. Each open now uses a unique name (`NSUUID`), covered by `testInMemoryDatabasesFromDifferentOpenersAreIndependent`.
+- Open (low): opening a file that is not a SQLite database fails with a cryptic `error while compiling: PRAGMA journal_mode`. Open (info): `peekUserVersion` can be stale for a WAL database whose latest `user_version` is only in the `-wal` file. Both are tracked in `docs/PENDING.md`.
