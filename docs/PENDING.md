@@ -45,6 +45,7 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 - [ ] Decide what to do with the `org.isoron.uhabits.ACTION_*` intent actions and the `content://org.isoron.uhabits/...` URI (kept for Tasker compatibility)
 - [ ] Sync server: the default URL is empty; set up a server or remove the setting
 - [ ] Review `versionCode` and `versionName`
+- [ ] Upgrade AGP to 8.10 or later and migrate the core Android target from `androidTarget` to the `com.android.kotlin.multiplatform.library` plugin (the upgrade also silences the D8 Kotlin metadata warnings)
 
 ## Documentation
 
