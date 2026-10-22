@@ -120,9 +120,9 @@ Versions come from `gradle/libs.versions.toml` — **add or bump dependencies on
 
 - Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on. iOS targets need macOS with Xcode selected (`xcode-select -p` must point to Xcode, not the Command Line Tools); the first iOS build downloads Kotlin/Native into `~/.konan` (about 1.3 GB).
 - DI: kotlin-inject 0.9.0 (runtime `compileOnly` in core; compiler via KSP in android).
-- Async: kotlinx-coroutines 1.10.1. Network: ktor 1.6.8 (android/core/jackson/json; mock in tests).
+- Async: kotlinx-coroutines 1.10.1. No network library: the app has no sync code (Ktor was removed).
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
-- Data/utils: Guava, OpenCSV, commons-codec, commons-lang3, JSR305.
+- Data/utils: no third-party utility libraries (Guava, OpenCSV, Apache Commons, JSR305 were unused and removed); CSV is parsed and written in `platform/io/Strings.kt` and `core/io`.
 - Tests: kotlin.test, JUnit 4/Jupiter, Hamcrest, Mokkery 3.3.0 (autofill mocks, class inheritance and concrete instantiation allowed), Espresso, UiAutomator, `androidx.test` rules, sqlite-jdbc.
 - Lint/format: ktlint-gradle plugin 11.6.1 with defaults (no `.editorconfig`), Android lint (`abortOnError = false`, large `lint-baseline.xml`), ProGuard `-dontobfuscate` with `-keep class org.isoron.** {*;}`.
 
