@@ -71,5 +71,5 @@ jobs:
         run: ./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64
 
       # The iOS test sources still have TODO stubs (step 4), so only selected classes are run
-      - name: Run iOS tests (preferences storage)
-        run: ./gradlew :uhabits-core:iosSimulatorArm64Test --tests "*UserDefaultsStorageTest*"
+      - name: Run iOS tests (preferences and database)
+        run: ./gradlew :uhabits-core:iosSimulatorArm64Test --tests "*UserDefaultsStorageTest*" --tests "*SqliteFileHeaderTest*" --tests "*SqliterDatabaseTest*" --tests "org.isoron.platform.io.DatabaseTest" --tests "*DatabaseQueryHelpersTest*" --tests "*MigrationTest*"
