@@ -26,6 +26,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AppleFilesTest {
@@ -125,5 +126,62 @@ class AppleFilesTest {
     @Test
     fun testPathString() {
         assertEquals("$root/p.txt", file("p.txt").pathString)
+    }
+
+    @Test
+    fun testMkdirsCreatesNestedDirectoriesAndIsIdempotent() = runTest {
+        val dir = file("x/y/z")
+        assertFalse(dir.exists())
+        dir.mkdirs()
+        assertTrue(dir.exists())
+        dir.mkdirs()
+        assertTrue(dir.exists())
+    }
+
+    @Test
+    fun testResolveIsRelativeToThePathItself() = runTest {
+        val dir = file("dir")
+        dir.mkdirs()
+        val child = dir.resolve("child.txt")
+        assertEquals("$root/dir/child.txt", child.pathString)
+        child.writeString("hi")
+        assertEquals(listOf("hi"), child.lines())
+    }
+
+    @Test
+    fun testListFilesReturnsSortedChildren() = runTest {
+        val dir = file("list")
+        dir.mkdirs()
+        dir.resolve("b.txt").writeString("b")
+        dir.resolve("a.txt").writeString("a")
+        dir.resolve("sub").mkdirs()
+        val children = dir.listFiles()
+        assertEquals(
+            listOf("$root/list/a.txt", "$root/list/b.txt", "$root/list/sub"),
+            children?.map { it.pathString }
+        )
+    }
+
+    @Test
+    fun testListFilesOfAnEmptyDirectoryIsEmpty() = runTest {
+        val dir = file("empty")
+        dir.mkdirs()
+        assertEquals(emptyList(), dir.listFiles()?.map { it.pathString })
+    }
+
+    @Test
+    fun testListFilesIsNullForMissingPathsAndRegularFiles() = runTest {
+        assertNull(file("nothing-here").listFiles())
+        val f = file("regular.txt")
+        f.writeString("x")
+        assertNull(f.listFiles())
+    }
+
+    @Test
+    fun testDeleteRemovesADirectoryWithItsContent() = runTest {
+        val dir = file("tree")
+        dir.resolve("a/b.txt").writeString("x")
+        dir.delete()
+        assertFalse(dir.exists())
     }
 }

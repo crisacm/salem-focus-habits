@@ -64,11 +64,26 @@ class AppleUserFile(private val path: String) : UserFile {
 
     override suspend fun readBytes(limit: Int): ByteArray = readFileBytes(path, limit)
 
-    override fun resolve(child: String): UserFile = TODO("TASK-3")
+    override fun resolve(child: String): UserFile = AppleUserFile("$path/$child")
 
-    override suspend fun listFiles(): List<UserFile>? = TODO("TASK-3")
+    /**
+     * The children sorted by name, or null if this is not a directory.
+     */
+    override suspend fun listFiles(): List<UserFile>? {
+        val names = NSFileManager.defaultManager.contentsOfDirectoryAtPath(path, null) ?: return null
+        return names.filterIsInstance<String>().sorted().map { AppleUserFile("$path/$it") }
+    }
 
-    override suspend fun mkdirs() = TODO("TASK-3")
+    override suspend fun mkdirs() {
+        check(
+            NSFileManager.defaultManager.createDirectoryAtPath(
+                path,
+                withIntermediateDirectories = true,
+                attributes = null,
+                error = null
+            )
+        ) { "Cannot create $path" }
+    }
 }
 
 internal fun createParentDirectories(path: String) {
