@@ -33,12 +33,94 @@ private const val CENTRAL_HEADER_SIGNATURE = 0x02014b50
 private const val END_SIGNATURE = 0x06054b50
 private const val VERSION = 20
 private const val FLAG_UTF8_NAMES = 0x0800
+private const val METHOD_STORED = 0
 private const val METHOD_DEFLATED = 8
+private const val FLAG_ENCRYPTED = 1
+private const val LOCAL_HEADER_SIZE = 30
+private const val CENTRAL_HEADER_SIZE = 46
+private const val END_SIZE = 22
+private const val MAX_ENTRY_SIZE = 256L * 1024 * 1024
 private const val MAX_ENTRIES = 0xFFFF
 
-actual class ZipReader actual constructor(bytes: ByteArray) {
-    actual suspend fun entries(): List<ZipEntry> = TODO("iOS: step 4")
+/**
+ * Reads a whole zip archive from memory. It follows the central directory, so archives written with
+ * data descriptors (like the JDK does) work, and it supports STORED and DEFLATED entries with a
+ * CRC-32 check. Directory entries are returned with empty content, as java.util.zip does.
+ *
+ * Unlike the JVM reader, which returns an empty list for bytes that are not a zip, anything that is
+ * not a valid archive (not a zip, truncated, corrupt, ZIP64, encrypted, an unknown method, or an entry
+ * over 256 MiB) throws [IllegalArgumentException].
+ */
+actual class ZipReader actual constructor(private val bytes: ByteArray) {
+    actual suspend fun entries(): List<ZipEntry> {
+        val endAt = findEndOfCentralDirectory()
+        val count = bytes.u16(endAt + 10)
+        val directorySize = bytes.u32(endAt + 12)
+        val directoryOffset = bytes.u32(endAt + 16)
+        require(count != 0xFFFF && directoryOffset != 0xFFFFFFFFL) { "ZIP64 archives are not supported" }
+        require(directoryOffset + directorySize <= endAt) { "Invalid central directory" }
+        val entries = ArrayList<ZipEntry>(count)
+        var at = directoryOffset.toInt()
+        repeat(count) {
+            require(at + CENTRAL_HEADER_SIZE <= endAt && bytes.u32(at) == CENTRAL_HEADER_SIGNATURE.toLong()) {
+                "Invalid central directory entry"
+            }
+            val nameLength = bytes.u16(at + 28)
+            val skipped = bytes.u16(at + 30) + bytes.u16(at + 32)
+            require(at + CENTRAL_HEADER_SIZE + nameLength + skipped <= endAt) { "Invalid central directory entry" }
+            val name = bytes.decodeToString(at + CENTRAL_HEADER_SIZE, at + CENTRAL_HEADER_SIZE + nameLength)
+            entries.add(ZipEntry(name, readContent(at, directoryOffset.toInt())))
+            at += CENTRAL_HEADER_SIZE + nameLength + skipped
+        }
+        return entries
+    }
+
+    private fun findEndOfCentralDirectory(): Int {
+        require(bytes.size >= END_SIZE) { "Not a zip archive" }
+        val lowest = maxOf(0, bytes.size - END_SIZE - 0xFFFF)
+        for (at in bytes.size - END_SIZE downTo lowest) {
+            if (bytes.u32(at) == END_SIGNATURE.toLong()) return at
+        }
+        throw IllegalArgumentException("Not a zip archive")
+    }
+
+    private fun readContent(headerAt: Int, directoryOffset: Int): String {
+        val flags = bytes.u16(headerAt + 8)
+        val method = bytes.u16(headerAt + 10)
+        val crc = bytes.u32(headerAt + 16)
+        val compressedSize = bytes.u32(headerAt + 20)
+        val size = bytes.u32(headerAt + 24)
+        val localAt = bytes.u32(headerAt + 42)
+        require(flags and FLAG_ENCRYPTED == 0) { "Encrypted entries are not supported" }
+        require(compressedSize != 0xFFFFFFFFL && size != 0xFFFFFFFFL && localAt != 0xFFFFFFFFL) {
+            "ZIP64 archives are not supported"
+        }
+        require(size <= MAX_ENTRY_SIZE) { "Entry too large: $size bytes" }
+        require(localAt + LOCAL_HEADER_SIZE <= directoryOffset && bytes.u32(localAt.toInt()) == LOCAL_HEADER_SIGNATURE.toLong()) {
+            "Invalid local header"
+        }
+        val dataAt = localAt + LOCAL_HEADER_SIZE + bytes.u16(localAt.toInt() + 26) + bytes.u16(localAt.toInt() + 28)
+        require(dataAt + compressedSize <= directoryOffset) { "Entry data is out of range" }
+        val stored = bytes.copyOfRange(dataAt.toInt(), (dataAt + compressedSize).toInt())
+        val data = when (method) {
+            METHOD_STORED -> {
+                require(compressedSize == size) { "Stored entry with different sizes" }
+                stored
+            }
+            METHOD_DEFLATED -> inflateRaw(stored, size.toInt())
+            else -> throw IllegalArgumentException("Unsupported compression method: $method")
+        }
+        require(crc32Of(data).toLong() and 0xFFFFFFFFL == crc) { "CRC-32 mismatch" }
+        return data.decodeToString()
+    }
 }
+
+private fun ByteArray.u16(at: Int): Int {
+    require(at >= 0 && at + 2 <= size) { "Truncated zip archive" }
+    return (this[at].toInt() and 0xFF) or ((this[at + 1].toInt() and 0xFF) shl 8)
+}
+
+private fun ByteArray.u32(at: Int): Long = u16(at).toLong() or (u16(at + 2).toLong() shl 16)
 
 /**
  * Writes a zip archive in memory: every entry is DEFLATED and its UTF-8 name is flagged as such, the
