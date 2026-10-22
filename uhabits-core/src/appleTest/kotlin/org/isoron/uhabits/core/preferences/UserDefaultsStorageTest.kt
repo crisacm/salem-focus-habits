@@ -83,6 +83,25 @@ class UserDefaultsStorageTest {
     }
 
     @Test
+    fun testClearWithoutDomainName() {
+        val withoutDomain = UserDefaultsStorage(NSUserDefaults(suiteName = suite), null)
+        withoutDomain.putInt("a", 1)
+        withoutDomain.putString("b", "x")
+        withoutDomain.clear()
+        assertEquals(-1, withoutDomain.getInt("a", -1))
+        assertEquals("none", withoutDomain.getString("b", "none"))
+    }
+
+    @Test
+    fun testClearWithDefaultConstructor() {
+        // The test executable has no bundle identifier, so there is no domain name to remove
+        val standard = UserDefaultsStorage()
+        standard.putInt("org.isoron.uhabits.test.clear", 1)
+        standard.clear()
+        assertEquals(-1, standard.getInt("org.isoron.uhabits.test.clear", -1))
+    }
+
+    @Test
     fun testLongArray() {
         assertEquals(listOf(1L), storage.getLongArray("arr", longArrayOf(1L)).toList())
         storage.putLongArray("arr", longArrayOf(3L, 5L, 8L))

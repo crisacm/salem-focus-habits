@@ -30,7 +30,12 @@ import platform.Foundation.NSUserDefaults
  *
  * @param defaults the defaults database to use
  * @param domainName the persistent domain that [clear] removes. For the standard defaults this is the
- *   bundle identifier; for a suite created with `NSUserDefaults(suiteName)` it is the suite name.
+ *   bundle identifier; for a suite created with `NSUserDefaults(suiteName)` it is the suite name. When it
+ *   is null (for example in a test executable, which has no bundle identifier) [clear] removes every key
+ *   of [defaults] instead.
+ *
+ * Integers are stored as `NSInteger` (64 bits), so [getInt] truncates a value that was stored with
+ * [putLong] and does not fit in an `Int`. `SharedPreferences` would throw instead.
  */
 class UserDefaultsStorage(
     private val defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults,
@@ -38,7 +43,11 @@ class UserDefaultsStorage(
 ) : Preferences.Storage {
 
     override fun clear() {
-        if (domainName != null) NSUserDefaults.standardUserDefaults.removePersistentDomainForName(domainName)
+        if (domainName != null) {
+            NSUserDefaults.standardUserDefaults.removePersistentDomainForName(domainName)
+        } else {
+            for (key in defaults.dictionaryRepresentation().keys) defaults.removeObjectForKey(key as String)
+        }
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean =
