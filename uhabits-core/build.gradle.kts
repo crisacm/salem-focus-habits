@@ -33,6 +33,10 @@ kotlin {
     androidTarget()
     iosArm64()
     iosSimulatorArm64()
+    // sqliter (iOS database) needs the system SQLite library when a native binary is linked
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries.all { linkerOpts("-lsqlite3") }
+    }
     jvmToolchain(17)
 
     // Code that only needs java.* APIs and is shared by the jvm and android targets
@@ -68,6 +72,12 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(libs.sqlite.jdbc)
+            }
+        }
+
+        val appleMain by getting {
+            dependencies {
+                implementation(libs.sqliter.driver)
             }
         }
 
@@ -115,6 +125,12 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile> {
 tasks.withType<Test>().configureEach {
     systemProperty("user.language", "en")
     systemProperty("user.country", "US")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest>().configureEach {
+    // The simulator reads host paths, so tests can load the core assets directly. simctl only forwards
+    // variables with the SIMCTL_CHILD_ prefix; the test process sees SALEM_ASSETS_DIR
+    environment("SIMCTL_CHILD_SALEM_ASSETS_DIR", file("assets").absolutePath)
 }
 
 tasks.withType<ProcessResources> {

@@ -10,6 +10,7 @@ attribution.
 ### Added
 
 - Add an iOS preferences storage (`UserDefaultsStorage`) to `uhabits-core`, tested on the iOS simulator
+- Add an iOS database (`SqliterDatabase`, on sqliter) to `uhabits-core`; the database contract tests and the real migrations run on the iOS simulator
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 
 ### Fixed
