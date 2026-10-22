@@ -2,7 +2,7 @@
 
 This page describes how to download and build the app from the source code. If you are having trouble building the project, please do not hesitate to open a new issue.
 
-> **Note:** for now, only the Android build is documented. Instructions for building the iOS app will be added as the migration progresses. To compile the iOS targets of `uhabits-core` you need macOS with Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`) and the license accepted; the first build downloads Kotlin/Native into `~/.konan`: `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64`. To run the iOS tests install an iOS Simulator runtime (`xcodebuild -downloadPlatform iOS`) and run `./gradlew :uhabits-core:iosSimulatorArm64Test --tests "*SqliterDatabaseTest*"` (see `AGENTS.md` section 5 for the full list of iOS test classes). The Gradle modules still carry the original project's names (for example, `uhabits-android`).
+> **Note:** for now, only the Android build is documented. Instructions for building the iOS app will be added as the migration progresses. To compile the iOS targets of `uhabits-core` you need macOS with Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`) and the license accepted; the first build downloads Kotlin/Native into `~/.konan`: `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64`. To run the iOS tests install an iOS Simulator runtime (`xcodebuild -downloadPlatform iOS`) and run `./gradlew :uhabits-core:iosSimulatorArm64Test` (it skips the tests listed in `uhabits-core/ios-blocked-tests.txt`, see `AGENTS.md` section 5). The Gradle modules still carry the original project's names (for example, `uhabits-android`).
 
 ## Contents
 

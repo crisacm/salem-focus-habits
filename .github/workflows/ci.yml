@@ -70,6 +70,6 @@ jobs:
       - name: Compile iOS targets
         run: ./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64
 
-      # The iOS test sources still have TODO stubs (step 4), so only selected classes are run
-      - name: Run iOS tests (preferences and database)
-        run: ./gradlew :uhabits-core:iosSimulatorArm64Test --tests "*UserDefaultsStorageTest*" --tests "*SqliteFileHeaderTest*" --tests "*SqliterDatabaseTest*" --tests "org.isoron.platform.io.DatabaseTest" --tests "*DatabaseQueryHelpersTest*" --tests "*MigrationTest*"
+      # Tests that need an iOS actual that is still a TODO stub are skipped (uhabits-core/ios-blocked-tests.txt)
+      - name: Run iOS tests
+        run: ./gradlew :uhabits-core:iosSimulatorArm64Test

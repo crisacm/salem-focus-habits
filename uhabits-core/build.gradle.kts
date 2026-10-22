@@ -131,6 +131,13 @@ tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimu
     // The simulator reads host paths, so tests can load the core assets directly. simctl only forwards
     // variables with the SIMCTL_CHILD_ prefix; the test process sees SALEM_ASSETS_DIR
     environment("SIMCTL_CHILD_SALEM_ASSETS_DIR", file("assets").absolutePath)
+
+    // Tests that need an iOS actual that is still a TODO stub are listed in ios-blocked-tests.txt and skipped.
+    // Pass -PiosRunBlocked=true to run them anyway.
+    if (!project.hasProperty("iosRunBlocked")) {
+        val blocked = file("ios-blocked-tests.txt").readLines().map { it.trim() }.filter { it.isNotEmpty() && !it.startsWith("#") }
+        blocked.forEach { filter.excludeTestsMatching(it) }
+    }
 }
 
 tasks.withType<ProcessResources> {
