@@ -19,9 +19,16 @@
 
 package org.isoron.platform.io
 
-// Stub so the commonTest sources link on iOS. The real implementation comes in migration step 3.
-actual object TestDatabaseHelper {
-    actual suspend fun createEmptyDatabase(): Database = TODO("iOS: step 3")
+import org.isoron.uhabits.core.DATABASE_VERSION
 
-    actual suspend fun loadMigrationSQL(version: Int): String = TODO("iOS: step 4")
+actual object TestDatabaseHelper {
+    actual suspend fun createEmptyDatabase(): Database {
+        val db = SqliterDatabaseOpener().open(":memory:")
+        db.setVersion(8)
+        db.migrateTo(DATABASE_VERSION) { v -> loadMigrationSQL(v) }
+        return db
+    }
+
+    actual suspend fun loadMigrationSQL(version: Int): String =
+        readAssetText("main/migrations/${version.toString().padStart(2, '0')}.sql")
 }

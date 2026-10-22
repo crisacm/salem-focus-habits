@@ -26,7 +26,7 @@ import org.isoron.platform.time.LocalDateFormatter
 
 actual fun createTestFileOpener(): FileOpener = TODO("iOS: step 4")
 
-actual fun createTestDatabaseOpener(): DatabaseOpener = TODO("iOS: step 3")
+actual fun createTestDatabaseOpener(): DatabaseOpener = SqliterDatabaseOpener()
 
 actual fun createTestCanvas(width: Int, height: Int): Canvas = TODO("iOS: step 4")
 
