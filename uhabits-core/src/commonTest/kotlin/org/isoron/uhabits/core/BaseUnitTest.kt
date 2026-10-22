@@ -43,7 +43,7 @@ open class BaseUnitTest {
     protected lateinit var modelFactory: ModelFactory
     protected lateinit var taskRunner: TaskRunner
     protected open lateinit var commandRunner: CommandRunner
-    protected val fileOpener: FileOpener = createTestFileOpener()
+    protected val fileOpener: FileOpener by lazy { createTestFileOpener() }
     private var _databaseOpener: DatabaseOpener? = null
     protected suspend fun databaseOpener(): DatabaseOpener {
         if (_databaseOpener == null) {
