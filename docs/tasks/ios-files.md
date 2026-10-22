@@ -39,4 +39,5 @@ Step 4c of `.specs/migration-kmp.md`. Unblocks `FilesTest`, `FileExtensionsTest`
 - `iosSimulatorArm64Test`: 288 tests, 0 failures; `jvmTest`: 292 tests, 0 failures; `ktlintCheck` ok.
 - Unblocked: `FilesTest`, `FileExtensionsTest`, `ImportTest`, `Version22Test` (except four cases), `Version23Test`. `ShowHabitMenuPresenterTest.testOnExport` moved to the Zip section.
 - Incertidumbre 4 resolved: four `Version22Test` cases expect "constraint" in the message of a failed insert; sqliter throws `SQLiteExceptionErrorCode("sqlite3_step failed")` with a private error code, so they are re-blocked with that reason.
+- Review fixes (rdd-lite): copyTo keeps the destination if the copy fails, delete refuses non-empty directories, lines() throws on invalid UTF-8, read() retries on EINTR, the opener needs a resource root. iOS suite 292 tests, 0 failures.
 - Not verified: the default opener (`createDefault()`) on a real device, and the app bundle `assets` folder (step 7).

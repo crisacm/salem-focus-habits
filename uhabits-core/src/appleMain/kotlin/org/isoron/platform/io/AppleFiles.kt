@@ -35,8 +35,10 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.writeToFile
+import platform.posix.EINTR
 import platform.posix.O_RDONLY
 import platform.posix.close
+import platform.posix.errno
 import platform.posix.open
 import platform.posix.read
 
@@ -51,6 +53,10 @@ class AppleFileOpener(
     private val userDir: String,
     private val resourceRoots: List<String>
 ) : FileOpener {
+    init {
+        require(resourceRoots.isNotEmpty()) { "At least one resource root is needed" }
+    }
+
     override fun openResourceFile(path: String): ResourceFile {
         val fm = NSFileManager.defaultManager
         val root = resourceRoots.firstOrNull { fm.fileExistsAtPath("$it/$path") } ?: resourceRoots.last()
@@ -82,12 +88,21 @@ class AppleFileOpener(
  * A file shipped with the app. [path] is absolute.
  */
 class AppleResourceFile(private val path: String) : ResourceFile {
+    /**
+     * Copies to a temporary sibling first, so a failed copy leaves an existing [dest] untouched.
+     */
     override suspend fun copyTo(dest: UserFile) {
         require(dest is AppleUserFile) { "Expected an AppleUserFile" }
-        dest.delete()
+        val fm = NSFileManager.defaultManager
+        val temporary = AppleUserFile(dest.pathString + ".copy-tmp")
+        temporary.delete()
         createParentDirectories(dest.pathString)
-        check(NSFileManager.defaultManager.copyItemAtPath(path, dest.pathString, null)) {
-            "Cannot copy $path to ${dest.pathString}"
+        try {
+            check(fm.copyItemAtPath(path, temporary.pathString, null)) { "Cannot copy $path to ${dest.pathString}" }
+            dest.delete()
+            check(fm.moveItemAtPath(temporary.pathString, dest.pathString, null)) { "Cannot replace ${dest.pathString}" }
+        } finally {
+            temporary.delete()
         }
     }
 
@@ -110,8 +125,13 @@ class AppleUserFile(private val path: String) : UserFile {
     override val pathString: String
         get() = path
 
+    /**
+     * Deletes a file or an empty directory; a directory with content is refused, like on the JVM.
+     */
     override suspend fun delete() {
         if (!exists()) return
+        val children = NSFileManager.defaultManager.contentsOfDirectoryAtPath(path, null)
+        check(children.isNullOrEmpty()) { "$path is not an empty directory" }
         check(NSFileManager.defaultManager.removeItemAtPath(path, null)) { "Cannot delete $path" }
     }
 
@@ -183,6 +203,7 @@ internal fun readFileBytes(path: String, limit: Int = Int.MAX_VALUE): ByteArray 
                 data = data.copyOf(minOf(limit.toLong(), data.size * 2L).toInt())
             }
             val count = data.usePinned { read(fd, it.addressOf(size), (data.size - size).convert()) }
+            if (count < 0 && errno == EINTR) continue
             check(count >= 0) { "Cannot read $path" }
             if (count == 0L) break
             size += count.toInt()
@@ -195,10 +216,11 @@ internal fun readFileBytes(path: String, limit: Int = Int.MAX_VALUE): ByteArray 
 
 /**
  * Decodes UTF-8 and splits on LF, CRLF and CR without a trailing empty line, like
- * java.nio.file.Files.readAllLines.
+ * java.nio.file.Files.readAllLines. Invalid UTF-8 throws, as on the JVM, so importers can tell
+ * binary files from text.
  */
 internal fun decodeLines(bytes: ByteArray): List<String> {
-    val text = bytes.decodeToString()
+    val text = bytes.decodeToString(throwOnInvalidSequence = true)
     val lines = ArrayList<String>()
     val line = StringBuilder()
     var i = 0

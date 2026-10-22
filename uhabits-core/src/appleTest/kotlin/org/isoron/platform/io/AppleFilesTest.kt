@@ -178,11 +178,22 @@ class AppleFilesTest {
     }
 
     @Test
-    fun testDeleteRemovesADirectoryWithItsContent() = runTest {
+    fun testDeleteRemovesAnEmptyDirectoryButNotANonEmptyOne() = runTest {
         val dir = file("tree")
         dir.resolve("a/b.txt").writeString("x")
+        assertFailsWith<Exception> { dir.delete() }
+        assertTrue(dir.resolve("a/b.txt").exists())
+        dir.resolve("a/b.txt").delete()
+        dir.resolve("a").delete()
         dir.delete()
         assertFalse(dir.exists())
+    }
+
+    @Test
+    fun testLinesOfInvalidUtf8Throws() = runTest {
+        val f = file("binary.bin")
+        f.writeBytes(byteArrayOf(0x53, 0x51, 0xFF.toByte(), 0xFE.toByte(), 0x00, 0x80.toByte()))
+        assertFailsWith<Exception> { f.lines() }
     }
 
     private fun opener(): AppleFileOpener {
@@ -256,5 +267,25 @@ class AppleFilesTest {
         } finally {
             f.delete()
         }
+    }
+
+    @Test
+    fun testFailedCopyKeepsTheExistingDestination() = runTest {
+        val dest = opener().openUserFile("keep/data.txt")
+        dest.writeString("precious")
+        assertFailsWith<Exception> { opener().openResourceFile("no-such-resource.txt").copyTo(dest) }
+        assertEquals(listOf("precious"), dest.lines())
+        assertFalse(AppleUserFile(dest.pathString + ".copy-tmp").exists())
+    }
+
+    @Test
+    fun testResourceLinesOfInvalidUtf8Throws() = runTest {
+        AppleUserFile("$root/res/test/binary.bin").writeBytes(byteArrayOf(0x53, 0xFF.toByte(), 0xFE.toByte(), 0x00))
+        assertFailsWith<Exception> { opener().openResourceFile("binary.bin").lines() }
+    }
+
+    @Test
+    fun testOpenerNeedsAtLeastOneResourceRoot() {
+        assertFailsWith<IllegalArgumentException> { AppleFileOpener("$root/user", emptyList()) }
     }
 }
