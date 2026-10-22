@@ -11,6 +11,11 @@ attribution.
 
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 
+### Fixed
+
+- CSV export no longer depends on the device locale: scores and target values always use `.` as decimal separator and ASCII digits (they were written as `0,5000` under Spanish and with Arabic-Indic digits under Arabic locales)
+- Importing a Loop database no longer fails on devices whose locale uses non-Latin digits (the migration file names were built with the locale's digits)
+
 ### Changed
 
 - Remove the JavaScript (browser) target from `uhabits-core`; the focus is Android and iOS
