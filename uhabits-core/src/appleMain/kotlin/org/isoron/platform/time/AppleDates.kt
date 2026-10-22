@@ -19,8 +19,41 @@
 
 package org.isoron.platform.time
 
-// Stubs: the real iOS implementations come in migration steps 3 and 4.
+import platform.Foundation.NSCalendar
+import platform.Foundation.NSDate
+import platform.Foundation.NSTimeZone
+import platform.Foundation.localTimeZone
+import platform.Foundation.timeIntervalSince1970
 
-actual fun computeToday(hourOffset: Int, minuteOffset: Int): LocalDate = TODO("iOS: step 4")
+private const val MILLIS_PER_DAY = 86_400_000L
+private const val DAYS_FROM_1970_TO_2000 = 10_957
 
-actual fun getFirstWeekdayNumberAccordingToLocale(): Int = TODO("iOS: step 4")
+actual fun computeToday(hourOffset: Int, minuteOffset: Int): LocalDate {
+    val now = NSDate()
+    val nowMillis = (now.timeIntervalSince1970 * 1000).toLong()
+    val zoneOffsetMillis = NSTimeZone.localTimeZone.secondsFromGMTForDate(now) * 1000L
+    return LocalDate(daysSince2000(nowMillis, zoneOffsetMillis, hourOffset, minuteOffset))
+}
+
+/**
+ * Same convention as Calendar.firstDayOfWeek on the JVM: 1 = Sunday ... 7 = Saturday.
+ */
+actual fun getFirstWeekdayNumberAccordingToLocale(): Int {
+    return NSCalendar.currentCalendar.firstWeekday.toInt()
+}
+
+/**
+ * Days since 2000-01-01 of the local date at [nowMillis] (milliseconds since the Unix epoch),
+ * in a zone [zoneOffsetMillis] ahead of UTC, with the day starting [hourOffset] hours and
+ * [minuteOffset] minutes late.
+ */
+internal fun daysSince2000(
+    nowMillis: Long,
+    zoneOffsetMillis: Long,
+    hourOffset: Int,
+    minuteOffset: Int
+): Int {
+    val offsetMillis = hourOffset * 3_600_000L + minuteOffset * 60_000L
+    val adjustedMillis = nowMillis + zoneOffsetMillis - offsetMillis
+    return (adjustedMillis.floorDiv(MILLIS_PER_DAY) - DAYS_FROM_1970_TO_2000).toInt()
+}

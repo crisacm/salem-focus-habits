@@ -2,17 +2,6 @@
 # They are excluded from `iosSimulatorArm64Test`; run them anyway with `-PiosRunBlocked=true`.
 # Remove a line when its stub is implemented. One pattern per line (class or class.method).
 
-# Blocked by getFirstWeekdayNumberAccordingToLocale (AppleDates.kt)
-org.isoron.uhabits.core.models.HabitListTest.testWriteCSV
-org.isoron.uhabits.core.models.HabitTest.test_isCompleted_numerical
-org.isoron.uhabits.core.models.NumericalAtLeastScoreListTest
-org.isoron.uhabits.core.models.NumericalAtLeastScoreListWithSkipTest
-org.isoron.uhabits.core.models.NumericalAtMostScoreListTest
-org.isoron.uhabits.core.models.StreakListTest.testGetBest_skipDoesNotBreakNumericalAtLeastStreak
-org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest
-org.isoron.uhabits.core.ui.widgets.WidgetBehaviorTest.testOnDecrement
-org.isoron.uhabits.core.ui.widgets.WidgetBehaviorTest.testOnIncrement
-
 # Blocked by createTestFileOpener / iOS FileOpener, UserFile and ResourceFile (appleTest TestPlatformHelper.kt)
 org.isoron.platform.io.FilesTest
 org.isoron.uhabits.core.database.migrations.Version22Test
@@ -29,12 +18,12 @@ org.isoron.uhabits.core.ui.views.HistoryChartTest
 # Blocked by formatInvariant (AppleStrings.kt)
 org.isoron.platform.io.FormatInvariantTest
 org.isoron.uhabits.core.io.HabitsCSVExporterTest
+org.isoron.uhabits.core.models.HabitListTest.testWriteCSV
+org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV
+org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV_fail
 
 # Blocked by createTestCanvas / iOS Canvas (appleTest TestPlatformHelper.kt)
 org.isoron.platform.gui.CanvasTest
-
-# Blocked by computeToday (AppleDates.kt)
-org.isoron.platform.gui.DatesTest.testComputeTodayReturnsSensibleDate
 
 # Blocked by format (AppleStrings.kt)
 org.isoron.platform.io.StringsTest.testFormat
