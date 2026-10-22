@@ -49,7 +49,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 ## 1. Project overview
 
 - **Salem - Focus & Habit Tracker** is a fork of [Loop Habit Tracker](https://github.com/iSoron/uhabits) (iSoron/uhabits), GPLv3. Goal: migrate to Jetpack Compose + Kotlin Multiplatform (KMP) and ship on the App Store (iOS) as well as Android. Original authorship must stay credited.
-- **Current state: still the original Android app** (XML layouts + custom Views). There is no Compose and no iOS target yet. Open placeholders and TODOs are tracked in `docs/PENDING.md`.
+- **Current state: still the original Android app** (XML layouts + custom Views). There is no Compose and no iOS app yet (`uhabits-core` already has iOS targets with stub actuals). Open placeholders and TODOs are tracked in `docs/PENDING.md`.
 - Identity: `applicationId = io.github.crisacm.salem`; `namespace` and all Kotlin packages are still `org.isoron.uhabits` (the package move is deferred to the KMP migration). App display name: `Salem`.
 - Repository: `github.com/crisacm/salem-focus-habits`. Branches: `develop` (day-to-day work, PRs target it) and `main`.
 - Docs for humans: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/GUIDELINES.md`, `docs/BUILD.md`, `docs/TEST.md`, `docs/PENDING.md`, `CHANGELOG.md`. Do not duplicate them here; link to them.
@@ -58,7 +58,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 
 | Path | Purpose |
 |---|---|
-| `uhabits-core/` | Kotlin Multiplatform library (targets `jvm` and `android`; iOS is planned, see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
+| `uhabits-core/` | Kotlin Multiplatform library (targets `jvm`, `android`, `iosArm64` and `iosSimulatorArm64`; see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
 | `uhabits-android/` | Android application module (depends on `project(":uhabits-core")`). 189 Kotlin files + 26 vendored Java files (AOSP pickers under `src/main/java/com/android/`). |
 | `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
@@ -91,6 +91,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
 - `jvmAndroidMain` (group shared by the jvm and android targets, `java.*` APIs only): `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, `JavaStrings`, `Zip`, `JavaUserFile`, date helpers, `JvmAnnotations`.
+- `appleMain` (iOS): `TODO("iOS: step 4")` stub actuals for `ZipReader`/`ZipWriter`, `format`, `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (`AppleZip.kt`, `AppleStrings.kt`, `AppleDates.kt`). The real implementations come in migration steps 3 and 4.
 - `jvmMain` only (desktop APIs: `java.awt`, JDBC): `JavaCanvas`, `JavaImage`, `JavaDatabase`, `JavaResourceFile`, `JavaFileOpener`. They back the `jvmTest` helpers; the Android app does not use them. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
@@ -117,7 +118,7 @@ Command (`commands/`), Observer (`ModelObservable`, `Preferences.Listener`, `Com
 
 Versions come from `gradle/libs.versions.toml` — **add or bump dependencies only there** and reference them as `libs.*`.
 
-- Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on.
+- Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on. iOS targets need macOS with Xcode selected (`xcode-select -p` must point to Xcode, not the Command Line Tools); the first iOS build downloads Kotlin/Native into `~/.konan` (about 1.3 GB).
 - DI: kotlin-inject 0.9.0 (runtime `compileOnly` in core; compiler via KSP in android).
 - Async: kotlinx-coroutines 1.10.1. Network: ktor 1.6.8 (android/core/jackson/json; mock in tests).
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
@@ -134,6 +135,7 @@ All run from the repo root. Add `--offline` when dependencies are already cached
 | Debug APK | `./gradlew :uhabits-android:assembleDebug` |
 | Compile Kotlin only (fast check) | `./gradlew :uhabits-android:compileDebugKotlin` |
 | Core JVM tests | `./gradlew :uhabits-core:jvmTest` |
+| Compile core for iOS | `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64` (macOS only; the iOS test source sets have no actuals yet, so do not use `check` or `allTests` on macOS until step 4) |
 | Compile core for Android | `./gradlew :uhabits-core:compileDebugKotlinAndroid` (core tests run only on `jvm`: the Android unit-test variant is disabled) |
 | Android JVM unit tests | `./gradlew :uhabits-android:testDebugUnitTest` |
 | Instrumented tests (device/emulator) | `./gradlew :uhabits-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
@@ -166,7 +168,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 ## 8. Known limitations and gotchas
 
 - Core is an Android library (`namespace org.isoron.uhabits.core`, `androidTarget` with `com.android.library`). Its `jvmMain` dependencies no longer reach the app at runtime, so the app declares what it uses (e.g. `androidx.annotation`). D8 (R8 8.9.35 in AGP 8.9.2) prints `Unexpected error during rewriting of Kotlin metadata` warnings for Kotlin 2.3 classes; they existed before and are harmless.
-- No Compose, no iOS target. CI is limited to `.github/workflows/ci.yml` (no instrumented tests). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
+- No Compose and no iOS app. CI is limited to `.github/workflows/ci.yml`: an ubuntu job (build, tests, ktlint) and a macOS job that compiles the iOS targets (no instrumented tests, no iOS tests). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
 - `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
 - Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
 - `HabitsApplication.isTestMode()` detects tests by `Class.forName("org.isoron.uhabits.BaseAndroidTest")`.
