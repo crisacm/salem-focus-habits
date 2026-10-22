@@ -79,8 +79,8 @@ ways to help, even if you are not a software developer.
   friends and colleagues, and star the repository to help others find it.
 
 * **Write some code.** Pull requests are welcome, whether you are an Android,
-  iOS or Kotlin Multiplatform developer. Please see the
-  [guidelines](docs/GUIDELINES.md).
+  iOS or Kotlin Multiplatform developer. Please see
+  [CONTRIBUTING.md](CONTRIBUTING.md) and the [guidelines](docs/GUIDELINES.md).
 
 ## License
 

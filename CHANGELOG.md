@@ -14,6 +14,7 @@ attribution.
 - Remove the original screenshots
 - Rename the app to Salem and change the application id to `io.github.crisacm.salem`
 - Rewrite the Google Play listing for Salem (English and Spanish) and remove Loop's store graphics and translations
+- Add CONTRIBUTING, SECURITY and pull request template
 
 ## Loop Habit Tracker -- unreleased upstream changes included in the fork base
 
