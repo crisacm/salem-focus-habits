@@ -1,13 +1,15 @@
 # Developer Guidelines
 
+Salem is a fork of [Loop Habit Tracker](https://github.com/iSoron/uhabits) by Álinson Santos Xavier. These guidelines are adapted from the original project's guidelines, and both are distributed under the GPLv3.
+
 ## Communication Channels
 
-* Our source code is [hosted on GitHub](https://github.com/iSoron/uhabits) and this is where all the main development takes place. We use [GitHub Issues](https://github.com/iSoron/uhabits/issues) for keeping track of open bugs and open development tasks.
-* Regular users are encouraged to post feature requests and support questions under [GitHub Discussions](https://github.com/iSoron/uhabits/discussions). This is also where major announcements about the project are made.
+* Our source code is [hosted on GitHub](https://github.com/crisacm/salem-focus-habits) and this is where all the main development takes place. We use [GitHub Issues](https://github.com/crisacm/salem-focus-habits/issues) for keeping track of open bugs and open development tasks.
+* Regular users are encouraged to post feature requests and support questions under [GitHub Discussions](https://github.com/crisacm/salem-focus-habits/discussions). This is also where major announcements about the project are made.
 
 * There is also a "Technical Discussion" section on GitHub Discussions for general technical issues (e.g., project fails to build). For technical discussions related to the implementation of a particular feature, please open a draft pull request instead.
 
-* Translations are managed in a [separate translation platform](https://translate.loophabits.org/).
+* Translations are not set up yet. Until a translation platform is available, please open an issue or a pull request if you would like to help translating the app.
 
 ## Building and Testing the Project
 
@@ -15,11 +17,11 @@ Please see `docs/BUILD.md` and `docs/TEST.md`
 
 ## Branching Policy
 
-This repository uses the [git-flow branching model](https://nvie.com/posts/a-successful-git-branching-model/). Basically, there are two main branches, `dev` and `master`. All the development takes place in the `dev` branch. After the new features have been implemented and tested, they are merged into the `master` branch and a new version of the app is released. Please submit your pull requests against the `dev` branch.
+This repository uses the [git-flow branching model](https://nvie.com/posts/a-successful-git-branching-model/). Basically, there are two main branches, `develop` and `main`. All the development takes place in the `develop` branch. After the new features have been implemented and tested, they are merged into the `main` branch and a new version of the app is released. Please submit your pull requests against the `develop` branch.
 
 ## Submitting Code
 
-Proposed code changes should be submitted to the project through [GitHub pull requests](https://github.com/iSoron/uhabits/pulls). For the basic steps of creating a pull request, see [GitHub's documentation](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request). The following suggestions will help your pull request get merged quickly and with few changes.
+Proposed code changes should be submitted to the project through [GitHub pull requests](https://github.com/crisacm/salem-focus-habits/pulls). For the basic steps of creating a pull request, see [GitHub's documentation](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request). The following suggestions will help your pull request get merged quickly and with few changes.
 
 * **Write a clear description of your proposed code changes:** Although it may look obvious to you, it's not always clear to others what your pull request is trying to accomplish. Please always describe what problem your pull request is trying to solve, and how it solves it (on a very high level). If you are fixing a bug that has not been reported before, please describe it first, including the steps to reproduce it.
 
@@ -43,7 +45,7 @@ Further resources:
 
 For Kotlin, we follow [ktlint](https://ktlint.github.io/) style with default settings. This code style is enforced by our automated build pipeline. To make sure that IntelliJ and Android Studio are configured according to ktlint, run `./gradlew ktlintApplyToIdea`. To check that all code is properly formatted, run `./gradlew ktlintCheck`. You can install a Git pre-commit hook to ensure that the code is properly formatted when you commit using `./gradlew addKtlintFormatGitPreCommitHook`. See more details in [ktlint-gradle](https://github.com/jlleitschuh/ktlint-gradle).
 
-For legacy Java code, we don't have strict guidelines. Please follow a code style similar to the file you are modifying. Note that new classes should be written in Kotlin. Pull requests converting existing Java code to Kotlin are also welcome.
+Salem is being migrated to Jetpack Compose and Kotlin Multiplatform (KMP), so new code should be written in Kotlin. For legacy Java code, we don't have strict guidelines. Please follow a code style similar to the file you are modifying. Pull requests converting existing Java code to Kotlin are also welcome.
 
 ## Release Process
 
@@ -52,5 +54,5 @@ The project loosely follows [semantic versioning](https://semver.org/), adapted 
 * `1.3.0` if minor new features are being introduced.
 * `2.0.0` if major new features are being introduced.
 
-Releases are first made available to beta testers on Google Play and to all F-Droid users. After no bugs are found, they are rolled out to the remaining users. Releases are also made available on [GitHub Releases](https://github.com/iSoron/uhabits/releases).
+Salem has no releases yet. Once it does, the plan is to publish it on Google Play and the App Store, and to make releases available on [GitHub Releases](https://github.com/crisacm/salem-focus-habits/releases).
 

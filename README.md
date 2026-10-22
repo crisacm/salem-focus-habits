@@ -79,9 +79,8 @@ ways to help, even if you are not a software developer.
   friends and colleagues, and star the repository to help others find it.
 
 * **Write some code.** Pull requests are welcome, whether you are an Android,
-  iOS or Kotlin Multiplatform developer. Until Salem has its own contribution
-  guidelines, the [original project's guidelines][guidelines] are a good
-  reference.
+  iOS or Kotlin Multiplatform developer. Please see the
+  [guidelines](docs/GUIDELINES.md).
 
 ## License
 
@@ -116,4 +115,3 @@ and sharing such a great open source project.
 [original]: https://github.com/iSoron/uhabits
 [playstore]: https://play.google.com/store/apps/details?id=org.isoron.uhabits
 [fdroid]: https://f-droid.org/app/org.isoron.uhabits
-[guidelines]: https://github.com/iSoron/uhabits/blob/dev/docs/GUIDELINES.md

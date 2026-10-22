@@ -7,10 +7,11 @@ assignees: ''
 
 ---
 <!--
-Please use the template below for your bug report. Issues that do not follow this
-template, or that do not contain all necessary information (namely, description of
-the problem, steps to reproduce, phone, phone operating system, and app version)
-will be closed without further consideration.
+Thanks for helping to improve Salem! Salem is under early development, so every
+report is valuable. Please use the template below and include all the necessary
+information (namely, description of the problem, steps to reproduce, platform,
+device, operating system, and app version). Reports that are missing this
+information are hard to act on and may be closed until it is provided.
 -->
 
 ## Pre-submission checklist
@@ -27,8 +28,9 @@ A clear and concise description of what the problem is.
 4. See error
 
 ## System information
- - Phone: [e.g. Google Pixel 4]
- - Phone Operating System: [e.g. Android 10]
+ - Platform: [Android / iOS]
+ - Device: [e.g. Google Pixel 4, iPhone 15]
+ - Operating system: [e.g. Android 14, iOS 18]
  - App version: [e.g. 2.0.2]
 
 ## Screenshots
