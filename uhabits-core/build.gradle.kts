@@ -17,6 +17,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.ktlint.plugin)
@@ -26,6 +28,16 @@ plugins {
 kotlin {
     jvm().withJava()
     jvmToolchain(17)
+
+    // Code that only needs java.* APIs and is shared by the jvm and android targets
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndroid") {
+                withJvm()
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
