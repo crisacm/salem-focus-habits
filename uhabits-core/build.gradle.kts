@@ -31,6 +31,8 @@ plugins {
 kotlin {
     jvm()
     androidTarget()
+    iosArm64()
+    iosSimulatorArm64()
     jvmToolchain(17)
 
     // Code that only needs java.* APIs and is shared by the jvm and android targets
