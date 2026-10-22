@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Add an iOS preferences storage (`UserDefaultsStorage`) to `uhabits-core`, tested on the iOS simulator
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 
 ### Fixed

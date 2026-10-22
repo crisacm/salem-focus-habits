@@ -51,7 +51,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(libs.kotlinx.coroutines.core)
-                compileOnly(libs.kotlin.inject.runtime)
+                implementation(libs.kotlin.inject.runtime)
             }
         }
 
@@ -68,6 +68,12 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(libs.sqlite.jdbc)
+            }
+        }
+
+        val appleTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
     }

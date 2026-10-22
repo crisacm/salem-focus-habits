@@ -45,7 +45,7 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 - [ ] Decide what to do with the `org.isoron.uhabits.ACTION_*` intent actions and the `content://org.isoron.uhabits/...` URI (kept for Tasker compatibility)
 - [ ] Sync server: the default URL is empty; set up a server or remove the setting
 - [ ] Review `versionCode` and `versionName`
-- [ ] Replace the iOS stub actuals in `uhabits-core/src/appleMain` with real implementations (steps 3 and 4), add iOS test actuals and install an iOS Simulator runtime (Xcode > Settings > Components) to run `iosSimulatorArm64Test`
+- [ ] Replace the iOS stub actuals in `uhabits-core/src/appleMain` with real implementations (steps 3 and 4) and the `TODO` stubs in `uhabits-core/src/appleTest`, so the whole commonTest suite can run on `iosSimulatorArm64Test`
 - [ ] Upgrade AGP to 8.10 or later and migrate the core Android target from `androidTarget` to the `com.android.kotlin.multiplatform.library` plugin (the upgrade also silences the D8 Kotlin metadata warnings)
 
 ## Documentation

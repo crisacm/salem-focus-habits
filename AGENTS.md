@@ -91,7 +91,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
 - `jvmAndroidMain` (group shared by the jvm and android targets, `java.*` APIs only): `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, `JavaStrings`, `Zip`, `JavaUserFile`, date helpers, `JvmAnnotations`.
-- `appleMain` (iOS): `TODO("iOS: step 4")` stub actuals for `ZipReader`/`ZipWriter`, `format`, `formatInvariant`, `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (`AppleZip.kt`, `AppleStrings.kt`, `AppleDates.kt`). The real implementations come in migration steps 3 and 4.
+- `appleMain` (iOS): `UserDefaultsStorage` (`Preferences.Storage` over `NSUserDefaults`, tested on the simulator by `appleTest/UserDefaultsStorageTest`) and `TODO("iOS: step 4")` stub actuals for `ZipReader`/`ZipWriter`, `format`, `formatInvariant`, `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (`AppleZip.kt`, `AppleStrings.kt`, `AppleDates.kt`). The real implementations come in migration steps 3 and 4. `appleTest` has `TODO` stub actuals for the commonTest `expect` helpers so the iOS test sources link; the stubs throw if a test uses them.
 - `jvmMain` only (desktop APIs: `java.awt`, JDBC): `JavaCanvas`, `JavaImage`, `JavaDatabase`, `JavaResourceFile`, `JavaFileOpener`. They back the `jvmTest` helpers; the Android app does not use them. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
@@ -119,7 +119,7 @@ Command (`commands/`), Observer (`ModelObservable`, `Preferences.Listener`, `Com
 Versions come from `gradle/libs.versions.toml` — **add or bump dependencies only there** and reference them as `libs.*`.
 
 - Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on. iOS targets need macOS with Xcode selected (`xcode-select -p` must point to Xcode, not the Command Line Tools); the first iOS build downloads Kotlin/Native into `~/.konan` (about 1.3 GB).
-- DI: kotlin-inject 0.9.0 (runtime `compileOnly` in core; compiler via KSP in android).
+- DI: kotlin-inject 0.9.0 (runtime `implementation` in core, because Kotlin/Native does not support `compileOnly`; compiler via KSP in android).
 - Async: kotlinx-coroutines 1.10.1. No network library: the app has no sync code (Ktor was removed).
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
 - Data/utils: no third-party utility libraries (Guava, OpenCSV, Apache Commons, JSR305 were unused and removed); CSV is parsed and written in `platform/io/Strings.kt` and `core/io`.
@@ -135,7 +135,8 @@ All run from the repo root. Add `--offline` when dependencies are already cached
 | Debug APK | `./gradlew :uhabits-android:assembleDebug` |
 | Compile Kotlin only (fast check) | `./gradlew :uhabits-android:compileDebugKotlin` |
 | Core JVM tests | `./gradlew :uhabits-core:jvmTest` |
-| Compile core for iOS | `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64` (macOS only; the iOS test source sets have no actuals yet, so do not use `check` or `allTests` on macOS until step 4) |
+| Compile core for iOS | `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64` (macOS only) |
+| Run iOS tests (simulator) | `./gradlew :uhabits-core:iosSimulatorArm64Test --tests "*UserDefaultsStorageTest*"` (needs an iOS Simulator runtime; run only classes that do not use the `TODO` test stubs, so do not use `check` or `allTests` on macOS until step 4) |
 | Compile core for Android | `./gradlew :uhabits-core:compileDebugKotlinAndroid` (core tests run only on `jvm`: the Android unit-test variant is disabled) |
 | Android JVM unit tests | `./gradlew :uhabits-android:testDebugUnitTest` |
 | Instrumented tests (device/emulator) | `./gradlew :uhabits-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
