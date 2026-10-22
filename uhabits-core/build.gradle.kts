@@ -127,6 +127,12 @@ tasks.withType<Test>().configureEach {
     systemProperty("user.country", "US")
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest>().configureEach {
+    // The simulator reads host paths, so tests can load the core assets directly. simctl only forwards
+    // variables with the SIMCTL_CHILD_ prefix; the test process sees SALEM_ASSETS_DIR
+    environment("SIMCTL_CHILD_SALEM_ASSETS_DIR", file("assets").absolutePath)
+}
+
 tasks.withType<ProcessResources> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
