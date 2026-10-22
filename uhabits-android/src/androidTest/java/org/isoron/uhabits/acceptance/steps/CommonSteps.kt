@@ -56,7 +56,7 @@ object CommonSteps : BaseUserInterfaceTest() {
     fun launchApp() {
         startActivity(ListHabitsActivity::class.java)
         assertTrue(
-            device.wait(Until.hasObject(By.pkg("org.isoron.uhabits")), 5000)
+            device.wait(Until.hasObject(By.pkg("io.github.crisacm.salem")), 5000)
         )
         device.waitForIdle()
     }

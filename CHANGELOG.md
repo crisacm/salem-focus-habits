@@ -12,6 +12,7 @@ attribution.
 - Rebrand the README as "Salem - Focus & Habit Tracker" and credit the original Loop Habit Tracker project
 - Adapt the issue templates, developer guidelines, build and test documentation to the Salem fork
 - Remove the original screenshots
+- Rename the app to Salem and change the application id to `io.github.crisacm.salem`
 
 ## Loop Habit Tracker -- unreleased upstream changes included in the fork base
 
