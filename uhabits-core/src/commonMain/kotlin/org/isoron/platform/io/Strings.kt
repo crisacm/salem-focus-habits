@@ -23,6 +23,15 @@ expect fun format(format: String, arg: String): String
 expect fun format(format: String, arg: Int): String
 expect fun format(format: String, arg: Double): String
 
+/**
+ * Same as [format], but independent of the device locale: it always uses ASCII digits and '.' as
+ * the decimal separator. Use it for data that is written to files or compared as text (CSV,
+ * file names); use [format] for text shown to the user.
+ */
+expect fun formatInvariant(format: String, arg: Int): String
+
+expect fun formatInvariant(format: String, arg: Double): String
+
 fun parseCsvLine(line: String): List<String> {
     val result = mutableListOf<String>()
     val sb = StringBuilder()

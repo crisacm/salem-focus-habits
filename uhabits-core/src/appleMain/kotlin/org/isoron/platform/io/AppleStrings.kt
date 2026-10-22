@@ -26,3 +26,7 @@ actual fun format(format: String, arg: String): String = TODO("iOS: step 4")
 actual fun format(format: String, arg: Int): String = TODO("iOS: step 4")
 
 actual fun format(format: String, arg: Double): String = TODO("iOS: step 4")
+
+actual fun formatInvariant(format: String, arg: Int): String = TODO("iOS: step 4")
+
+actual fun formatInvariant(format: String, arg: Double): String = TODO("iOS: step 4")

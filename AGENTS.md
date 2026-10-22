@@ -91,7 +91,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
 - `jvmAndroidMain` (group shared by the jvm and android targets, `java.*` APIs only): `reminders/ReminderScheduler` (takes a `SystemScheduler` interface), `utils/MidnightTimer`, `JavaStrings`, `Zip`, `JavaUserFile`, date helpers, `JvmAnnotations`.
-- `appleMain` (iOS): `TODO("iOS: step 4")` stub actuals for `ZipReader`/`ZipWriter`, `format`, `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (`AppleZip.kt`, `AppleStrings.kt`, `AppleDates.kt`). The real implementations come in migration steps 3 and 4.
+- `appleMain` (iOS): `TODO("iOS: step 4")` stub actuals for `ZipReader`/`ZipWriter`, `format`, `formatInvariant`, `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (`AppleZip.kt`, `AppleStrings.kt`, `AppleDates.kt`). The real implementations come in migration steps 3 and 4.
 - `jvmMain` only (desktop APIs: `java.awt`, JDBC): `JavaCanvas`, `JavaImage`, `JavaDatabase`, `JavaResourceFile`, `JavaFileOpener`. They back the `jvmTest` helpers; the Android app does not use them. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
@@ -168,7 +168,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 ## 8. Known limitations and gotchas
 
 - Core is an Android library (`namespace org.isoron.uhabits.core`, `androidTarget` with `com.android.library`). Its `jvmMain` dependencies no longer reach the app at runtime, so the app declares what it uses (e.g. `androidx.annotation`). D8 (R8 8.9.35 in AGP 8.9.2) prints `Unexpected error during rewriting of Kotlin metadata` warnings for Kotlin 2.3 classes; they existed before and are harmless.
-- No Compose and no iOS app. CI is limited to `.github/workflows/ci.yml`: an ubuntu job (build, tests, ktlint) and a macOS job that compiles the iOS targets (no instrumented tests, no iOS tests). Three core tests fail under a comma-decimal locale (CSV decimal bug, see `docs/PENDING.md`); run them with `JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US"` locally.
+- No Compose and no iOS app. CI is limited to `.github/workflows/ci.yml`: an ubuntu job (build, tests, ktlint) and a macOS job that compiles the iOS targets (no instrumented tests, no iOS tests). Core `jvmTest` pins the locale to en-US so tests do not depend on the machine; data written to files (CSV, migration file names) uses `formatInvariant`, not the locale-sensitive `format` (which is for UI text).
 - `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
 - Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
 - `HabitsApplication.isTestMode()` detects tests by `Class.forName("org.isoron.uhabits.BaseAndroidTest")`.

@@ -59,5 +59,5 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 
 - [x] Add CI workflow (`.github/workflows/ci.yml`: assemble, core JVM tests, Android unit tests and ktlint on PRs to `develop`)
 - [ ] Confirm the first GitHub Actions run of `ci.yml` is green
-- [ ] Fix locale-dependent decimal formatting in CSV export (`0,0000` and `"2,0"` under es-ES). Affects `HabitsCSVExporterTest`, `HabitListTest`, `StringsTest`, which fail on machines with a comma-decimal locale. CI passes only because the GitHub runner uses an English locale.
+- [ ] `WidgetPreferences` keys (`widget-%06d-habit`, `snooze-%06d`) still use the locale-sensitive `format`; on devices whose locale uses non-Latin digits (for example Arabic or Persian) the stored keys contain those digits. Changing them to `formatInvariant` would orphan existing widget settings on those devices, so it needs a data migration first
 - [ ] Set up signing and publishing for Google Play and the App Store

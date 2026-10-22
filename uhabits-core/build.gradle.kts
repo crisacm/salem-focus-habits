@@ -104,6 +104,13 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile> {
     }
 }
 
+// Tests assert locale-sensitive text such as decimal separators. Pin the locale so they do not depend
+// on the machine; LocaleIndependenceTest switches locales explicitly.
+tasks.withType<Test>().configureEach {
+    systemProperty("user.language", "en")
+    systemProperty("user.country", "US")
+}
+
 tasks.withType<ProcessResources> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
