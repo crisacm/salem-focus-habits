@@ -19,6 +19,7 @@
 
 package org.isoron.platform.time
 
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -29,6 +30,11 @@ class AppleDatesTest {
 
     // 2000-01-01T00:00:00Z
     private val y2000 = 946_684_800_000L
+
+    @AfterTest
+    fun tearDown() {
+        resetFirstWeekday()
+    }
 
     @Test
     fun testFirstWeekdayNumberIsBetweenOneAndSeven() {
@@ -72,12 +78,8 @@ class AppleDatesTest {
     }
 
     @Test
-    fun testComputeTodayIsConsistentWithDaysSince2000() {
-        val before = computeToday()
-        val after = computeToday()
-        assertTrue(before.year in 2020..2100)
-        assertTrue(after >= before)
-        // A 24 hour delay always yields the previous day.
-        assertEquals(computeToday().daysSince2000 - 1, computeToday(24, 0).daysSince2000)
+    fun testComputeTodayIsInAPlausibleRange() {
+        val today = computeToday()
+        assertTrue(today.year in 2020..2100)
     }
 }

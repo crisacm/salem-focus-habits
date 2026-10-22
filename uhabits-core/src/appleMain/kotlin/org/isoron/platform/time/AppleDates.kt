@@ -39,7 +39,7 @@ actual fun computeToday(hourOffset: Int, minuteOffset: Int): LocalDate {
  * Same convention as Calendar.firstDayOfWeek on the JVM: 1 = Sunday ... 7 = Saturday.
  */
 actual fun getFirstWeekdayNumberAccordingToLocale(): Int {
-    return NSCalendar.currentCalendar.firstWeekday.toInt()
+    return NSCalendar.autoupdatingCurrentCalendar.firstWeekday.toInt()
 }
 
 /**
