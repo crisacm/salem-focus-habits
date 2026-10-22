@@ -27,16 +27,16 @@ Resolved locally:
 - U2: `compileOnly(kotlin-inject-runtime)` in commonMain compiles for native targets with no changes.
 - U3: `Synchronized`/`JvmStatic` need no actual on native (no error for them). `@Throws` is fine.
 - U5: Mokkery and the default hierarchy keep working. `jvmTest` (274), Android and ktlint are unaffected; ktlint checks `appleMain`.
-Pending the CI of this PR:
-- U4: the ubuntu job must stay green with Apple targets declared (Apple targets are skipped on Linux).
-- U6: the macOS job must be able to configure core (Android library) and compile the iOS targets.
+Resolved by the CI of this PR:
+- U4: the ubuntu job stays green with Apple targets declared (they are skipped on Linux); no `kotlin.native.ignoreDisabledTargets` needed.
+- U6: the macOS job configures core (an Android library) and compiles both iOS targets after `rm -f local.properties`.
 
 ## Checklist
 TDD mode: red/green gradle checks. Red check: `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64` fails now (task does not exist).
 - [x] TASK-1: add `iosArm64()` and `iosSimulatorArm64()` — criterio: the compile errors are exactly the 7 missing actuals
 - [x] TASK-2: stub actuals in `src/appleMain` — criterio: `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` green
 - [x] TASK-3: regression — criterio: `jvmTest` 274, `compileDebugKotlinAndroid`, `assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `ktlintCheck` green
-- [ ] TASK-4: macOS job in `.github/workflows/ci.yml` — criterio: PR shows both jobs green
+- [x] TASK-4: macOS job in `.github/workflows/ci.yml` — criterio: PR shows both jobs green
 - [x] TASK-5: docs, re-index codebase-memory, Engram — criterio: ktlintCheck green
 
 ## Estrategia de entrega
@@ -48,4 +48,4 @@ Run on macOS (arm64), Xcode 27.1, with `JAVA_TOOL_OPTIONS="-Duser.language=en -D
 - GREEN: `:uhabits-core:compileKotlinIosSimulatorArm64` and `:uhabits-core:compileKotlinIosArm64` pass with the stubs.
 - Regression: `:uhabits-core:jvmTest` (274 tests, 0 failures), `:uhabits-core:compileDebugKotlinAndroid`, `:uhabits-android:assembleDebug`, `:uhabits-android:assembleRelease`, `:uhabits-android:testDebugUnitTest` (5 tests, 0 failures), `ktlintCheck`.
 - Not run: iOS tests (no simulator runtime, no iOS test actuals).
-- CI: see the PR checks.
+- CI (PR #5): `build-and-test` (ubuntu) and `ios-compile` (macOS) both completed with success.
