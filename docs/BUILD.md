@@ -2,6 +2,8 @@
 
 This page describes how to download and build the app from the source code. If you are having trouble building the project, please do not hesitate to open a new issue.
 
+> **Note:** for now, only the Android build is documented. Instructions for building the Kotlin Multiplatform and iOS targets (which will require macOS and Xcode) will be added as the migration progresses. The Gradle modules still carry the original project's names (for example, `uhabits-android`).
+
 ## Contents
 
 * [Build using Android Studio](#build-using-android-studio)
@@ -23,14 +25,14 @@ After installation, launch Android Studio. If this is the first time you launch 
 
 To create a complete copy of the source code repository, open the terminal (Linux/macOS) or Git Bash (Windows), navigate to the desired folder, then run:
 ```bash
-git clone https://github.com/iSoron/uhabits.git
+git clone https://github.com/crisacm/salem-focus-habits.git
 ```
-The repository will be downloaded to the directory `uhabits`.
+The repository will be downloaded to the directory `salem-focus-habits`.
 
 ### Step 4: Open and run the project on Android Studio
 
 1. Launch Android Studio and select "Open an existing Android Studio project".
-2. When the IDE asks you for the project location, select `uhabits` and click "Ok".
+2. When the IDE asks you for the project location, select `salem-focus-habits` and click "Ok".
 3. Android Studio will spend some time indexing the project. When this is complete, click the toolbar icon "Sync Project with Gradle File", located near the right corner of the top toolbar.
 4. The operation will likely fail several times due to missing Android SDK components. Each time it fails, click the link "Install missing platforms", "Install build tools", etc, and try again.
 5. To test the application, create a virtual Android device using the menu "Tools" and "AVD Manager". The default options should work fine, but feel free to customize the device.
@@ -74,13 +76,13 @@ yes | sdkmanager --licenses
 
 To create a complete copy of the source code repository, navigate to your home directory and run:
 ```bash
-git clone https://github.com/iSoron/uhabits.git
+git clone https://github.com/crisacm/salem-focus-habits.git
 ```
-The repository will be downloaded to the directory `uhabits`.
+The repository will be downloaded to the directory `salem-focus-habits`.
 
 ### Step 4: Compile the source code
 
-1. Navigate to the directory `uhabits`
+1. Navigate to the directory `salem-focus-habits`
 2. Run `./gradlew assembleDebug --stacktrace`
 
 If the compilation is successful, a debug APK will be generated somewhere inside the folder `uhabits-android/build/`. Currently, the full path is `./uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk`, but it may change in the future.

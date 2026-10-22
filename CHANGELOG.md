@@ -1,6 +1,19 @@
 # Changelog
 
+All notable changes to Salem are documented in this file, starting with the
+section below. Everything after the Salem sections is the history of the
+original [Loop Habit Tracker](https://github.com/iSoron/uhabits), kept here for
+attribution.
+
 ## [Unreleased]
+
+### Changed
+
+- Rebrand the README as "Salem - Focus & Habit Tracker" and credit the original Loop Habit Tracker project
+- Adapt the issue templates, developer guidelines, build and test documentation to the Salem fork
+- Remove the original screenshots
+
+## Loop Habit Tracker -- unreleased upstream changes included in the fork base
 
 ### Added
 

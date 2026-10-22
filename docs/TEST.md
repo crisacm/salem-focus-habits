@@ -1,9 +1,11 @@
 # Testing the project
 
-Loop Habit Tracker has a fairly large number of automated tests to reduce the chance of bugs being silently introduced in our code base. The tests are divided into three categories:
+Salem inherits the automated test suite of Loop Habit Tracker, which has a fairly large number of tests to reduce the chance of bugs being silently introduced in the code base. The tests are divided into three categories:
 
 - **Unit tests:** These tests run very quickly on the developer's computer, inside a JVM, and do not need an Android emulator or device. They typically test the correctness of core functions of the application, such as the computation of scores and streaks.
 - **Instrumented tests:** These tests require an Android emulator or device. _Medium_ instrumented tests are still quite fast to run, since only individual classes are tested. The app itself does not need to be launched. Examples include _view tests_, which render our custom views on the device and compare them against prerendered images. _Large_ instrumented tests launch the application on an Android emulator and interact with it by touching the screen, much like a regular user.
+
+Tests for the Jetpack Compose, Kotlin Multiplatform and iOS parts of the project will be documented here once they exist.
 
 ## Running unit tests
 
