@@ -33,7 +33,7 @@ actual fun formatInvariant(format: String, arg: Int): String = formatPrintf(form
 
 actual fun formatInvariant(format: String, arg: Double): String = formatPrintf(format, arg)
 
-private fun localeDecimalSeparator(): Char {
-    val separator = NSLocale.currentLocale.objectForKey(NSLocaleDecimalSeparator) as? String
+internal fun localeDecimalSeparator(locale: NSLocale = NSLocale.currentLocale): Char {
+    val separator = locale.objectForKey(NSLocaleDecimalSeparator) as? String
     return separator?.firstOrNull() ?: '.'
 }
