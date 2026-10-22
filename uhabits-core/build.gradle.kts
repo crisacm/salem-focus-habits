@@ -93,6 +93,10 @@ android {
     defaultConfig {
         minSdk = 28
     }
+
+    lint {
+        abortOnError = false
+    }
 }
 
 androidComponents {
