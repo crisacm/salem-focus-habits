@@ -184,4 +184,77 @@ class AppleFilesTest {
         dir.delete()
         assertFalse(dir.exists())
     }
+
+    private fun opener(): AppleFileOpener {
+        val main = "$root/res/main"
+        val test = "$root/res/test"
+        return AppleFileOpener(
+            userDir = "$root/user",
+            resourceRoots = listOf(main, test)
+        )
+    }
+
+    private suspend fun putResource(kind: String, path: String, content: String) {
+        AppleUserFile("$root/res/$kind/$path").writeString(content)
+    }
+
+    @Test
+    fun testOpenUserFileIsRelativeToTheUserDirectory() = runTest {
+        val f = opener().openUserFile("db/uhabits.db")
+        assertEquals("$root/user/db/uhabits.db", f.pathString)
+        assertFalse(f.exists())
+    }
+
+    @Test
+    fun testResourcesFallBackFromMainToTest() = runTest {
+        putResource("main", "migrations/09.sql", "main sql")
+        putResource("test", "loop.db", "test db")
+        putResource("test", "migrations/09.sql", "shadowed")
+        val opener = opener()
+        assertEquals(listOf("main sql"), opener.openResourceFile("migrations/09.sql").lines())
+        assertEquals(listOf("test db"), opener.openResourceFile("loop.db").lines())
+    }
+
+    @Test
+    fun testMissingResource() = runTest {
+        val r = opener().openResourceFile("nope/missing.sql")
+        assertFalse(r.exists())
+        assertFailsWith<Exception> { r.lines() }
+    }
+
+    @Test
+    fun testCopyToCreatesAndReplacesTheDestination() = runTest {
+        putResource("test", "data.txt", "new content")
+        val dest = opener().openUserFile("copies/out/data.txt")
+        dest.writeString("old content that is longer")
+        opener().openResourceFile("data.txt").copyTo(dest)
+        assertEquals(listOf("new content"), dest.lines())
+    }
+
+    @Test
+    fun testCopyToIsBinarySafe() = runTest {
+        val bytes = ByteArray(5000) { (it * 7).toByte() }
+        AppleUserFile("$root/res/test/blob.bin").writeBytes(bytes)
+        val dest = opener().openUserFile("blob.bin")
+        opener().openResourceFile("blob.bin").copyTo(dest)
+        assertContentEquals(bytes, dest.readBytes(10000))
+    }
+
+    @Test
+    fun testToImageIsNotAvailableYet() = runTest {
+        putResource("test", "image.png", "x")
+        assertFailsWith<UnsupportedOperationException> { opener().openResourceFile("image.png").toImage() }
+    }
+
+    @Test
+    fun testDefaultOpenerUsesApplicationSupport() = runTest {
+        val f = AppleFileOpener.createDefault().openUserFile("salem-apple-files-test.tmp")
+        try {
+            assertTrue(f.pathString.contains("Application Support"), f.pathString)
+            f.writeString("ok")
+            assertEquals(listOf("ok"), f.lines())
+        } finally {
+            f.delete()
+        }
+    }
 }

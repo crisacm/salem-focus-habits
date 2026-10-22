@@ -26,14 +26,78 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
+import org.isoron.platform.gui.Image
+import platform.Foundation.NSApplicationSupportDirectory
+import platform.Foundation.NSBundle
 import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.writeToFile
 import platform.posix.O_RDONLY
 import platform.posix.close
 import platform.posix.open
 import platform.posix.read
+
+/**
+ * Opens the files of the app. Like AndroidFileOpener, it receives its roots instead of looking them up.
+ *
+ * User files live under [userDir]. A resource is looked up in [resourceRoots] in order, so tests can
+ * list the main assets before the test assets, as JavaFileOpener does. A resource that exists in no
+ * root is opened on the last one, so [ResourceFile.exists] is false instead of failing.
+ */
+class AppleFileOpener(
+    private val userDir: String,
+    private val resourceRoots: List<String>
+) : FileOpener {
+    override fun openResourceFile(path: String): ResourceFile {
+        val fm = NSFileManager.defaultManager
+        val root = resourceRoots.firstOrNull { fm.fileExistsAtPath("$it/$path") } ?: resourceRoots.last()
+        return AppleResourceFile("$root/$path")
+    }
+
+    override fun openUserFile(path: String): UserFile = AppleUserFile("$userDir/$path")
+
+    companion object {
+        /**
+         * User files in Application Support (backed up, not shown in the Files app) and resources in
+         * the "assets" folder of the app bundle. The app target must copy `uhabits-core/assets/main`
+         * there (migration step 7).
+         */
+        fun createDefault(): AppleFileOpener {
+            val fm = NSFileManager.defaultManager
+            val url = fm.URLsForDirectory(NSApplicationSupportDirectory, NSUserDomainMask).first() as NSURL
+            val userDir = checkNotNull(url.path) { "No Application Support directory" }
+            check(fm.createDirectoryAtPath(userDir, withIntermediateDirectories = true, attributes = null, error = null)) {
+                "Cannot create $userDir"
+            }
+            val bundle = NSBundle.mainBundle.resourcePath ?: ""
+            return AppleFileOpener(userDir, listOf("$bundle/assets"))
+        }
+    }
+}
+
+/**
+ * A file shipped with the app. [path] is absolute.
+ */
+class AppleResourceFile(private val path: String) : ResourceFile {
+    override suspend fun copyTo(dest: UserFile) {
+        require(dest is AppleUserFile) { "Expected an AppleUserFile" }
+        dest.delete()
+        createParentDirectories(dest.pathString)
+        check(NSFileManager.defaultManager.copyItemAtPath(path, dest.pathString, null)) {
+            "Cannot copy $path to ${dest.pathString}"
+        }
+    }
+
+    override suspend fun lines(): List<String> = decodeLines(readFileBytes(path))
+
+    override suspend fun exists(): Boolean = NSFileManager.defaultManager.fileExistsAtPath(path)
+
+    override suspend fun toImage(): Image =
+        throw UnsupportedOperationException("Images are not available on iOS until migration steps 6-7")
+}
 
 /**
  * A file in the user area of the app (databases, backups, exports). [path] must be absolute,
