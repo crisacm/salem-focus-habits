@@ -51,7 +51,7 @@ class LinksTest : BaseUserInterfaceTest() {
         launchApp()
         clickMenu(ABOUT)
         clickText("Help translate this app")
-        verifyOpensWebsite("translate.loophabits.org")
+        verifyOpensWebsite("github.com")
     }
 
     @Test

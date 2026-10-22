@@ -46,7 +46,7 @@ class IntentFactory() {
         buildViewIntent(context.getString(R.string.playStoreURL))
 
     fun sendFeedback(context: Context) =
-        buildSendToIntent(context.getString(R.string.feedbackURL))
+        buildViewIntent(context.getString(R.string.feedbackURL))
 
     fun privacyPolicy(context: Context) =
         buildViewIntent(context.getString(R.string.privacyPolicyURL))
@@ -70,11 +70,6 @@ class IntentFactory() {
 
     fun viewSourceCode(context: Context) =
         buildViewIntent(context.getString(R.string.sourceCodeURL))
-
-    private fun buildSendToIntent(url: String) = Intent().apply {
-        action = Intent.ACTION_SENDTO
-        data = Uri.parse(url)
-    }
 
     private fun buildViewIntent(url: String) = Intent().apply {
         action = Intent.ACTION_VIEW

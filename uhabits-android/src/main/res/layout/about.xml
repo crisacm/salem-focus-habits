@@ -66,6 +66,13 @@
                     android:gravity="center"
                     android:text="" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_margin="6dp"
+                    android:text="Based on Loop Habit Tracker by Álinson S. Xavier (@iSoron)" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -120,6 +127,10 @@
                 linked at the bottom of the list. If you qualify, please feel free to
                 submit a pull request adding yourself here.
                 -->
+                <TextView
+                    style="@style/About.Item"
+                    android:text="Cristian Castillo (@crisacm) - Salem" />
+
                 <TextView
                     style="@style/About.Item"
                     android:text="Álinson S. Xavier (@iSoron)" />
