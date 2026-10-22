@@ -199,6 +199,19 @@ class SqliterDatabaseTest {
     }
 
     @Test
+    fun testInMemoryDatabasesFromDifferentOpenersAreIndependent() {
+        // TestDatabaseHelper and createTestDatabaseOpener create a new opener for every database
+        val a = SqliterDatabaseOpener().open(":memory:")
+        a.run("create table x(v integer)")
+        a.run("insert into x values (1)")
+        val b = SqliterDatabaseOpener().open(":memory:")
+        assertEquals(0, b.queryInt("select count(*) from sqlite_master"))
+        assertEquals(1, a.queryInt("select count(*) from x"))
+        a.close()
+        b.close()
+    }
+
+    @Test
     fun testClosingWithALiveStatementDoesNotCrash() {
         val db = opener.open(newPath("sqliter_close.db"))
         db.run("create table x(v integer)")

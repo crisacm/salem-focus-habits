@@ -26,6 +26,7 @@ import co.touchlab.sqliter.JournalMode
 import co.touchlab.sqliter.Statement
 import co.touchlab.sqliter.createDatabaseManager
 import co.touchlab.sqliter.getVersion
+import platform.Foundation.NSUUID
 
 /**
  * [Database] for iOS on top of sqliter. It follows the behaviour of `JavaDatabase`: typed binds,
@@ -143,8 +144,6 @@ private class TransactionStatement(private val action: () -> Unit) : PreparedSta
 }
 
 class SqliterDatabaseOpener : DatabaseOpener {
-    private var inMemoryCount = 0
-
     /**
      * Opens [path], or a new private in-memory database when it is `:memory:`.
      *
@@ -156,7 +155,8 @@ class SqliterDatabaseOpener : DatabaseOpener {
     override fun open(path: String): Database {
         val inMemory = path == ":memory:"
         val slash = path.lastIndexOf('/')
-        val name = if (inMemory) "memory-${inMemoryCount++}" else path.substring(slash + 1)
+        // sqliter shares in-memory databases by name within the process, so every open needs its own name
+        val name = if (inMemory) "memory-" + NSUUID().UUIDString else path.substring(slash + 1)
         val directory = if (inMemory || slash < 0) null else path.substring(0, slash)
         val peeked = if (inMemory) null else peekUserVersion(path)
         val configuration = DatabaseConfiguration(
