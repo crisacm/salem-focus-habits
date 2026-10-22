@@ -22,24 +22,31 @@ Explorer brief (static analysis) plus the plan in the session plan file.
 - This branch is stacked on PR #12 (unique in-memory database names): the repository tests create many `:memory:` databases with different opener instances.
 
 ## Incertidumbre
-Open (record the answer here):
-- U1: the four runnable classes pass on Kotlin/Native as-is.
-- U2: Mokkery works on Kotlin/Native (`SQLiteHabitListTest`).
-- U3: a lazy `fileOpener` keeps the JVM and Android unit tests unchanged.
-- U4: how many `BaseUnitTest` subclasses pass on iOS without stubs once `fileOpener` is lazy (gap list for step 4).
-- U5: CI time of the larger iOS test set; include list vs whole passing set.
-- U6: repositories read the expected data after migrating a copy of `loop.db` 12 -> 25.
+All resolved:
+- U1: `HabitRepositoryTest` (7), `EntryRepositoryTest` (5), `SQLiteEntryListTest` (2) and `SQLParserTest` (4) pass on Kotlin/Native as they are (18 tests).
+- U2: Mokkery works on Kotlin/Native: `SQLiteHabitListTest` (11, with `mock()` and `verify`) passes once the file opener is lazy.
+- U3: the lazy `fileOpener` leaves `jvmTest` (277 tests) and the Android unit tests (5) unchanged.
+- U4: whole commonTest + appleTest suite on iOS: 275 tests, 193 pass, 82 fail, and **every failure is a `NotImplementedError` from a `TODO` stub, none is a logic failure**. First stub reached by the 82: `getFirstWeekdayNumberAccordingToLocale` 29, `createTestFileOpener` 25, `createTestCanvas` 13, `createTestDateFormatter` 5, `formatInvariant` 4, Zip 4, `computeToday` 1, `format` 1. The list is in `uhabits-core/ios-blocked-tests.txt` and in `docs/PENDING.md`.
+- U5: instead of an include list that goes stale, CI runs the whole suite and skips the tests of `ios-blocked-tests.txt` (generated from the results above); `-PiosRunBlocked=true` runs them. 193 tests, 39 classes, 0 failures; `allTests` and `check` work on macOS.
+- U6: after migrating a copy of `loop.db` 12 -> 25 the repositories read 9 habits, 164 repetitions, the expected per-habit counts, the checked days, every `value` = 2 and an uuid on every habit (`LoopDbMigrationTest`).
 
 ## Checklist
 TDD mode: red/green. Tests are the work here: baseline first, then the lazy `fileOpener`, then the new migration test (RED before it exists).
-- [ ] TASK-1: baseline run of the five classes on the simulator — criterio: pass/fail and cause recorded (U1, U2)
-- [ ] TASK-2: lazy `BaseUnitTest.fileOpener` — criterio: `SQLiteHabitListTest` passes on iOS, `jvmTest` 277 and Android unit tests unchanged (U3)
-- [ ] TASK-3: `LoopDbMigrationTest` — criterio: RED first, GREEN after the test is complete (U6)
-- [ ] TASK-4: discovery run of the whole iOS suite — criterio: pass/fail per class and breaking stub recorded (U4)
-- [ ] TASK-5: CI filters, docs, spec, CHANGELOG — criterio: `ktlintCheck` green, PR CI green (ubuntu and macOS) (U5)
+- [x] TASK-1: baseline run of the five classes on the simulator — criterio: pass/fail and cause recorded (U1, U2)
+- [x] TASK-2: lazy `BaseUnitTest.fileOpener` — criterio: `SQLiteHabitListTest` passes on iOS, `jvmTest` 277 and Android unit tests unchanged (U3)
+- [x] TASK-3: `LoopDbMigrationTest` — criterio: RED first, GREEN after the test is complete (U6)
+- [x] TASK-4: discovery run of the whole iOS suite — criterio: pass/fail per class and breaking stub recorded (U4)
+- [x] TASK-5: CI filters, docs, spec, CHANGELOG — criterio: `ktlintCheck` green, PR CI green (ubuntu and macOS) (U5)
 
 ## Estrategia de entrega
 `single-pr` (small diff), stacked on PR #12 until it is merged. One commit per task; CI read via `gh api .../jobs`.
 
 ## Evidencia
-(pending)
+macOS arm64, Xcode 27.1, iOS 27.1 simulator, Gradle from the repo root.
+- Baseline (TASK-1): 29 tests, 11 failed, all in `SQLiteHabitListTest` with `NotImplementedError: iOS: step 4` (eager `fileOpener`); the other 18 passed.
+- TASK-2: `SQLiteHabitListTest` 11/11 on iOS after the lazy `fileOpener`; `jvmTest` 277/0, Android unit tests 5/0.
+- TASK-3: `LoopDbMigrationTest` passes; mutation check (migrating only to version 20) fails with `Expected <25>, actual <20>`.
+- TASK-4: unfiltered run 275 tests / 82 failures (all stubs); with the blocked list 193 tests / 0 failures; with `-PiosRunBlocked=true` 275 / 82 again.
+- Regression: `jvmTest`, `compileDebugKotlinAndroid`, `compileKotlinIosArm64`, `assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `ktlintCheck` pass.
+- Not run: the 82 blocked tests (they need step 4), instrumented tests.
+- CI: see the PR checks.
