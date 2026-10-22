@@ -33,6 +33,10 @@ kotlin {
     androidTarget()
     iosArm64()
     iosSimulatorArm64()
+    // sqliter (iOS database) needs the system SQLite library when a native binary is linked
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries.all { linkerOpts("-lsqlite3") }
+    }
     jvmToolchain(17)
 
     // Code that only needs java.* APIs and is shared by the jvm and android targets
@@ -68,6 +72,12 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(libs.sqlite.jdbc)
+            }
+        }
+
+        val appleMain by getting {
+            dependencies {
+                implementation(libs.sqliter.driver)
             }
         }
 
