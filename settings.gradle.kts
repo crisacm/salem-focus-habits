@@ -11,7 +11,7 @@ pluginManagement {
     }
 }
 
-include(":uhabits-android", ":uhabits-core")
+include(":salem-android", ":salem-core")
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
@@ -28,5 +28,3 @@ dependencyResolutionManagement {
         maven(url = "https://jitpack.io")
     }
 }
-
-include(":uhabits-android", ":uhabits-core")

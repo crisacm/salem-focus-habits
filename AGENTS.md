@@ -49,8 +49,8 @@ Everything below this line is project-specific knowledge for agents maintaining 
 ## 1. Project overview
 
 - **Salem - Focus & Habit Tracker** is a fork of [Loop Habit Tracker](https://github.com/iSoron/uhabits) (iSoron/uhabits), GPLv3. Goal: migrate to Jetpack Compose + Kotlin Multiplatform (KMP) and ship on the App Store (iOS) as well as Android. Original authorship must stay credited.
-- **Current state: still the original Android app** (XML layouts + custom Views). There is no Compose and no iOS app yet (`uhabits-core` already has iOS targets with stub actuals). Open placeholders and TODOs are tracked in `docs/PENDING.md`.
-- Identity: `applicationId = io.github.crisacm.salem`; `namespace` (the Android app) is the same id, and the Kotlin packages are `io.github.crisacm.salem` (Android code in the root package), `io.github.crisacm.salem.core` and `io.github.crisacm.salem.platform`; the Gradle modules are still called `uhabits-*` (renamed in step 5b). App display name: `Salem`.
+- **Current state: still the original Android app** (XML layouts + custom Views). There is no Compose and no iOS app yet (`salem-core` already has iOS targets with stub actuals). Open placeholders and TODOs are tracked in `docs/PENDING.md`.
+- Identity: `applicationId = io.github.crisacm.salem`; `namespace` (the Android app) is the same id, and the Kotlin packages are `io.github.crisacm.salem` (Android code in the root package), `io.github.crisacm.salem.core` and `io.github.crisacm.salem.platform`; the Gradle modules are `salem-core` and `salem-android`. App display name: `Salem`.
 - Repository: `github.com/crisacm/salem-focus-habits`. Branches: `develop` (day-to-day work, PRs target it) and `main`.
 - Docs for humans: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/GUIDELINES.md`, `docs/BUILD.md`, `docs/TEST.md`, `docs/PENDING.md`, `CHANGELOG.md`. Do not duplicate them here; link to them.
 
@@ -58,10 +58,10 @@ Everything below this line is project-specific knowledge for agents maintaining 
 
 | Path | Purpose |
 |---|---|
-| `uhabits-core/` | Kotlin Multiplatform library (targets `jvm`, `android`, `iosArm64` and `iosSimulatorArm64`; see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
-| `uhabits-android/` | Android application module (depends on `project(":uhabits-core")`). 189 Kotlin files + 26 vendored Java files (AOSP pickers under `src/main/java/com/android/`). |
-| `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
-| `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
+| `salem-core/` | Kotlin Multiplatform library (targets `jvm`, `android`, `iosArm64` and `iosSimulatorArm64`; see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
+| `salem-android/` | Android application module (depends on `project(":salem-core")`). 189 Kotlin files + 26 vendored Java files (AOSP pickers under `src/main/java/com/android/`). |
+| `salem-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
+| `salem-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
 | `docs/` | Developer docs (see above). |
 | `.github/` | Issue templates, PR template and `workflows/ci.yml` (assemble, core JVM tests, Android unit tests, ktlint on every pull request, on pushes to `develop` and on manual runs). |
 | `gradle/` | Version catalog `libs.versions.toml`, `translators.gradle.kts`, wrapper (Gradle 8.11.1). |
@@ -76,9 +76,9 @@ Everything below this line is project-specific knowledge for agents maintaining 
 ## 3. Architecture
 
 ### 3.1 Modules
-`uhabits-android` → `uhabits-core`. Core is platform-agnostic: it talks to the platform only through interfaces and `expect/actual` declarations. The Android module implements those interfaces and owns all UI, Android services and DI wiring.
+`salem-android` → `salem-core`. Core is platform-agnostic: it talks to the platform only through interfaces and `expect/actual` declarations. The Android module implements those interfaces and owns all UI, Android services and DI wiring.
 
-### 3.2 uhabits-core (`src/<set>/kotlin/io/github/crisacm/salem/...`; `jvmMain` and `jvmTest` use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
+### 3.2 salem-core (`src/<set>/kotlin/io/github/crisacm/salem/...`; `jvmMain` and `jvmTest` use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
 - `commonMain/.../salem/platform/` — platform abstractions: `gui` (Canvas, Color, Image, View, FontAwesome), `io` (Database, Files, Strings `format`, Zip), `time` (`LocalDate`, `DayOfWeek`, `LocalDateFormatter`, `getToday/setToday`), `utils`. `JvmAnnotations.kt` declares `expect` `Synchronized`/`JvmStatic`.
 - `commonMain/.../salem/core/`:
   - `models/` — domain model; `models/memory/` (in-memory) and `models/sqlite/` (SQLite-backed) implementations behind `ModelFactory`.
@@ -91,7 +91,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
   - `test/HabitFixtures.kt` lives in **main** source (ships with the library).
   - `Constants.kt`: `DATABASE_FILENAME = "uhabits.db"`, `DATABASE_VERSION = 25`. `AppScope.kt`: kotlin-inject scope annotation.
 - `jvmAndroidMain` (group shared by the jvm and android targets, `java.*` APIs only): `JavaStrings`, `Zip`, `JavaUserFile`, date helpers, `JvmAnnotations`.
-- `appleMain` (iOS): `UserDefaultsStorage` (`Preferences.Storage` over `NSUserDefaults`), `SqliterDatabase`/`SqliterPreparedStatement`/`SqliterDatabaseOpener` (`Database` over sqliter, see 3.4) with `SqliteFileHeader.peekUserVersion`, tested on the simulator from `appleTest` and by the shared database, repository and list tests, and `ZipReader`/`ZipWriter` (`AppleZip.kt`: zip container written in Kotlin, raw DEFLATE and CRC-32 through `platform.zlib` in `AppleDeflate.kt`; STORED and DEFLATED entries, no ZIP64, non-zip input throws; checked against the JDK with fixtures in `assets/test/zip`). `format`/`formatInvariant` (`AppleStrings.kt`) use the pure-Kotlin `formatPrintf` of commonMain (`platform/io/Printf.kt`: `%d %f %s`, rounding HALF_UP like Java, parity-tested against `String.format` on the JVM); `format` takes the decimal separator from `NSLocale`. `AppleDates.kt` has the real `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (NSCalendar/NSTimeZone). `AppleFiles.kt` has `AppleFileOpener` (roots injected: user files in Application Support, resources in the bundle `assets` folder via `createDefault()`; the app target must copy `uhabits-core/assets/main` there in step 7), `AppleUserFile` and `AppleResourceFile` (`toImage()` throws until steps 6-7). `AppleLocalDateFormatter` (`appleMain/platform/time`) builds names from `NSDateFormatter` symbols for a given `NSLocale`. Reminders and notifications (`appleMain/platform/notifications`): `AppleSystemScheduler` (a `ReminderScheduler.SystemScheduler`: one local notification per enabled day of the next 7 days, `reminder-<habitId>-<day>`, because iOS runs no code when a notification fires; weekday mask applied when scheduling via `upcomingReminderTimes`; the 64 pending limit keeps the earliest, `reminderIdsToDrop`), `AppleSystemTray` (`NotificationTray.SystemTray`, shown notifications use `shown-<habitId>`), Yes/No actions (`buildReminderCategory`, `parseNotificationResponse`, `AppleNotificationDelegate`), `HabitCompletionRearmer` (moves the reminder to tomorrow when the habit is done), `AppleReminderSync` (clears and schedules again after each command, used instead of `ReminderScheduler.startListening()`, because deleted, archived or reminder-less habits would otherwise keep their pending notifications), `AppForegroundRefresher` and `AppLifecycleObserver` (iOS has no background timer: on launch and when returning from the background they refresh the day, the first weekday and call `clear()` plus `scheduleAll()`). The real notification center cannot be created in the unit-test host, so it sits behind `PendingNotificationCenter`/`DeliveredNotificationCenter` with fakes in `appleTest`; the app wires everything (checklist in `docs/tasks/ios-reminders.md`). The only missing iOS implementation is Canvas/Image, which waits for steps 6-7. `appleTest` still has a `TODO` stub actual for `createTestCanvas` so the iOS test sources link; the stubs throw if a test uses them. sqliter hides the SQLite error message (`sqlite3_step failed`), which keeps four `Version22Test` cases blocked.
+- `appleMain` (iOS): `UserDefaultsStorage` (`Preferences.Storage` over `NSUserDefaults`), `SqliterDatabase`/`SqliterPreparedStatement`/`SqliterDatabaseOpener` (`Database` over sqliter, see 3.4) with `SqliteFileHeader.peekUserVersion`, tested on the simulator from `appleTest` and by the shared database, repository and list tests, and `ZipReader`/`ZipWriter` (`AppleZip.kt`: zip container written in Kotlin, raw DEFLATE and CRC-32 through `platform.zlib` in `AppleDeflate.kt`; STORED and DEFLATED entries, no ZIP64, non-zip input throws; checked against the JDK with fixtures in `assets/test/zip`). `format`/`formatInvariant` (`AppleStrings.kt`) use the pure-Kotlin `formatPrintf` of commonMain (`platform/io/Printf.kt`: `%d %f %s`, rounding HALF_UP like Java, parity-tested against `String.format` on the JVM); `format` takes the decimal separator from `NSLocale`. `AppleDates.kt` has the real `computeToday` and `getFirstWeekdayNumberAccordingToLocale` (NSCalendar/NSTimeZone). `AppleFiles.kt` has `AppleFileOpener` (roots injected: user files in Application Support, resources in the bundle `assets` folder via `createDefault()`; the app target must copy `salem-core/assets/main` there in step 7), `AppleUserFile` and `AppleResourceFile` (`toImage()` throws until steps 6-7). `AppleLocalDateFormatter` (`appleMain/platform/time`) builds names from `NSDateFormatter` symbols for a given `NSLocale`. Reminders and notifications (`appleMain/platform/notifications`): `AppleSystemScheduler` (a `ReminderScheduler.SystemScheduler`: one local notification per enabled day of the next 7 days, `reminder-<habitId>-<day>`, because iOS runs no code when a notification fires; weekday mask applied when scheduling via `upcomingReminderTimes`; the 64 pending limit keeps the earliest, `reminderIdsToDrop`), `AppleSystemTray` (`NotificationTray.SystemTray`, shown notifications use `shown-<habitId>`), Yes/No actions (`buildReminderCategory`, `parseNotificationResponse`, `AppleNotificationDelegate`), `HabitCompletionRearmer` (moves the reminder to tomorrow when the habit is done), `AppleReminderSync` (clears and schedules again after each command, used instead of `ReminderScheduler.startListening()`, because deleted, archived or reminder-less habits would otherwise keep their pending notifications), `AppForegroundRefresher` and `AppLifecycleObserver` (iOS has no background timer: on launch and when returning from the background they refresh the day, the first weekday and call `clear()` plus `scheduleAll()`). The real notification center cannot be created in the unit-test host, so it sits behind `PendingNotificationCenter`/`DeliveredNotificationCenter` with fakes in `appleTest`; the app wires everything (checklist in `docs/tasks/ios-reminders.md`). The only missing iOS implementation is Canvas/Image, which waits for steps 6-7. `appleTest` still has a `TODO` stub actual for `createTestCanvas` so the iOS test sources link; the stubs throw if a test uses them. sqliter hides the SQLite error message (`sqlite3_step failed`), which keeps four `Version22Test` cases blocked.
 - `jvmMain` only (desktop APIs: `java.awt`, JDBC): `JavaCanvas`, `JavaImage`, `JavaDatabase`, `JavaResourceFile`, `JavaFileOpener`. They back the `jvmTest` helpers; the Android app does not use them. The `js` target was removed.
 
 ### 3.3 Domain model essentials (`models/`)
@@ -105,7 +105,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 - `Database`/`DatabaseOpener`/`PreparedStatement` abstraction (`platform/io/Database.kt`); schema version via `PRAGMA user_version`. Migrations are numbered SQL files run in order up to `DATABASE_VERSION`. iOS = `SqliterDatabase` over sqliter (`co.touchlab:sqliter-driver`, the engine under SQLDelight's native driver; SQLDelight's `SqlDriver` API was rejected because its cursor has no column count and it does not see uncommitted rows after a raw `BEGIN`). The iOS opener reads `user_version` from the SQLite file header first, because sqliter rewrites the version of a file when it is opened with a newer one; it opens with `JournalMode.DELETE` (single file) and a new file reports version 0. JVM = JDBC (sqlite-jdbc, test dependency), Android = `AndroidDatabase`/`AndroidDatabaseOpener`.
 - No sync code, no JSON export. Backups: `HabitsBackupAgent` (Google backup), `AutoBackup` (daily, keeps 5, optional SAF folder), CSV zip export, DB export/import tasks.
 
-### 3.5 uhabits-android (`src/main/java/io/github/crisacm/salem`)
+### 3.5 salem-android (`src/main/java/io/github/crisacm/salem`)
 - Entry: `HabitsApplication` (builds the DI component, initializes/repairs the DB, starts widget/reminder/notification listeners). Launcher alias `.MainActivity` → `ListHabitsActivity`.
 - DI: kotlin-inject + KSP. `inject/HabitsApplicationComponent` (`@AppScope`, constructed with `@AppContext Context` and the db file) and `HabitsActivityComponent` (`@ActivityScope`, parent = app component, `@ActivityContext`). Non-activity classes get the global via `HabitsApplication.component`. `ReceiverScope` exists in `receivers/`.
 - UI: programmatic Views + ~48 XML layouts + view binding in some screens + canvas-drawn charts (`activities/common/views/*Chart`, via `platform/gui/AndroidCanvas`). Pattern per screen: core `*Behavior`/presenter + Android `*Screen` / `*RootView` / `*Menu` / `*Adapter` implementing core interfaces (see `activities/habits/list`, `activities/habits/show`, `activities/about`, `automation/`).
@@ -118,7 +118,7 @@ Command (`commands/`), Observer (`ModelObservable`, `Preferences.Listener`, `Com
 
 Versions come from `gradle/libs.versions.toml` — **add or bump dependencies only there** and reference them as `libs.*`.
 
-- Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on. iOS targets need macOS with Xcode selected (`xcode-select -p` must point to Xcode, not the Command Line Tools); the first iOS build downloads Kotlin/Native into `~/.konan` (about 1.3 GB). Native binaries link `-lsqlite3` (set in `uhabits-core/build.gradle.kts`; the future iOS app framework needs it too).
+- Language/build: Kotlin 2.3.20, AGP 8.9.2, KSP 2.3.6, Gradle wrapper 8.11.1, JDK 17 (`jvmToolchain(17)`), compileSdk/targetSdk 36, minSdk 28, core library desugaring on. iOS targets need macOS with Xcode selected (`xcode-select -p` must point to Xcode, not the Command Line Tools); the first iOS build downloads Kotlin/Native into `~/.konan` (about 1.3 GB). Native binaries link `-lsqlite3` (set in `salem-core/build.gradle.kts`; the future iOS app framework needs it too).
 - DI: kotlin-inject 0.9.0 (runtime `implementation` in core, because Kotlin/Native does not support `compileOnly`; compiler via KSP in android).
 - Async: kotlinx-coroutines 1.10.1. No network library: the app has no sync code (Ktor was removed).
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
@@ -132,16 +132,16 @@ All run from the repo root. Add `--offline` when dependencies are already cached
 
 | Goal | Command |
 |---|---|
-| Debug APK | `./gradlew :uhabits-android:assembleDebug` |
-| Compile Kotlin only (fast check) | `./gradlew :uhabits-android:compileDebugKotlin` |
-| Core JVM tests | `./gradlew :uhabits-core:jvmTest` |
-| Compile core for iOS | `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64` (macOS only) |
-| Run iOS tests (simulator) | `./gradlew :uhabits-core:iosSimulatorArm64Test` (needs an iOS Simulator runtime; Gradle passes `SALEM_ASSETS_DIR` through `SIMCTL_CHILD_SALEM_ASSETS_DIR` so tests read `uhabits-core/assets`). It runs the whole commonTest and appleTest suite except the tests listed in `uhabits-core/ios-blocked-tests.txt`, which need the Canvas/Image actual (steps 6-7) or a driver that reports SQLite messages; add `-PiosRunBlocked=true` to run them anyway. `allTests` and `check` work on macOS. Filter with `--tests "*SomeTest*"` |
-| Compile core for Android | `./gradlew :uhabits-core:compileDebugKotlinAndroid` (core tests run only on `jvm`: the Android unit-test variant is disabled) |
-| Android JVM unit tests | `./gradlew :uhabits-android:testDebugUnitTest` |
-| Instrumented tests (device/emulator) | `./gradlew :uhabits-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
-| Compile instrumented sources | `./gradlew :uhabits-android:compileDebugAndroidTestKotlin` |
-| Lint / format | `./gradlew ktlintCheck` / `./gradlew ktlintFormat` (per module: `:uhabits-core:`, `:uhabits-android:`) |
+| Debug APK | `./gradlew :salem-android:assembleDebug` |
+| Compile Kotlin only (fast check) | `./gradlew :salem-android:compileDebugKotlin` |
+| Core JVM tests | `./gradlew :salem-core:jvmTest` |
+| Compile core for iOS | `./gradlew :salem-core:compileKotlinIosSimulatorArm64 :salem-core:compileKotlinIosArm64` (macOS only) |
+| Run iOS tests (simulator) | `./gradlew :salem-core:iosSimulatorArm64Test` (needs an iOS Simulator runtime; Gradle passes `SALEM_ASSETS_DIR` through `SIMCTL_CHILD_SALEM_ASSETS_DIR` so tests read `salem-core/assets`). It runs the whole commonTest and appleTest suite except the tests listed in `salem-core/ios-blocked-tests.txt`, which need the Canvas/Image actual (steps 6-7) or a driver that reports SQLite messages; add `-PiosRunBlocked=true` to run them anyway. `allTests` and `check` work on macOS. Filter with `--tests "*SomeTest*"` |
+| Compile core for Android | `./gradlew :salem-core:compileDebugKotlinAndroid` (core tests run only on `jvm`: the Android unit-test variant is disabled) |
+| Android JVM unit tests | `./gradlew :salem-android:testDebugUnitTest` |
+| Instrumented tests (device/emulator) | `./gradlew :salem-android:connectedDebugAndroidTest` or `./build.sh android-tests <API>` |
+| Compile instrumented sources | `./gradlew :salem-android:compileDebugAndroidTestKotlin` |
+| Lint / format | `./gradlew ktlintCheck` / `./gradlew ktlintFormat` (per module: `:salem-core:`, `:salem-android:`) |
 | Regenerate translator lists | `./gradlew updateTranslators` |
 | Emulator helpers | `./build.sh android-setup <API>`, `android-tests-parallel`, `android-accept-images` (needs `ANDROID_HOME`) |
 
@@ -153,7 +153,7 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 - **Language:** new code in Kotlin (Java conversions welcome). Docs, comments, commit messages and PRs in English.
 - **Style:** ktlint defaults; run `ktlintCheck` before finishing. Match the surrounding code (naming, comment density, idioms).
 - **Naming:** `Android*` for Android implementations of core abstractions, `*Behavior` for core presenters, `*Screen`/`*RootView`/`*Menu`/`*Adapter` for Android UI glue, `*Test` for tests. Models are data classes with `var`s; nullable values use `*OrNull` getters; shared model lists are `@Synchronized`.
-- **Strings:** add UI strings to `uhabits-android/src/main/res/values/strings.xml`; do not hand-edit translations. Only `app_name` was changed to "Salem" in the ~55 `values-*` locales; other translated strings may still say "Loop".
+- **Strings:** add UI strings to `salem-android/src/main/res/values/strings.xml`; do not hand-edit translations. Only `app_name` was changed to "Salem" in the ~55 `values-*` locales; other translated strings may still say "Loop".
 - **Changelog:** user-visible or project-level changes go under the Salem `## [Unreleased]` section of `CHANGELOG.md` (Keep a Changelog). The history below it belongs to Loop and must not be rewritten.
 - **Git:** Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`…) ending with the required `Co-Authored-By` trailer; one logical change per commit; work on `develop`; commit and push **only when the user asks**; never force-push; never rewrite published history.
 - **PRs:** target `develop`, small and focused, follow `.github/pull_request_template.md` and `docs/GUIDELINES.md`.
@@ -161,9 +161,9 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 7. Testing
 
-- **Core** (`uhabits-core/src/commonTest`): kotlin.test + `kotlinx-coroutines-test` (`runTest`). Base class `BaseUnitTest` fixes today to 2015-01-25, builds the in-memory model factory and `HabitFixtures`. Platform-specific helpers via `expect/actual` (`TestDatabaseHelper`, `TestPlatformHelper`) in `jvmTest`. Mokkery is used for presenter/UI tests. Migration tests follow `database/migrations/Version22Test`/`Version23Test`.
-- **Android JVM** (`uhabits-android/src/test`): `BaseAndroidJVMTest`, `ReminderControllerTest`.
-- **Instrumented** (`uhabits-android/src/androidTest`): bases `BaseAndroidTest`, `BaseViewTest`, `BaseUserInterfaceTest`; DI test components `HabitsApplicationTestComponent`/`HabitsActivityTestComponent`; suites for acceptance, views, widgets, database, intents, regression, performance. View tests render a View/widget to a bitmap and compare to PNGs in `src/androidTest/assets/views/**` (`assertRenders`, `similarityCutoff = 0.00018`); accept new images with `./build.sh android-accept-images`. They require a clean emulator (Nexus 4 profile, en-US, animations off) — see `docs/TEST.md`.
+- **Core** (`salem-core/src/commonTest`): kotlin.test + `kotlinx-coroutines-test` (`runTest`). Base class `BaseUnitTest` fixes today to 2015-01-25, builds the in-memory model factory and `HabitFixtures`. Platform-specific helpers via `expect/actual` (`TestDatabaseHelper`, `TestPlatformHelper`) in `jvmTest`. Mokkery is used for presenter/UI tests. Migration tests follow `database/migrations/Version22Test`/`Version23Test`.
+- **Android JVM** (`salem-android/src/test`): `BaseAndroidJVMTest`, `ReminderControllerTest`.
+- **Instrumented** (`salem-android/src/androidTest`): bases `BaseAndroidTest`, `BaseViewTest`, `BaseUserInterfaceTest`; DI test components `HabitsApplicationTestComponent`/`HabitsActivityTestComponent`; suites for acceptance, views, widgets, database, intents, regression, performance. View tests render a View/widget to a bitmap and compare to PNGs in `src/androidTest/assets/views/**` (`assertRenders`, `similarityCutoff = 0.00018`); accept new images with `./build.sh android-accept-images`. They require a clean emulator (Nexus 4 profile, en-US, animations off) — see `docs/TEST.md`.
 - **Rule:** put new logic in core where possible and cover it with a core test; every bug fix gets a regression test when feasible. Finish a change by running the build, ktlint and the tests relevant to the touched module.
 
 ## 8. Known limitations and gotchas
@@ -181,13 +181,13 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 9. Task playbooks
 
-- **Add a DB migration:** new `uhabits-core/assets/main/migrations/26.sql`, bump `DATABASE_VERSION`, update repositories/importers if columns change, add `Version26Test` modelled on `Version23Test`, run `:uhabits-core:jvmTest`.
+- **Add a DB migration:** new `salem-core/assets/main/migrations/26.sql`, bump `DATABASE_VERSION`, update repositories/importers if columns change, add `Version26Test` modelled on `Version23Test`, run `:salem-core:jvmTest`.
 - **Add a habit command:** implement `Command` in `core/commands`, run it through `CommandRunner`, test with `BaseUnitTest`, wire it from a `*Behavior`/Android screen.
 - **Add a setting:** key + accessor in core `Preferences`, entry in `res/xml/preferences.xml` and `strings.xml`, handle in `SettingsFragment`; no hardcoded user-visible strings.
 - **Add a widget type:** follow an existing pair (`*Widget` + `*WidgetProvider`), register in the manifest with its `res/xml/widget_*_info.xml`, add widget view tests.
 - **Change UI strings:** edit `values/strings.xml` only; mention in the summary that translations are not updated.
 - **Rename/move packages or modules:** out of scope until the KMP phase (see `docs/PENDING.md`); needs a dedicated plan (manifest, `preferences.xml`, ProGuard, tests, `build.sh`, `Habit.uriString`).
-- **Before finishing any change:** `./gradlew :uhabits-android:assembleDebug`, `ktlintCheck`, relevant tests, update `CHANGELOG.md` if user-facing, and report honestly what could not be run.
+- **Before finishing any change:** `./gradlew :salem-android:assembleDebug`, `ktlintCheck`, relevant tests, update `CHANGELOG.md` if user-facing, and report honestly what could not be run.
 
 ## 10. Code exploration index (codebase-memory-mcp)
 

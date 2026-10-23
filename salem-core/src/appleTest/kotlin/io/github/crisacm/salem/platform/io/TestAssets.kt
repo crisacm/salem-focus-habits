@@ -30,7 +30,7 @@ import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.stringWithContentsOfFile
 import platform.Foundation.writeToFile
 
-/** The `uhabits-core/assets` directory of the repository. The simulator reads host paths. */
+/** The `salem-core/assets` directory of the repository. The simulator reads host paths. */
 internal fun assetsDir(): String =
     NSProcessInfo.processInfo.environment["SALEM_ASSETS_DIR"] as? String
         ?: error("SALEM_ASSETS_DIR is not set; run the iOS tests through Gradle")

@@ -2,7 +2,7 @@
 
 This page describes how to download and build the app from the source code. If you are having trouble building the project, please do not hesitate to open a new issue.
 
-> **Note:** for now, only the Android build is documented. Instructions for building the iOS app will be added as the migration progresses. To compile the iOS targets of `uhabits-core` you need macOS with Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`) and the license accepted; the first build downloads Kotlin/Native into `~/.konan`: `./gradlew :uhabits-core:compileKotlinIosSimulatorArm64`. To run the iOS tests install an iOS Simulator runtime (`xcodebuild -downloadPlatform iOS`) and run `./gradlew :uhabits-core:iosSimulatorArm64Test` (it skips the tests listed in `uhabits-core/ios-blocked-tests.txt`, see `AGENTS.md` section 5). The Gradle modules still carry the original project's names (for example, `uhabits-android`).
+> **Note:** for now, only the Android build is documented. Instructions for building the iOS app will be added as the migration progresses. To compile the iOS targets of `salem-core` you need macOS with Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`) and the license accepted; the first build downloads Kotlin/Native into `~/.konan`: `./gradlew :salem-core:compileKotlinIosSimulatorArm64`. To run the iOS tests install an iOS Simulator runtime (`xcodebuild -downloadPlatform iOS`) and run `./gradlew :salem-core:iosSimulatorArm64Test` (it skips the tests listed in `salem-core/ios-blocked-tests.txt`, see `AGENTS.md` section 5). The Gradle modules still carry the original project's names (for example, `salem-android`).
 
 ## Contents
 
@@ -36,7 +36,7 @@ The repository will be downloaded to the directory `salem-focus-habits`.
 3. Android Studio will spend some time indexing the project. When this is complete, click the toolbar icon "Sync Project with Gradle File", located near the right corner of the top toolbar.
 4. The operation will likely fail several times due to missing Android SDK components. Each time it fails, click the link "Install missing platforms", "Install build tools", etc, and try again.
 5. To test the application, create a virtual Android device using the menu "Tools" and "AVD Manager". The default options should work fine, but feel free to customize the device.
-6. Click the menu "Run" and "uhabits-android". The application should launch.
+6. Click the menu "Run" and "salem-android". The application should launch.
 
 
 ## Build from the command line
@@ -85,6 +85,6 @@ The repository will be downloaded to the directory `salem-focus-habits`.
 1. Navigate to the directory `salem-focus-habits`
 2. Run `./gradlew assembleDebug --stacktrace`
 
-If the compilation is successful, a debug APK will be generated somewhere inside the folder `uhabits-android/build/`. Currently, the full path is `./uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk`, but it may change in the future.
+If the compilation is successful, a debug APK will be generated somewhere inside the folder `salem-android/build/`. Currently, the full path is `./salem-android/build/outputs/apk/debug/salem-android-debug.apk`, but it may change in the future.
 
 The APK can be installed using the tool `adb`, which should have been automatically installed at `/opt/android-sdk/platform-tools/adb` during compilation of the project.

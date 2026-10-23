@@ -6,10 +6,10 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 ## Project contact
 
 - [ ] Create a project email address and use it in:
-  - `uhabits-android/src/main/play/contact-email.txt` (currently the placeholder `TODO-contact-email@example.invalid`)
-  - `bugReportTo` in `uhabits-android/src/main/res/values/constants.xml` (currently empty, so the user chooses the recipient)
+  - `salem-android/src/main/play/contact-email.txt` (currently the placeholder `TODO-contact-email@example.invalid`)
+  - `bugReportTo` in `salem-android/src/main/res/values/constants.xml` (currently empty, so the user chooses the recipient)
   - optionally `SECURITY.md`
-- [ ] If the project gets a website, set it in `uhabits-android/src/main/play/contact-website.txt` (currently the GitHub repository)
+- [ ] If the project gets a website, set it in `salem-android/src/main/play/contact-website.txt` (currently the GitHub repository)
 
 ## Privacy policy
 
@@ -24,7 +24,7 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 
 ## Store assets and screenshots
 
-- [ ] Salem icon, feature graphic and phone screenshots in `uhabits-android/src/main/play/listings/en-US/graphics/` (currently empty)
+- [ ] Salem icon, feature graphic and phone screenshots in `salem-android/src/main/play/listings/en-US/graphics/` (currently empty)
 - [ ] Screenshots for the README (the section is commented out) and the `screenshots/` folder (currently empty)
 
 ## App identity
@@ -41,11 +41,11 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 
 ## Code
 
-- [ ] Rename the Gradle modules `uhabits-core` and `uhabits-android` to `salem-core` and `salem-android` (step 5b; the Kotlin packages are already `io.github.crisacm.salem`)
 - [ ] Decide what to do with the `org.isoron.uhabits.ACTION_*` intent actions and the `content://org.isoron.uhabits/...` URI (kept for Tasker compatibility)
 - [ ] Sync server: the default URL is empty; set up a server or remove the setting
 - [ ] Review `versionCode` and `versionName`
-- [ ] Implement the iOS `Canvas`/`Image` actuals or replace the chart rendering with Compose (steps 6-7). Of the shared tests, 439 (shared plus iOS-specific) run on the iOS simulator; the 13 canvas and chart tests (`CanvasTest`, `BarChartTest`, `HistoryChartTest`) and 4 `Version22Test` cases (sqliter does not report the SQLite error message) stay in `uhabits-core/ios-blocked-tests.txt`. iOS `getFirstWeekdayNumberAccordingToLocale`, `computeToday`, `format`, `formatInvariant`, files, `LocalDateFormatter`, zip and reminders/notifications are implemented
+- [ ] `build.sh` still prints Loop branding (`loop-$VERSION-*.apk`) and removes legacy directories that no longer exist (`uhabits-android/uhabits-android`, `uhabits-core-legacy`); clean it up
+- [ ] Implement the iOS `Canvas`/`Image` actuals or replace the chart rendering with Compose (steps 6-7). Of the shared tests, 439 (shared plus iOS-specific) run on the iOS simulator; the 13 canvas and chart tests (`CanvasTest`, `BarChartTest`, `HistoryChartTest`) and 4 `Version22Test` cases (sqliter does not report the SQLite error message) stay in `salem-core/ios-blocked-tests.txt`. iOS `getFirstWeekdayNumberAccordingToLocale`, `computeToday`, `format`, `formatInvariant`, files, `LocalDateFormatter`, zip and reminders/notifications are implemented
 - [ ] Check on a device or simulator app (step 7): local notifications (delivery over several days, the 64 limit, Yes/No buttons, foreground banners, permission prompt), `AppForegroundRefresher` with `AppLifecycleObserver`, and that a shown notification replaces nothing pending. The classes that need an app bundle are compiled but not exercised by tests; wiring checklist in `docs/tasks/ios-reminders.md`
 - [ ] iOS reminders stop after about 7 days without opening the app (they are scheduled 7 days ahead, and fewer days with more than about 9 reminder habits because of the 64 limit); consider a background refresh task at step 7
 - [ ] Merge `develop` into `main` (the default branch) when ready, so `workflow_dispatch` (manual CI runs) becomes available
