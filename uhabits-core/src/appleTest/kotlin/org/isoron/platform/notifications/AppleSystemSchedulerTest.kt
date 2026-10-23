@@ -205,6 +205,19 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
     }
 
     @Test
+    fun testRemindersThatAlreadyFiredDoNotCountForTheLimit() {
+        val small = scheduler(limit = 2, horizon = 2)
+        small.scheduleShowReminder(monday830, habit(1), monday0)
+        // Habit 1's reminder of today has fired by now; it must not push out the later ones
+        now = utcTime(2015, 1, 26, 8, 45)
+        val h2 = habit(2).also { it.reminder = Reminder(9, 0, WeekdayList.EVERY_DAY) }
+        small.scheduleShowReminder(utcTime(2015, 1, 26, 9, 0), h2, monday0)
+        assertEquals(true, idOf(2, 2015, 1, 26) in center.requests)
+        assertEquals(true, idOf(1, 2015, 1, 27) in center.requests)
+        assertEquals(false, idOf(2, 2015, 1, 27) in center.requests)
+    }
+
+    @Test
     fun testTheNewHabitIsIgnoredWhenAllItsRemindersAreTheLatest() {
         val small = scheduler(limit = 2, horizon = 2)
         small.scheduleShowReminder(monday830, habit(1), monday0)
