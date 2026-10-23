@@ -26,24 +26,33 @@ import org.isoron.uhabits.core.models.WeekdayList
 private const val DAYS_FROM_1970_TO_2000 = 10_957L
 
 /**
- * Moves [reminderTime] (milliseconds since the Unix epoch) to the same local time on the first day
- * that is enabled in [days], or returns null if no day is enabled. Android shows every alarm and
- * checks the weekday when it fires; iOS cannot run code at that moment, so the day is chosen here.
+ * The times at which the reminder fires during the next [horizonDays] days, counting the day of
+ * [reminderTime] (milliseconds since the Unix epoch) as the first: the same local time of day on
+ * every day that is enabled in [days]. Android shows every alarm and checks the weekday when it
+ * fires and arms the next alarm itself; iOS cannot run code at that moment, so the days are chosen
+ * here and scheduled ahead.
  *
  * The weekday index is the one of `ShowNotificationTask`: index 0 is Saturday and index 1 is Sunday.
  */
-internal fun nextEnabledReminderTime(reminderTime: Long, days: WeekdayList): Long? {
+internal fun upcomingReminderTimes(reminderTime: Long, days: WeekdayList, horizonDays: Int): List<Long> {
     val enabled = days.toArray()
     val localTime = DateUtils.removeTimezone(reminderTime)
-    for (offset in 0..6) {
+    val times = mutableListOf<Long>()
+    for (offset in 0 until horizonDays) {
         val shifted = localTime + offset * DateUtils.DAY_LENGTH
         val date = LocalDate((shifted.floorDiv(DateUtils.DAY_LENGTH) - DAYS_FROM_1970_TO_2000).toInt())
         if (enabled[(date.dayOfWeek.daysSinceSunday + 1) % 7]) {
-            return if (offset == 0) reminderTime else DateUtils.applyTimezone(shifted)
+            times.add(if (offset == 0) reminderTime else DateUtils.applyTimezone(shifted))
         }
     }
-    return null
+    return times
 }
+
+/**
+ * The first of [upcomingReminderTimes] within a week, or null if no day is enabled.
+ */
+internal fun nextEnabledReminderTime(reminderTime: Long, days: WeekdayList): Long? =
+    upcomingReminderTimes(reminderTime, days, 7).firstOrNull()
 
 internal data class PendingReminder(val identifier: String, val fireTimeMillis: Long)
 
