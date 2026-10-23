@@ -19,58 +19,22 @@
 
 package io.github.crisacm.salem.activities.intro
 
-import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import com.github.appintro.AppIntro2
-import com.github.appintro.AppIntroFragment
-import io.github.crisacm.salem.R
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 /**
  * Activity that introduces the app to the user, shown only after the app is
  * launched for the first time.
  */
-class IntroActivity : AppIntro2() {
-
+class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showStatusBar(false)
-
-        addSlide(
-            AppIntroFragment.newInstance(
-                getString(R.string.intro_title_1),
-                getString(R.string.intro_description_1),
-                R.drawable.intro_icon_1,
-                Color.parseColor("#194673")
-            )
-        )
-
-        addSlide(
-            AppIntroFragment.newInstance(
-                getString(R.string.intro_title_2),
-                getString(R.string.intro_description_2),
-                R.drawable.intro_icon_2,
-                Color.parseColor("#ffa726")
-            )
-        )
-
-        addSlide(
-            AppIntroFragment.newInstance(
-                getString(R.string.intro_title_4),
-                getString(R.string.intro_description_4),
-                R.drawable.intro_icon_4,
-                Color.parseColor("#9575cd")
-            )
-        )
-    }
-
-    override fun onDonePressed(currentFragment: Fragment?) {
-        super.onDonePressed(currentFragment)
-        finish()
-    }
-
-    override fun onSkipPressed(currentFragment: Fragment?) {
-        super.onSkipPressed(currentFragment)
-        finish()
+        WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.statusBars())
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContent { IntroContent(onFinish = ::finish) }
     }
 }
