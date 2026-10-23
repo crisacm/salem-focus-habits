@@ -34,6 +34,7 @@ attribution.
 ### Fixed
 
 - CSV export no longer depends on the device locale: scores and target values always use `.` as decimal separator and ASCII digits (they were written as `0,5000` under Spanish and with Arabic-Indic digits under Arabic locales)
+- Opening a Compose dialog (colour, habit type, weekdays, snooze and the others built on `ComposeDialogFragment`) no longer crashes the app with a `StackOverflowError`: `Content()` called itself forever inside `ComposeView.apply`
 - Importing a Loop database no longer fails on devices whose locale uses non-Latin digits (the migration file names were built with the locale's digits)
 
 ### Changed

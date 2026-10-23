@@ -45,6 +45,7 @@ abstract class ComposeDialogFragment : AppCompatDialogFragment() {
         savedInstanceState: Bundle?
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent { SalemTheme { Content() } }
+        // Inside `apply`, a bare `Content()` would resolve to ComposeView.Content() and recurse forever.
+        setContent { SalemTheme { this@ComposeDialogFragment.Content() } }
     }
 }
