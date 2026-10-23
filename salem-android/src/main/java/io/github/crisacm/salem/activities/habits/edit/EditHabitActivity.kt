@@ -27,9 +27,7 @@ import android.text.Html
 import android.text.Spanned
 import android.text.format.DateFormat
 import android.view.View
-import android.widget.ArrayAdapter
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.android.datetimepicker.time.RadialPickerLayout
@@ -37,9 +35,12 @@ import com.android.datetimepicker.time.TimePickerDialog
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
+import io.github.crisacm.salem.activities.common.dialogs.ChoiceDialog
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
+import io.github.crisacm.salem.activities.common.dialogs.FrequencyLabel
 import io.github.crisacm.salem.activities.common.dialogs.FrequencyPickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.WeekdayPickerDialog
+import io.github.crisacm.salem.activities.common.dialogs.frequencyLabel
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateHabitCommand
 import io.github.crisacm.salem.core.commands.EditHabitCommand
@@ -59,14 +60,14 @@ import io.github.crisacm.salem.utils.dismissCurrentAndShow
 import io.github.crisacm.salem.utils.formatTime
 import io.github.crisacm.salem.utils.toFormattedString
 
-fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when {
-    freqNum == 1 && (freqDen == 30 || freqDen == 31) -> resources.getString(R.string.every_month)
-    freqDen == 30 || freqDen == 31 -> resources.getString(R.string.x_times_per_month, freqNum)
-    freqNum == 1 && freqDen == 1 -> resources.getString(R.string.every_day)
-    freqNum == 1 && freqDen == 7 -> resources.getString(R.string.every_week)
-    freqNum == 1 && freqDen > 1 -> resources.getString(R.string.every_x_days, freqDen)
-    freqDen == 7 -> resources.getString(R.string.x_times_per_week, freqNum)
-    else -> resources.getString(R.string.x_times_per_y_days, freqNum, freqDen)
+fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when (val label = frequencyLabel(freqNum, freqDen)) {
+    FrequencyLabel.EveryMonth -> resources.getString(R.string.every_month)
+    is FrequencyLabel.TimesPerMonth -> resources.getString(R.string.x_times_per_month, label.times)
+    FrequencyLabel.EveryDay -> resources.getString(R.string.every_day)
+    FrequencyLabel.EveryWeek -> resources.getString(R.string.every_week)
+    is FrequencyLabel.EveryXDays -> resources.getString(R.string.every_x_days, label.days)
+    is FrequencyLabel.TimesPerWeek -> resources.getString(R.string.x_times_per_week, label.times)
+    is FrequencyLabel.TimesInDays -> resources.getString(R.string.x_times_per_y_days, label.times, label.days)
 }
 
 class EditHabitActivity : AppCompatActivity() {
@@ -177,38 +178,28 @@ class EditHabitActivity : AppCompatActivity() {
 
         populateTargetType()
         binding.targetTypePicker.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            arrayAdapter.add(getString(R.string.target_type_at_least))
-            arrayAdapter.add(getString(R.string.target_type_at_most))
-            builder.setAdapter(arrayAdapter) { dialog, which ->
+            ChoiceDialog.newInstance(
+                listOf(getString(R.string.target_type_at_least), getString(R.string.target_type_at_most))
+            ) { which ->
                 targetType = when (which) {
                     0 -> NumericalHabitType.AT_LEAST
                     else -> NumericalHabitType.AT_MOST
                 }
                 populateTargetType()
-                dialog.dismiss()
-            }
-            val dialog = builder.create()
-            dialog.dismissCurrentAndShow()
+            }.dismissCurrentAndShow(supportFragmentManager, "targetTypePicker")
         }
 
         binding.numericalFrequencyPicker.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            arrayAdapter.add(getString(R.string.every_day))
-            arrayAdapter.add(getString(R.string.every_week))
-            arrayAdapter.add(getString(R.string.every_month))
-            builder.setAdapter(arrayAdapter) { dialog, which ->
+            ChoiceDialog.newInstance(
+                listOf(getString(R.string.every_day), getString(R.string.every_week), getString(R.string.every_month))
+            ) { which ->
                 freqDen = when (which) {
                     1 -> 7
                     2 -> 30
                     else -> 1
                 }
                 populateFrequency()
-                dialog.dismiss()
-            }
-            builder.show()
+            }.dismissCurrentAndShow(supportFragmentManager, "numericalFrequencyPicker")
         }
 
         populateReminder()

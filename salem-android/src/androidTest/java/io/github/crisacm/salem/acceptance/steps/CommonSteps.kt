@@ -39,6 +39,7 @@ import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.ListHabitsActivity
 import org.hamcrest.CoreMatchers
 import org.junit.Assert.assertTrue
+import java.util.regex.Pattern
 
 object CommonSteps : BaseUserInterfaceTest() {
     fun pressBack() {
@@ -57,6 +58,24 @@ object CommonSteps : BaseUserInterfaceTest() {
         if (scrollable.exists()) scrollable.scrollIntoView(UiSelector().text(text))
         assertTrue("Text not found: $text", device.wait(Until.hasObject(By.text(text)), 5000))
         device.findObject(UiSelector().text(text)).click()
+        device.waitForIdle()
+    }
+
+    /**
+     * Clicks the last match of [text]. A dialog is drawn above its screen, which may show the same text
+     * (the "Every day" label of the frequency button), and the topmost match is the one wanted.
+     */
+    fun clickLastComposeText(text: String) {
+        assertTrue("Text not found: $text", device.wait(Until.hasObject(By.text(text)), 5000))
+        device.findObjects(By.text(text)).last().click()
+        device.waitForIdle()
+    }
+
+    /** Like [clickComposeText], for buttons whose label case may change (Compose does not capitalize them). */
+    fun clickComposeTextIgnoreCase(text: String) {
+        val pattern = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE)
+        assertTrue("Text not found: $text", device.wait(Until.hasObject(By.text(pattern)), 5000))
+        device.findObject(By.text(pattern)).click()
         device.waitForIdle()
     }
 

@@ -57,10 +57,10 @@ fun Scrim(onDismiss: () -> Unit, content: @Composable () -> Unit) {
     ) { content() }
 }
 
-/** A centred dialog card with a title, a scrollable body and optional text buttons. */
+/** A centred dialog card with an optional title, a scrollable body and optional text buttons. */
 @Composable
 fun DialogSurface(
-    title: String,
+    title: String?,
     onDismiss: () -> Unit,
     buttons: @Composable () -> Unit = {},
     content: @Composable () -> Unit
@@ -76,12 +76,14 @@ fun DialogSurface(
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
         ) {
             Column(modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-                )
+                if (!title.isNullOrEmpty()) {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                    )
+                }
                 Column(modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
                     content()
                 }

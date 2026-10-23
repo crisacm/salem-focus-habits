@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the frequency picker and the target type and numerical frequency lists of the edit screen to Compose; the rules that turn the typed numbers into a frequency are unchanged and now covered by tests (an invalid or empty entry still becomes every day)
 - Move the delete confirmation and the checkmark and number popups to Compose; closing a popup without choosing still saves changed notes. The buttons of the checkmark popup now have accessibility labels, and the new "Unknown" label is not translated yet
 - Move the habit type, weekday, colour and snooze dialogs to Compose and remove the vendored AOSP colour picker; the colours keep their layout and accessibility labels. The snooze dialog no longer crashes when the habit is missing
 - Move the Intro screen to Compose and remove the AppIntro library; the slides, colours and behaviour are the same, and the Next button label is not translated yet
