@@ -18,6 +18,11 @@
  */
 package io.github.crisacm.salem.acceptance
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import io.github.crisacm.salem.BaseUserInterfaceTest
@@ -27,19 +32,27 @@ import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysText
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.ABOUT
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.SETTINGS
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.clickMenu
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class AboutTest : BaseUserInterfaceTest() {
+    @get:Rule
+    val composeRule = createEmptyComposeRule()
+
+    private fun verifyDisplaysComposeText(text: String) {
+        composeRule.onAllNodesWithText(text).onFirst().performScrollTo().assertIsDisplayed()
+    }
+
     @Test
     fun shouldDisplayAboutScreen() {
         launchApp()
         clickMenu(ABOUT)
-        verifyDisplaysText("Loop Habit Tracker")
-        verifyDisplaysText("Rate this app on Google Play")
-        verifyDisplaysText("Developers")
+        verifyDisplaysComposeText("Salem")
+        verifyDisplaysComposeText("Rate this app on Google Play")
+        verifyDisplaysComposeText("Developers")
         verifyDisplaysText("Translators")
     }
 

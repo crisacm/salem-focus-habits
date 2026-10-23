@@ -16,12 +16,17 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.about
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import io.github.crisacm.salem.BuildConfig
 import io.github.crisacm.salem.HabitsApplication
+import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
 /**
  * Activity that allows the user to see information about the app itself.
@@ -36,7 +41,21 @@ class AboutActivity : AppCompatActivity() {
             app.component.intentFactory,
             app.component.preferences
         )
-        AndroidThemeSwitcher(this, app.component.preferences).apply()
-        setContentView(AboutView(this, screen))
+        val themeSwitcher = AndroidThemeSwitcher(this, app.component.preferences)
+        themeSwitcher.apply()
+        val version = getString(R.string.version_n, BuildConfig.VERSION_NAME)
+        val actions = AboutActions(
+            onBack = { finish() },
+            onVersionTap = screen::onPressDeveloperCountdown,
+            onRate = screen::showRateAppWebsite,
+            onFeedback = screen::showSendFeedbackScreen,
+            onTranslate = screen::showTranslationWebsite,
+            onSource = screen::showSourceCodeWebsite,
+            onPrivacy = screen::showPrivacyPolicyWebsite,
+            onContributors = screen::showCodeContributorsWebsite
+        )
+        setContent {
+            SalemTheme(themeSwitcher.currentTheme) { AboutContent(version, actions) }
+        }
     }
 }
