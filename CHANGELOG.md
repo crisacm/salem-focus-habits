@@ -16,7 +16,9 @@ attribution.
 - Add iOS file access (`AppleFileOpener`, user files in Application Support) to `uhabits-core`; the file, import and migration tests run on the iOS simulator
 - Add an iOS date formatter (`AppleLocalDateFormatter`, on `NSDateFormatter`) to `uhabits-core` for weekday and month names
 - Add an iOS zip reader and writer (raw DEFLATE through the system zlib) to `uhabits-core`, so the CSV export runs on iOS; archives are checked against the JDK
-- Run the shared tests on the iOS simulator in CI: 193 of 275 pass, the rest wait for the iOS platform implementations (listed in `uhabits-core/ios-blocked-tests.txt`)
+- Add iOS reminders and notifications to `uhabits-core`: local notifications scheduled for the next 7 days (respecting the 64 pending limit and the weekdays of each reminder), Yes/No actions, and a refresh of the day and the reminders when the app returns to the foreground
+- Share `DateUtils`, `ReminderScheduler` and `MidnightTimer` between Android and iOS (they moved to `commonMain`)
+- Run the shared tests on the iOS simulator in CI: 432 tests pass, only the canvas and chart tests and four database migration cases wait for later steps (listed in `uhabits-core/ios-blocked-tests.txt`)
 - Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
 
 ### Fixed
