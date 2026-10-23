@@ -119,6 +119,8 @@
     <string name="version_n">Version %s</string>
     <string name="about_based_on">Based on Loop Habit Tracker by Álinson S. Xavier (@iSoron)</string>
     <string name="navigate_up">Navigate up</string>
+    <string name="development">Development</string>
+    <string name="enable_developer_mode">Enable developer mode</string>
     <string name="frequency">Frequency</string>
     <string name="checkmark">Checkmark</string>
     <string name="checkmark_stack_widget" formatted="false">Checkmark Stack Widget</string>

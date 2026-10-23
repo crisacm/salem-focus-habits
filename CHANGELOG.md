@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the Settings screen to Compose with reusable preference rows; the preference keys and the results returned to the habit list are unchanged. The unused sync server, sync key and encryption key settings and the hidden reminder sound row are gone
 - Add Jetpack Compose (Material 3) to `salem-android` with `SalemTheme`, which maps the core `Theme` (light, dark, pure black), and move the About screen to Compose as the first screen of the migration; the developer-mode tap counter is now a tested class
 - Add an iOS preferences storage (`UserDefaultsStorage`) to `uhabits-core`, tested on the iOS simulator
 - Add an iOS database (`SqliterDatabase`, on sqliter) to `uhabits-core`; the database contract tests and the real migrations run on the iOS simulator

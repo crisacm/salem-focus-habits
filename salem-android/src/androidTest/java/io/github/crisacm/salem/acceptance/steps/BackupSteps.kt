@@ -26,7 +26,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiSelector
 import io.github.crisacm.salem.BaseUserInterfaceTest.Companion.device
-import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.pressBack
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.SETTINGS
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.clickMenu
@@ -38,7 +38,7 @@ const val DOWNLOAD_FOLDER = "/sdcard/Download/"
 
 fun exportFullBackup() {
     clickMenu(SETTINGS)
-    clickText("Export full backup")
+    clickComposeText("Export full backup")
     if (SDK_INT < 28) return
     pressBack()
 }
@@ -77,7 +77,7 @@ fun clearPublicBackupFolderSelection() {
 
 fun importBackupFromDownloadFolder() {
     clickMenu(SETTINGS)
-    clickText("Import data")
+    clickComposeText("Import data")
     if (SDK_INT <= 23) {
         while (!device.hasObject(By.textContains("Show file size"))) {
             device.click(720, 100) // Click overflow menu

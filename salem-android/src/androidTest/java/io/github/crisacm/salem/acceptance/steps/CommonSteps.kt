@@ -30,6 +30,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import io.github.crisacm.salem.BaseUserInterfaceTest
@@ -46,6 +47,15 @@ object CommonSteps : BaseUserInterfaceTest() {
     fun clickText(text: String?) {
         scrollToText(text)
         Espresso.onView(ViewMatchers.withText(text)).perform(ViewActions.click())
+        device.waitForIdle()
+    }
+
+    /** Clicks text drawn by Compose, which Espresso view matchers cannot see. */
+    fun clickComposeText(text: String) {
+        val scrollable = UiScrollable(UiSelector().scrollable(true))
+        if (scrollable.exists()) scrollable.scrollIntoView(UiSelector().text(text))
+        assertTrue("Text not found: $text", device.wait(Until.hasObject(By.text(text)), 5000))
+        device.findObject(UiSelector().text(text)).click()
         device.waitForIdle()
     }
 
