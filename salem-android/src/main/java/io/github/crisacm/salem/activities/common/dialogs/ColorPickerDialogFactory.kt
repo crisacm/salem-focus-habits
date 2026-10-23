@@ -16,33 +16,19 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.common.dialogs
 
-import android.content.Context
-import com.android.colorpicker.ColorPickerDialog.SIZE_SMALL
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.PaletteColor
-import io.github.crisacm.salem.core.ui.views.Theme
-import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.utils.StyledResources
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 @ActivityScope
-class ColorPickerDialogFactory(@param:ActivityContext private val context: Context) {
-    fun create(color: PaletteColor, theme: Theme): ColorPickerDialog {
+class ColorPickerDialogFactory {
+    fun create(color: PaletteColor): ColorPickerDialog {
         val dialog = ColorPickerDialog()
-        val res = StyledResources(context)
-        val androidColor = theme.color(color).toInt()
-        dialog.initialize(
-            R.string.color_picker_default_title,
-            res.getPalette(),
-            androidColor,
-            4,
-            SIZE_SMALL
-        )
+        dialog.initialize(color)
         return dialog
     }
 }

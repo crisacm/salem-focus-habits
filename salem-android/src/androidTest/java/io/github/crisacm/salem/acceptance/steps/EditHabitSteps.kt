@@ -24,6 +24,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.uiautomator.By
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.R
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 
 object EditHabitSteps {
     fun clickSave() {
@@ -82,13 +83,13 @@ object EditHabitSteps {
     }
 
     fun unselectAllDays() {
-        Espresso.onView(ViewMatchers.withText("Saturday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Sunday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Monday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Tuesday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Wednesday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Thursday")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Friday")).perform(ViewActions.click())
+        clickComposeText("Saturday")
+        clickComposeText("Sunday")
+        clickComposeText("Monday")
+        clickComposeText("Tuesday")
+        clickComposeText("Wednesday")
+        clickComposeText("Thursday")
+        clickComposeText("Friday")
     }
 
     private fun typeTextWithId(id: Int, name: String) {

@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the habit type, weekday, colour and snooze dialogs to Compose and remove the vendored AOSP colour picker; the colours keep their layout and accessibility labels. The snooze dialog no longer crashes when the habit is missing
 - Move the Intro screen to Compose and remove the AppIntro library; the slides, colours and behaviour are the same, and the Next button label is not translated yet
 - Move the Settings screen to Compose with reusable preference rows; the preference keys and the results returned to the habit list are unchanged. The unused sync server, sync key and encryption key settings and the hidden reminder sound row are gone
 - Add Jetpack Compose (Material 3) to `salem-android` with `SalemTheme`, which maps the core `Theme` (light, dark, pure black), and move the About screen to Compose as the first screen of the migration; the developer-mode tap counter is now a tested class
