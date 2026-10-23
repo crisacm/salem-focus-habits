@@ -33,6 +33,7 @@ import kotlinx.cinterop.usePinned
 import platform.zlib.ZLIB_VERSION
 import platform.zlib.Z_DEFLATED
 import platform.zlib.Z_FINISH
+import platform.zlib.Z_NO_FLUSH
 import platform.zlib.Z_OK
 import platform.zlib.Z_STREAM_END
 import platform.zlib.crc32
@@ -50,6 +51,7 @@ private const val RAW_WINDOW_BITS = -15
 private const val COMPRESSION_LEVEL = 6
 private const val DEFAULT_MEM_LEVEL = 8
 private const val DEFAULT_STRATEGY = 0
+private const val INFLATE_CHUNK = 64 * 1024
 
 // The empty input compressed by zlib: a final fixed-Huffman block with no symbols.
 private val EMPTY_DEFLATE = byteArrayOf(0x03, 0x00)
@@ -110,20 +112,31 @@ internal fun inflateRaw(input: ByteArray, expectedSize: Int): ByteArray {
         val init = inflateInit2_(stream.ptr, RAW_WINDOW_BITS, ZLIB_VERSION, sizeOf<z_stream>().toInt())
         check(init == Z_OK) { "inflateInit2 failed: $init" }
         try {
-            // One spare byte tells data that is larger than expected from data that fits exactly
-            val out = ByteArray(expectedSize + 1)
-            val result = input.usePinned { source ->
-                out.usePinned { target ->
-                    stream.next_in = source.addressOf(0).reinterpret()
-                    stream.avail_in = input.size.convert()
-                    stream.next_out = target.addressOf(0).reinterpret()
-                    stream.avail_out = out.size.convert()
-                    inflate(stream.ptr, Z_FINISH)
-                }
+            // One spare byte tells data that is larger than expected from data that fits exactly.
+            // The buffer grows with the real output, so a header that declares a huge size does not
+            // reserve it up front.
+            val limit = expectedSize + 1
+            var out = ByteArray(minOf(limit, INFLATE_CHUNK))
+            var written = 0
+            var result = Z_OK
+            input.usePinned { source ->
+                stream.next_in = source.addressOf(0).reinterpret()
+                stream.avail_in = input.size.convert()
+                do {
+                    out.usePinned { target ->
+                        stream.next_out = target.addressOf(written).reinterpret()
+                        stream.avail_out = (out.size - written).convert()
+                        result = inflate(stream.ptr, Z_NO_FLUSH)
+                    }
+                    written = stream.total_out.toInt()
+                    val full = written == out.size
+                    if (result != Z_OK || !full || out.size == limit) break
+                    out = out.copyOf(minOf(limit.toLong(), out.size * 2L).toInt())
+                } while (true)
             }
             require(result == Z_STREAM_END) { "Corrupt or truncated DEFLATE data: $result" }
-            require(stream.total_out.toInt() == expectedSize) {
-                "Expected $expectedSize bytes but the data holds ${stream.total_out}"
+            require(written == expectedSize) {
+                "Expected $expectedSize bytes but the data holds $written"
             }
             out.copyOf(expectedSize)
         } finally {

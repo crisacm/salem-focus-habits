@@ -70,6 +70,20 @@ class AppleDeflateTest {
     }
 
     @Test
+    fun testInflateRoundTripsAroundTheBufferChunkSize() {
+        for (size in listOf(1, 65_535, 65_536, 65_537, 131_072, 200_001)) {
+            val input = ByteArray(size) { (it * 31 % 251).toByte() }
+            assertContentEquals(input, inflateRaw(deflateRaw(input), size), "size=$size")
+        }
+    }
+
+    @Test
+    fun testInflateWithAHugeDeclaredSizeFailsWithoutReservingIt() {
+        val deflated = deflateRaw("abc".encodeToByteArray())
+        assertFailsWith<IllegalArgumentException> { inflateRaw(deflated, 256 * 1024 * 1024) }
+    }
+
+    @Test
     fun testDosDateTime() {
         val start = dosDateTime(2000, 1, 1, 0, 0, 0)
         assertEquals(0, start.time)
