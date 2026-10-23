@@ -86,7 +86,7 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
         val result = scheduler.scheduleShowReminder(monday830, habit(7, "Read", "Did you read?"), monday0)
         assertEquals(SchedulerResult.OK, result)
         assertEquals(
-            ReminderRequest("reminder-7", "Read", "Did you read?", monday830, 7, monday0),
+            ReminderRequest("reminder-7", "Read", "Did you read?", monday830, 7, monday0, true),
             center.requests["reminder-7"]
         )
     }

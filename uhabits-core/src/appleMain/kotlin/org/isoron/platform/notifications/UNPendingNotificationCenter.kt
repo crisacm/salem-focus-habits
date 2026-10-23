@@ -51,6 +51,7 @@ internal fun buildNotificationRequest(request: ReminderRequest): UNNotificationR
     content.setBody(request.body)
     content.setSound(UNNotificationSound.defaultSound)
     content.setUserInfo(mapOf("habitId" to request.habitId, "timestamp" to request.timestamp))
+    if (request.hasActions) content.setCategoryIdentifier(REMINDER_CATEGORY)
     val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(parts, false)
     return UNNotificationRequest.requestWithIdentifier(request.identifier, content, trigger)
 }

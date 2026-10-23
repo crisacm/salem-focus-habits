@@ -22,6 +22,7 @@ package org.isoron.platform.notifications
 /**
  * A local notification that should fire once at [fireTimeMillis] (milliseconds since the Unix epoch).
  * [timestamp] is the start of the day it is about, in the same unit as the Android intent extra.
+ * [hasActions] adds the Yes/No buttons, which only make sense for yes/no habits.
  */
 data class ReminderRequest(
     val identifier: String,
@@ -29,7 +30,8 @@ data class ReminderRequest(
     val body: String,
     val fireTimeMillis: Long,
     val habitId: Long,
-    val timestamp: Long
+    val timestamp: Long,
+    val hasActions: Boolean = false
 )
 
 /**

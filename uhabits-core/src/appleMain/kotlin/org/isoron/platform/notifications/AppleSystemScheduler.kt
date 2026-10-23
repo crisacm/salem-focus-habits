@@ -22,6 +22,7 @@ package org.isoron.platform.notifications
 import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.currentTimeMillis
 import org.isoron.uhabits.core.models.Habit
+import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.reminders.ReminderScheduler.SchedulerResult
 import org.isoron.uhabits.core.reminders.ReminderScheduler.SystemScheduler
 import platform.Foundation.NSLog
@@ -53,7 +54,15 @@ class AppleSystemScheduler(
         }
         val day = if (fireTime == reminderTime) timestamp else DateUtils.getStartOfDayWithOffset(DateUtils.removeTimezone(fireTime), 0, 0)
         center.add(
-            ReminderRequest(identifier, habit.name, habit.question.ifBlank { defaultBody }, fireTime, habitId, day)
+            ReminderRequest(
+                identifier,
+                habit.name,
+                habit.question.ifBlank { defaultBody },
+                fireTime,
+                habitId,
+                day,
+                habit.type == HabitType.YES_NO
+            )
         )
         scheduled[identifier] = fireTime
         val dropped = reminderIdsToDrop(scheduled.map { PendingReminder(it.key, it.value) }, limit)
