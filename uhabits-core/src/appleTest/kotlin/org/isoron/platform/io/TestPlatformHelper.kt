@@ -20,7 +20,9 @@
 package org.isoron.platform.io
 
 import org.isoron.platform.gui.Canvas
+import org.isoron.platform.time.AppleLocalDateFormatter
 import org.isoron.platform.time.LocalDateFormatter
+import platform.Foundation.NSLocale
 
 // Stubs so the commonTest sources link on iOS. The real implementations come in migration steps 3 and 4.
 
@@ -33,4 +35,4 @@ actual fun createTestDatabaseOpener(): DatabaseOpener = SqliterDatabaseOpener()
 
 actual fun createTestCanvas(width: Int, height: Int): Canvas = TODO("iOS: step 4")
 
-actual fun createTestDateFormatter(): LocalDateFormatter = TODO("iOS: step 4")
+actual fun createTestDateFormatter(): LocalDateFormatter = AppleLocalDateFormatter(NSLocale("en_US"))

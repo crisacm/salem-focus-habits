@@ -2,13 +2,10 @@
 # They are excluded from `iosSimulatorArm64Test`; run them anyway with `-PiosRunBlocked=true`.
 # Remove a line when its stub is implemented. One pattern per line (class or class.method).
 
-# Blocked by createTestDateFormatter / iOS LocalDateFormatter (appleTest TestPlatformHelper.kt)
-org.isoron.platform.time.LocalDateFormatterTest
+# Blocked by createTestCanvas / iOS Canvas (appleTest TestPlatformHelper.kt); the chart tests render to a canvas
+org.isoron.platform.gui.CanvasTest
 org.isoron.uhabits.core.ui.views.BarChartTest
 org.isoron.uhabits.core.ui.views.HistoryChartTest
-
-# Blocked by createTestCanvas / iOS Canvas (appleTest TestPlatformHelper.kt)
-org.isoron.platform.gui.CanvasTest
 
 # Blocked by ZipWriter / ZipReader (AppleZip.kt)
 org.isoron.platform.io.ZipTest
