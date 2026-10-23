@@ -1,142 +1,155 @@
+/*
+ * Copyright (C) 2016-2025 Álinson Santos Xavier <git@axavier.org>
+ *
+ * This file is part of Loop Habit Tracker.
+ *
+ * Loop Habit Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * Loop Habit Tracker is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package io.github.crisacm.salem.activities.common.dialogs
 
-import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.provider.Settings
-import android.text.method.DigitsKeyListener
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Entry
-import io.github.crisacm.salem.databinding.CheckmarkPopupBinding
-import io.github.crisacm.salem.utils.InterfaceUtils
-import io.github.crisacm.salem.utils.getCenter
-import io.github.crisacm.salem.utils.requestFocusWithKeyboard
-import io.github.crisacm.salem.utils.sres
-import java.text.DecimalFormat
+import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
+import io.github.crisacm.salem.utils.InterfaceUtils.getFontAwesome
 import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
-import java.text.ParseException
 
-class NumberDialog : AppCompatDialogFragment() {
-
+class NumberDialog : ComposeDialogFragment() {
     var onToggle: (Double, String) -> Unit = { _, _ -> }
     var onDismiss: () -> Unit = {}
 
-    private var dismissedViaSaveAction = false
-    private var originalNotes: String = ""
-    private var originalValue: Double = 0.0
-    private lateinit var view: CheckmarkPopupBinding
+    private var savedViaAction = false
+    private var originalNotes = ""
+    private var originalValue = 0.0
+    private var currentNotes = ""
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val appComponent = (requireActivity().application as HabitsApplication).component
-        val prefs = appComponent.preferences
-        view = CheckmarkPopupBinding.inflate(LayoutInflater.from(context))
-        arrayOf(view.yesBtn).forEach {
-            it.setTextColor(requireArguments().getInt("color"))
-        }
-        arrayOf(view.noBtn, view.unknownBtnNumber).forEach {
-            it.setTextColor(view.root.sres.getColor(R.attr.contrast60))
-        }
-        arrayOf(view.yesBtn, view.noBtn, view.unknownBtnNumber).forEach {
-            it.typeface = InterfaceUtils.getFontAwesome(requireContext())
-        }
-        if (!prefs.isSkipEnabled) view.skipBtnNumber.visibility = View.GONE
-        if (!prefs.areQuestionMarksEnabled) view.unknownBtnNumber.visibility = View.GONE
-        view.numberButtons.visibility = View.VISIBLE
-        fixDecimalSeparator(view)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         originalNotes = requireArguments().getString("notes")!!
         originalValue = requireArguments().getDouble("value")
-        view.notes.setText(originalNotes)
-        view.value.setText(
-            when {
-                originalValue < 0.01 -> "0"
-                else -> DecimalFormat("#.##").format(originalValue)
-            }
-        )
-        view.value.setOnKeyListener { _, keyCode, event ->
-            if (event.action == MotionEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                save()
-                return@setOnKeyListener true
-            }
-            return@setOnKeyListener false
-        }
-        view.saveBtn.setOnClickListener {
-            save()
-        }
-        view.skipBtnNumber.setOnClickListener {
-            view.value.setText(DecimalFormat("#.###").format((Entry.SKIP.toDouble() / 1000)))
-            save()
+        currentNotes = originalNotes
+        // The callbacks are not saved: a popup restored after a rotation could not report anything.
+        if (savedInstanceState != null) dismissAllowingStateLoss()
+    }
+
+    @Composable
+    override fun Content() {
+        val context = LocalContext.current
+        val prefs = remember { (context.applicationContext as HabitsApplication).component.preferences }
+        val neutral = MaterialTheme.colorScheme.onSurfaceVariant
+        val glyphs = remember { getFontAwesome(context)?.let { FontFamily(it) } }
+        val separator = remember { DecimalFormatSymbols.getInstance().decimalSeparator }
+        // https://github.com/flutter/flutter/issues/61175
+        val textKeyboard = remember { usesTextKeyboardWorkaround(context) }
+        var notes by remember { mutableStateOf(originalNotes) }
+        val initial = formatNumberFieldValue(originalValue)
+        var value by remember { mutableStateOf(TextFieldValue(initial, TextRange(0, initial.length))) }
+        val focus = remember { FocusRequester() }
+        val keyboard = LocalSoftwareKeyboardController.current
+        LaunchedEffect(Unit) {
+            // The field may not be attached yet on the first frame; the user can still tap it.
+            runCatching { focus.requestFocus() }
+            keyboard?.show()
         }
 
-        view.unknownBtnNumber.setOnClickListener {
-            view.value.setText(DecimalFormat("#.###").format((Entry.UNKNOWN.toDouble() / 1000)))
-            save()
+        PopupCard(onDismiss = ::dismiss) {
+            NotesField(
+                notes = notes,
+                onChange = {
+                    notes = it
+                    currentNotes = it
+                },
+                onDone = { save(value.text) }
+            )
+            ButtonRow {
+                TextField(
+                    value = value,
+                    onValueChange = { if (isAllowedNumberInput(it.text, separator)) value = it },
+                    singleLine = true,
+                    textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 14.sp),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = if (textKeyboard) KeyboardType.Text else KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { save(value.text) }),
+                    colors = transparentFieldColors(),
+                    modifier = Modifier.weight(2f).focusRequester(focus)
+                )
+                PopupButton(stringResource(R.string.save), MaterialTheme.colorScheme.primary, stringResource(R.string.save)) {
+                    save(value.text)
+                }
+                if (prefs.isSkipEnabled) {
+                    PopupButton(stringResource(R.string.skip_day), MaterialTheme.colorScheme.primary, stringResource(R.string.skip_day)) {
+                        save(formatSpecialValue(Entry.SKIP))
+                    }
+                }
+                if (prefs.areQuestionMarksEnabled) {
+                    PopupButton(
+                        stringResource(R.string.fa_question),
+                        neutral,
+                        stringResource(R.string.unknown),
+                        glyph = glyphs
+                    ) { save(formatSpecialValue(Entry.UNKNOWN)) }
+                }
+            }
         }
+    }
 
-        view.notes.setOnEditorActionListener { v, actionId, event ->
-            save()
-            true
-        }
-        view.value.requestFocusWithKeyboard()
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(view.root)
-        dialog.window?.apply {
-            setBackgroundDrawableResource(android.R.color.transparent)
-        }
-        return dialog
+    private fun save(text: String) {
+        savedViaAction = true
+        onToggle(parseNumberFieldValue(text, originalValue), currentNotes.trim())
+        dismiss()
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-
-        if (!dismissedViaSaveAction) {
-            val currentNotes = view.notes.text.toString().trim()
-            if (currentNotes != originalNotes) {
-                onToggle(originalValue, currentNotes)
-            }
+        if (shouldSaveNotesOnDismiss(savedViaAction, originalNotes, currentNotes)) {
+            onToggle(originalValue, currentNotes.trim())
         }
         onDismiss()
     }
 
-    private fun fixDecimalSeparator(view: CheckmarkPopupBinding) {
-        // https://stackoverflow.com/a/34256139
-        val separator = DecimalFormatSymbols.getInstance().decimalSeparator
-        view.value.keyListener = DigitsKeyListener.getInstance("0123456789$separator")
-
-        // https://github.com/flutter/flutter/issues/61175
-        val currKeyboard = Settings.Secure.getString(
-            requireContext().contentResolver,
-            Settings.Secure.DEFAULT_INPUT_METHOD
-        )
-        if (currKeyboard.contains("swiftkey") || currKeyboard.contains("samsung")) {
-            view.value.inputType = EditorInfo.TYPE_CLASS_TEXT
-        }
-    }
-
-    fun save() {
-        dismissedViaSaveAction = true
-        var value = originalValue
-        try {
-            val numberFormat = NumberFormat.getInstance()
-            val valueStr = view.value.text.toString()
-            value = if (valueStr.isNotEmpty()) {
-                numberFormat.parse(valueStr)!!.toDouble()
-            } else {
-                Entry.UNKNOWN.toDouble() / 1000
-            }
-        } catch (e: ParseException) {
-            // NOP
-        }
-        val notes = view.notes.text.toString().trim()
-        val location = view.saveBtn.getCenter()
-        onToggle(value, notes)
-        requireDialog().dismiss()
+    private fun usesTextKeyboardWorkaround(context: android.content.Context): Boolean {
+        val keyboard = Settings.Secure.getString(context.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+        return keyboard != null && (keyboard.contains("swiftkey") || keyboard.contains("samsung"))
     }
 }

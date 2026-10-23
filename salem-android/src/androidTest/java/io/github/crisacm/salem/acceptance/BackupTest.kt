@@ -21,7 +21,7 @@ package io.github.crisacm.salem.acceptance
 
 import androidx.test.filters.LargeTest
 import io.github.crisacm.salem.BaseUserInterfaceTest
-import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.longClickText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysText
@@ -49,7 +49,7 @@ class BackupTest : BaseUserInterfaceTest() {
         copyBackupToDownloadFolder()
         longClickText("Wake up early")
         clickMenu(DELETE)
-        clickText("Yes")
+        clickComposeText("Yes")
         verifyDoesNotDisplayText("Wake up early")
         importBackupFromDownloadFolder()
         verifyDisplaysText("Wake up early")

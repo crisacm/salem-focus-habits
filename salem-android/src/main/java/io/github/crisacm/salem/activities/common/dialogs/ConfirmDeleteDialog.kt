@@ -16,34 +16,64 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.common.dialogs
 
-import android.content.Context
-import android.content.DialogInterface
-import androidx.appcompat.app.AlertDialog
+import android.os.Bundle
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
-import io.github.crisacm.salem.inject.ActivityContext
+import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
+import io.github.crisacm.salem.ui.compose.DialogButton
+import io.github.crisacm.salem.ui.compose.DialogSurface
 
 /**
  * Dialog that asks the user confirmation before executing a delete operation.
  */
-class ConfirmDeleteDialog(
-    @ActivityContext context: Context,
-    callback: OnConfirmedCallback,
-    quantity: Int
-) : AlertDialog(context) {
-    init {
-        val res = context.resources
-        setTitle(res.getQuantityString(R.plurals.delete_habits_title, quantity))
-        setMessage(res.getQuantityString(R.plurals.delete_habits_message, quantity))
-        setButton(
-            BUTTON_POSITIVE,
-            res.getString(R.string.yes)
-        ) { dialog: DialogInterface?, which: Int -> callback.onConfirmed() }
-        setButton(
-            BUTTON_NEGATIVE,
-            res.getString(R.string.no)
-        ) { dialog: DialogInterface?, which: Int -> }
+class ConfirmDeleteDialog : ComposeDialogFragment() {
+    private var callback: OnConfirmedCallback? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // The callback is not saved: a dialog restored after a rotation could not confirm anything.
+        if (savedInstanceState != null) dismissAllowingStateLoss()
+    }
+
+    @Composable
+    override fun Content() {
+        val quantity = requireArguments().getInt(KEY_QUANTITY)
+        DialogSurface(
+            title = pluralStringResource(R.plurals.delete_habits_title, quantity),
+            onDismiss = ::dismiss,
+            buttons = {
+                DialogButton(stringResource(R.string.no), ::dismiss)
+                DialogButton(stringResource(R.string.yes)) {
+                    callback?.onConfirmed()
+                    dismiss()
+                }
+            }
+        ) {
+            Text(
+                pluralStringResource(R.plurals.delete_habits_message, quantity),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+        }
+    }
+
+    companion object {
+        private const val KEY_QUANTITY = "quantity"
+
+        fun newInstance(quantity: Int, callback: OnConfirmedCallback) = ConfirmDeleteDialog().apply {
+            arguments = Bundle().apply { putInt(KEY_QUANTITY, quantity) }
+            this.callback = callback
+        }
     }
 }

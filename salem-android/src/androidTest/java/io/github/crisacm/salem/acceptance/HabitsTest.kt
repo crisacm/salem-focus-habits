@@ -105,7 +105,7 @@ class HabitsTest : BaseUserInterfaceTest() {
         verifyShowsScreen(LIST_HABITS)
         longClickText("Track time")
         clickMenu(DELETE)
-        clickText("Yes")
+        clickComposeText("Yes")
         verifyDoesNotDisplayText("Track time")
     }
 

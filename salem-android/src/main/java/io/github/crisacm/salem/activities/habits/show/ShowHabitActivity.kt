@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.HabitsApplication
@@ -203,12 +202,6 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             dialog.dismissCurrentAndShow(supportFragmentManager, "checkmarkDialog")
         }
 
-        private fun getPopupAnchor(): View? {
-            val dialog =
-                supportFragmentManager.findFragmentByTag("historyEditor") as HistoryEditorDialog?
-            return dialog?.dataView
-        }
-
         override fun showEditHabitScreen(habit: Habit) {
             startActivity(IntentFactory().startEditActivity(this@ShowHabitActivity, habit))
         }
@@ -246,7 +239,8 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         }
 
         override fun showDeleteConfirmationScreen(callback: OnConfirmedCallback) {
-            ConfirmDeleteDialog(this@ShowHabitActivity, callback, 1).dismissCurrentAndShow()
+            ConfirmDeleteDialog.newInstance(1, callback)
+                .dismissCurrentAndShow(supportFragmentManager, "confirmDelete")
         }
 
         override fun close() {

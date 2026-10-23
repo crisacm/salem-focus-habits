@@ -173,7 +173,8 @@ class ListHabitsScreen(
     }
 
     override fun showDeleteConfirmationScreen(callback: OnConfirmedCallback, quantity: Int) {
-        ConfirmDeleteDialog(activity, callback, quantity).dismissCurrentAndShow()
+        ConfirmDeleteDialog.newInstance(quantity, callback)
+            .dismissCurrentAndShow(activity.supportFragmentManager, "confirmDelete")
     }
 
     override fun showEditHabitsScreen(selected: List<Habit>) {
