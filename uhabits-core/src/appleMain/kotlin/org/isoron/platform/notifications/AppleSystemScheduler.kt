@@ -96,6 +96,10 @@ class AppleSystemScheduler(
     }
 
     private fun dropOverTheLimit(): Set<String> {
+        // Notifications whose time has passed were delivered; they no longer count as pending
+        val now = clock()
+        for (list in scheduled.values) list.removeAll { it.fireTimeMillis <= now }
+        scheduled.values.removeAll { it.isEmpty() }
         val dropped = reminderIdsToDrop(scheduled.values.flatten(), limit).toSet()
         if (dropped.isEmpty()) return dropped
         log("Over the limit of $limit notifications, dropping ${dropped.size}: ${dropped.sorted().joinToString()}")
