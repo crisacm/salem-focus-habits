@@ -54,6 +54,15 @@ class NotificationRequestsTest {
     }
 
     @Test
+    fun testKeepsTheSecondsOfASnoozedTime() {
+        val fireTime = DateUtils.applyTimezone(utcTime(2030, 1, 2, 8, 30)) + 45_000
+        val request = buildNotificationRequest(ReminderRequest("reminder-7", "Read", "Body", fireTime, 7, 0))
+        val trigger = request.trigger as UNCalendarNotificationTrigger
+        val next = assertNotNull(trigger.nextTriggerDate())
+        assertEquals(fireTime, (next.timeIntervalSince1970 * 1000).toLong())
+    }
+
+    @Test
     fun testKeepsTheHabitAndTheDayInTheUserInfo() {
         val request = buildNotificationRequest(
             ReminderRequest("reminder-7", "Read", "Body", utcTime(2030, 1, 2, 13), 7, utcTime(2030, 1, 2))

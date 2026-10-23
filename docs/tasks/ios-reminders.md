@@ -29,7 +29,7 @@ Step 4f of `.specs/migration-kmp.md`. `ReminderScheduler`, `MidnightTimer` and `
 - [x] TASK-4 (4f-1): `MidnightTimer` in `commonMain` with virtual-time test — criterio: green on JVM and iOS, Android compiles and unit tests pass
 - [x] TASK-5 (4f-2): iOS `SystemScheduler`, 64 limit, permission wrapper — criterio: appleTest green, device target compiles
 - [ ] TASK-6 (4f-3): iOS `SystemTray` and Yes/No action handler
-- [ ] TASK-7 (4f-4): foreground refresh
+- [ ] TASK-7 (4f-4): foreground refresh. Requirements from the #20 review: call `AppleSystemScheduler.clear()` at launch before `scheduleAll()` (the count of pending requests is in memory and is lost on restart, so iOS could hold more than 64); decide who calls `clear()` and whether `AppleSystemScheduler` needs its own `@Synchronized` (`ReminderScheduler` methods are synchronized, `clear()` is not)
 
 ## Estrategia de entrega
 `multi-pr`, base `feat/ios-zip` until the parents merge, then retarget to `develop`.
@@ -42,4 +42,5 @@ Step 4f of `.specs/migration-kmp.md`. `ReminderScheduler`, `MidnightTimer` and `
 - 4f-2 spike (Engram `spike/ios-notifications`): `platform.UserNotifications` compiles on simulator and device targets with no Gradle change and requests/triggers can be built and inspected in tests, but `UNUserNotificationCenter.currentNotificationCenter()` aborts the process in the test host (no app bundle). So the center is behind `PendingNotificationCenter` with a fake; `UNPendingNotificationCenter` and `NotificationPermission` are compiled but only the app (step 7) can run them.
 - 4f-2 tests written first (compile error): `ReminderPlanningTest` (9: next enabled weekday, week wrap, local day vs UTC day, Sydney daylight saving, 64-limit selection and ties), `AppleSystemSchedulerTest` (11: content, replace per habit, past time, no id/reminder, weekday shift, limit with the earliest kept, clear, no widget updates), `NotificationRequestsTest` (2, real UN classes: trigger fires at the given local time, userInfo). iOS suite 383 tests, 0 failures (see below), `compileKotlinIosArm64` and `ktlintCheck` pass.
 - Decisions 4f-2: weekday mask is applied when scheduling (iOS cannot run code at fire time); `AppleSystemScheduler.clear()` must be called before `scheduleAll()` so reminders of habits that lost theirs are removed (wired in 4f-4); calendar triggers use the device zone at fire time.
+- #20 review fix: the notification trigger now keeps the seconds, so a snoozed time inside the current minute still fires (test written first, failed before the fix).
 - Not verified: Android timing on a device (the coroutine loop replaces `scheduleAtFixedRate`), CI.

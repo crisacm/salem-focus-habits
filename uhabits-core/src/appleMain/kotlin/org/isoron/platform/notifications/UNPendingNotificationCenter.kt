@@ -38,13 +38,14 @@ internal fun buildNotificationRequest(request: ReminderRequest): UNNotificationR
     val localTime = DateUtils.removeTimezone(request.fireTimeMillis)
     val dayCount = localTime.floorDiv(DateUtils.DAY_LENGTH)
     val date = LocalDate((dayCount - DAYS_FROM_1970_TO_2000).toInt())
-    val minutesOfDay = (localTime - dayCount * DateUtils.DAY_LENGTH) / DateUtils.MINUTE_LENGTH
+    val secondsOfDay = (localTime - dayCount * DateUtils.DAY_LENGTH) / DateUtils.SECOND_LENGTH
     val parts = NSDateComponents()
     parts.year = date.year.toLong()
     parts.month = date.month.toLong()
     parts.day = date.day.toLong()
-    parts.hour = minutesOfDay / 60
-    parts.minute = minutesOfDay % 60
+    parts.hour = secondsOfDay / 3600
+    parts.minute = secondsOfDay % 3600 / 60
+    parts.second = secondsOfDay % 60
     val content = UNMutableNotificationContent()
     content.setTitle(request.title)
     content.setBody(request.body)
