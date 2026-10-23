@@ -121,8 +121,6 @@ class AppleSystemScheduler(
         const val DEFAULT_HORIZON_DAYS = 7
         private const val DAYS_FROM_1970_TO_2000 = 10_957L
 
-        fun identifierOf(habitId: Long) = "reminder-$habitId"
-
         fun identifierOf(habitId: Long, day: LocalDate) = "reminder-$habitId-${day.daysSince2000}"
     }
 }
