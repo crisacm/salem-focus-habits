@@ -30,13 +30,13 @@ jobs:
         run: rm -f local.properties
 
       - name: Assemble debug APK
-        run: ./gradlew :uhabits-android:assembleDebug
+        run: ./gradlew :salem-android:assembleDebug
 
       - name: Core JVM tests
-        run: ./gradlew :uhabits-core:jvmTest
+        run: ./gradlew :salem-core:jvmTest
 
       - name: Android JVM unit tests
-        run: ./gradlew :uhabits-android:testDebugUnitTest
+        run: ./gradlew :salem-android:testDebugUnitTest
 
       - name: Lint (ktlint)
         run: ./gradlew ktlintCheck
@@ -70,8 +70,8 @@ jobs:
           restore-keys: konan-${{ runner.os }}-
 
       - name: Compile iOS targets
-        run: ./gradlew :uhabits-core:compileKotlinIosSimulatorArm64 :uhabits-core:compileKotlinIosArm64
+        run: ./gradlew :salem-core:compileKotlinIosSimulatorArm64 :salem-core:compileKotlinIosArm64
 
-      # Tests that need an iOS actual that is still a TODO stub are skipped (uhabits-core/ios-blocked-tests.txt)
+      # Tests that need an iOS actual that is still a TODO stub are skipped (salem-core/ios-blocked-tests.txt)
       - name: Run iOS tests
-        run: ./gradlew :uhabits-core:iosSimulatorArm64Test
+        run: ./gradlew :salem-core:iosSimulatorArm64Test

@@ -18,7 +18,7 @@
 cd "$(dirname "$0")" || exit
 
 ADB="${ANDROID_HOME}/platform-tools/adb"
-ANDROID_OUTPUTS_DIR="uhabits-android/build/outputs"
+ANDROID_OUTPUTS_DIR="salem-android/build/outputs"
 AVDMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/avdmanager"
 AVD_PREFIX="uhabitsTest"
 EMULATOR="${ANDROID_HOME}/emulator/emulator"
@@ -26,7 +26,7 @@ GRADLE="./gradlew --stacktrace --quiet --console=plain"
 GRADLE_LOG="build/gradle-output.log"
 PACKAGE_NAME=io.github.crisacm.salem
 SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
-VERSION=$(grep versionName uhabits-android/build.gradle.kts | sed -e 's/.*"\([^"]*\)".*/\1/g')
+VERSION=$(grep versionName salem-android/build.gradle.kts | sed -e 's/.*"\([^"]*\)".*/\1/g')
 ATTEMPTS=1
 BOOT_TIMEOUT=360
 case "$(uname -m)" in
@@ -69,7 +69,7 @@ fail() {
 # -----------------------------------------------------------------------------
 
 if [ -z $VERSION ]; then
-    log_error "Could not parse app version from: uhabits-android/build.gradle.kts"
+    log_error "Could not parse app version from: salem-android/build.gradle.kts"
     exit 1
 fi
 
@@ -131,8 +131,8 @@ gradle_run() {
 core_build() {
     log_info "Formatting code..."
     gradle_run ktlintFormat || fail
-    log_info "Building uhabits-core..."
-    gradle_run :uhabits-core:build || fail
+    log_info "Building salem-core..."
+    gradle_run :salem-core:build || fail
 }
 
 # Android
@@ -239,13 +239,13 @@ android_test() {
 
     if [ -n "$RELEASE" ]; then
         log_info "Installing release APK..."
-        run $ADB install -r ${ANDROID_OUTPUTS_DIR}/apk/release/uhabits-android-release.apk || return 1
+        run $ADB install -r ${ANDROID_OUTPUTS_DIR}/apk/release/salem-android-release.apk || return 1
     else
         log_info "Installing debug APK..."
-        run $ADB install -t -r ${ANDROID_OUTPUTS_DIR}/apk/debug/uhabits-android-debug.apk || return 1
+        run $ADB install -t -r ${ANDROID_OUTPUTS_DIR}/apk/debug/salem-android-debug.apk || return 1
     fi
     log_info "Installing test APK..."
-    run $ADB install -r ${ANDROID_OUTPUTS_DIR}/apk/androidTest/debug/uhabits-android-debug-androidTest.apk || return 1
+    run $ADB install -r ${ANDROID_OUTPUTS_DIR}/apk/androidTest/debug/salem-android-debug-androidTest.apk || return 1
 
     for size in medium large; do
         OUT_INSTRUMENT=${ANDROID_OUTPUTS_DIR}/instrument-${API}.txt
@@ -323,7 +323,7 @@ android_test_parallel() {
 }
 
 android_build() {
-    log_info "Building uhabits-android..."
+    log_info "Building salem-android..."
 
     if [ -n "$RELEASE" ]; then
         log_info "Reading secret..."
@@ -332,26 +332,26 @@ android_build() {
     fi
 
     log_info "Removing old APKs..."
-    rm -f uhabits-android/build/*.apk
+    rm -f salem-android/build/*.apk
 
     if [ -n "$RELEASE" ]; then
         log_info "Building release APK..."
         gradle_run updateTranslators
-        gradle_run :uhabits-android:assembleRelease
+        gradle_run :salem-android:assembleRelease
         log_info "Copying release APK..."
-        cp  uhabits-android/build/outputs/apk/release/uhabits-android-release.apk \
-            uhabits-android/build/loop-"$VERSION"-release.apk
+        cp  salem-android/build/outputs/apk/release/salem-android-release.apk \
+            salem-android/build/loop-"$VERSION"-release.apk
     fi
 
     log_info "Building debug APK..."
-    gradle_run :uhabits-android:assembleDebug || fail
+    gradle_run :salem-android:assembleDebug || fail
     log_info "Copying debug APK..."
-    cp  uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk \
-        uhabits-android/build/loop-"$VERSION"-debug.apk
+    cp  salem-android/build/outputs/apk/debug/salem-android-debug.apk \
+        salem-android/build/loop-"$VERSION"-debug.apk
 
     log_info "Building instrumentation APK..."
     if [ -n "$RELEASE" ]; then
-        gradle_run :uhabits-android:assembleAndroidTest  \
+        gradle_run :salem-android:assembleAndroidTest  \
             -Pandroid.injected.signing.store.file="$LOOP_KEY_STORE" \
             -Pandroid.injected.signing.store.password="$LOOP_STORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$LOOP_KEY_ALIAS" \
@@ -366,7 +366,7 @@ android_build() {
 android_accept_images() {
     log_info "Accepting test screenshots..."
     run find ${ANDROID_OUTPUTS_DIR}/test-screenshots -name '*.expected*' -delete
-    run rsync -av ${ANDROID_OUTPUTS_DIR}/test-screenshots/ uhabits-android/src/androidTest/assets/
+    run rsync -av ${ANDROID_OUTPUTS_DIR}/test-screenshots/ salem-android/src/androidTest/assets/
 }
 
 # General
@@ -414,14 +414,14 @@ END
 
 clean() {
     log_info "Cleaning build folders..."
-    rm -rf uhabits-android/.gradle
-    rm -rf uhabits-android/android-pickers/build
-    rm -rf uhabits-android/build
+    rm -rf salem-android/.gradle
+    rm -rf salem-android/android-pickers/build
+    rm -rf salem-android/build
     rm -rf uhabits-android/uhabits-android/build
     rm -rf uhabits-core-legacy/.gradle
     rm -rf uhabits-core-legacy/build
-    rm -rf uhabits-core/.gradle
-    rm -rf uhabits-core/build
+    rm -rf salem-core/.gradle
+    rm -rf salem-core/build
     rm -rf uhabits-server/.gradle
     rm -rf uhabits-server/build
     rm -rf uhabits-web/build

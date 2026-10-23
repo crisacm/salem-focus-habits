@@ -68,7 +68,7 @@ class AppleFileOpener(
     companion object {
         /**
          * User files in Application Support (backed up, not shown in the Files app) and resources in
-         * the "assets" folder of the app bundle. The app target must copy `uhabits-core/assets/main`
+         * the "assets" folder of the app bundle. The app target must copy `salem-core/assets/main`
          * there (migration step 7).
          */
         fun createDefault(): AppleFileOpener {
