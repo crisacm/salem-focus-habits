@@ -2,7 +2,8 @@
 # They are excluded from `iosSimulatorArm64Test`; run them anyway with `-PiosRunBlocked=true`.
 # Remove a line when its stub is implemented. One pattern per line (class or class.method).
 
-# Blocked by createTestFileOpener / iOS FileOpener, UserFile and ResourceFile (appleTest TestPlatformHelper.kt)
+# Blocked by createTestFileOpener / iOS FileOpener, UserFile and ResourceFile (appleTest TestPlatformHelper.kt).
+# Version22Test and Version23Test also call format, which is implemented.
 org.isoron.platform.io.FilesTest
 org.isoron.uhabits.core.database.migrations.Version22Test
 org.isoron.uhabits.core.database.migrations.Version23Test
@@ -15,18 +16,11 @@ org.isoron.platform.time.LocalDateFormatterTest
 org.isoron.uhabits.core.ui.views.BarChartTest
 org.isoron.uhabits.core.ui.views.HistoryChartTest
 
-# Blocked by formatInvariant (AppleStrings.kt)
-org.isoron.platform.io.FormatInvariantTest
-org.isoron.uhabits.core.io.HabitsCSVExporterTest
-org.isoron.uhabits.core.models.HabitListTest.testWriteCSV
-org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV
-org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV_fail
-
 # Blocked by createTestCanvas / iOS Canvas (appleTest TestPlatformHelper.kt)
 org.isoron.platform.gui.CanvasTest
 
-# Blocked by format (AppleStrings.kt)
-org.isoron.platform.io.StringsTest.testFormat
-
 # Blocked by ZipWriter / ZipReader (AppleZip.kt)
 org.isoron.platform.io.ZipTest
+org.isoron.uhabits.core.io.HabitsCSVExporterTest
+org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV
+org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV_fail

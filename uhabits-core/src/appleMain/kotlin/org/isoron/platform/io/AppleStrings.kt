@@ -19,14 +19,21 @@
 
 package org.isoron.platform.io
 
-// Stubs: the real iOS implementations come in migration steps 3 and 4.
+import platform.Foundation.NSLocale
+import platform.Foundation.NSLocaleDecimalSeparator
+import platform.Foundation.currentLocale
 
-actual fun format(format: String, arg: String): String = TODO("iOS: step 4")
+actual fun format(format: String, arg: String): String = formatPrintf(format, arg)
 
-actual fun format(format: String, arg: Int): String = TODO("iOS: step 4")
+actual fun format(format: String, arg: Int): String = formatPrintf(format, arg)
 
-actual fun format(format: String, arg: Double): String = TODO("iOS: step 4")
+actual fun format(format: String, arg: Double): String = formatPrintf(format, arg, localeDecimalSeparator())
 
-actual fun formatInvariant(format: String, arg: Int): String = TODO("iOS: step 4")
+actual fun formatInvariant(format: String, arg: Int): String = formatPrintf(format, arg)
 
-actual fun formatInvariant(format: String, arg: Double): String = TODO("iOS: step 4")
+actual fun formatInvariant(format: String, arg: Double): String = formatPrintf(format, arg)
+
+internal fun localeDecimalSeparator(locale: NSLocale = NSLocale.currentLocale): Char {
+    val separator = locale.objectForKey(NSLocaleDecimalSeparator) as? String
+    return separator?.firstOrNull() ?: '.'
+}
