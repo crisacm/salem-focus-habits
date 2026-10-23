@@ -154,9 +154,9 @@ class EditHabitActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.elevation = 10.0f
 
-        val colorPickerDialogFactory = ColorPickerDialogFactory(this)
+        val colorPickerDialogFactory = ColorPickerDialogFactory()
         binding.colorButton.setOnClickListener {
-            val picker = colorPickerDialogFactory.create(color, themeSwitcher.currentTheme)
+            val picker = colorPickerDialogFactory.create(color)
             picker.setListener { paletteColor ->
                 this.color = paletteColor
                 updateColors()

@@ -27,6 +27,7 @@ import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.LIST_HABITS
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.SELECT_HABIT_TYPE
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.changeFrequencyToDaily
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.changeFrequencyToMonthly
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.createHabit
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
@@ -64,7 +65,7 @@ class ListHabitsRegressionTest : BaseUserInterfaceTest() {
         clickText("Yes")
         clickMenu(ADD)
         verifyShowsScreen(SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        clickComposeText("Yes or No")
         verifyShowsScreen(EDIT_HABIT)
         typeName("Hello world")
         clickSave()

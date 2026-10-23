@@ -29,6 +29,7 @@ import androidx.test.espresso.assertion.PositionAssertions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
@@ -166,9 +167,12 @@ object CommonSteps : BaseUserInterfaceTest() {
                 Espresso.onView(ViewMatchers.withId(R.id.questionInput))
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
-            Screen.SELECT_HABIT_TYPE ->
-                Espresso.onView(ViewMatchers.withText(R.string.yes_or_no_example))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Screen.SELECT_HABIT_TYPE -> {
+                // The dialog is drawn by Compose, which Espresso view matchers cannot see.
+                val example = InstrumentationRegistry.getInstrumentation().targetContext
+                    .getString(R.string.yes_or_no_example)
+                assertTrue(device.wait(Until.hasObject(By.text(example)), 5000))
+            }
 
             else -> throw IllegalStateException()
         }
@@ -187,7 +191,7 @@ object CommonSteps : BaseUserInterfaceTest() {
     fun createHabit(habitName: String) {
         ListHabitsSteps.clickMenu(ListHabitsSteps.MenuItem.ADD)
         verifyShowsScreen(Screen.SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        clickComposeText("Yes or No")
         verifyShowsScreen(Screen.EDIT_HABIT)
         EditHabitSteps.typeName(habitName)
         EditHabitSteps.clickSave()

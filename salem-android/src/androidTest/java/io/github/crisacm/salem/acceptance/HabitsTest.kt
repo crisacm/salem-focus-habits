@@ -25,6 +25,7 @@ import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.EDIT_HABIT
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.LIST_HABITS
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.SELECT_HABIT_TYPE
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.Screen.SHOW_HABIT
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.longClickText
@@ -74,7 +75,7 @@ class HabitsTest : BaseUserInterfaceTest() {
         verifyShowsScreen(LIST_HABITS)
         clickMenu(ADD)
         verifyShowsScreen(SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        clickComposeText("Yes or No")
         verifyShowsScreen(EDIT_HABIT)
         val testName = "Hello world"
         typeName(testName)
