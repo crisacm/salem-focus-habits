@@ -27,16 +27,16 @@ import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.DateUtils.removeTimezone
 import org.isoron.platform.time.DateUtils.setFixedLocalTime
 import org.isoron.platform.time.DateUtils.setFixedTimeZone
-import org.isoron.platform.time.unixTime
+import org.isoron.platform.time.fixedOffsetZone
+import org.isoron.platform.time.utcTime
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.Reminder
 import org.isoron.uhabits.core.models.WeekdayList
 import org.isoron.uhabits.core.preferences.WidgetPreferences
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import java.util.TimeZone
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class ReminderSchedulerTest : BaseUnitTest() {
     private val habitId = 10L
@@ -46,18 +46,17 @@ class ReminderSchedulerTest : BaseUnitTest() {
     private val sys: ReminderScheduler.SystemScheduler = mock()
     private val widgetPreferences: WidgetPreferences = mock()
 
-    @Before
-    @Throws(Exception::class)
+    @BeforeTest
     override fun setUp() {
         super.setUp()
         habit = fixtures.createEmptyHabit()
         habit.id = habitId
         reminderScheduler =
             ReminderScheduler(commandRunner, habitList, sys, widgetPreferences)
-        setFixedTimeZone(TimeZone.getTimeZone("GMT-4"))
+        setFixedTimeZone(fixedOffsetZone(-4 * DateUtils.HOUR_LENGTH))
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         setFixedLocalTime(null)
         setFixedTimeZone(null)
@@ -65,7 +64,7 @@ class ReminderSchedulerTest : BaseUnitTest() {
 
     @Test
     fun testScheduleAll() {
-        val now = unixTime(2015, 1, 26, 13, 0)
+        val now = utcTime(2015, 1, 26, 13, 0)
         setFixedLocalTime(now)
         val h1 = fixtures.createEmptyHabit()
         val h2 = fixtures.createEmptyHabit()
@@ -79,14 +78,14 @@ class ReminderSchedulerTest : BaseUnitTest() {
         reminderScheduler.scheduleAll()
         verify {
             sys.scheduleShowReminder(
-                unixTime(2015, 1, 27, 12, 30),
+                utcTime(2015, 1, 27, 12, 30),
                 h1,
                 any()
             )
         }
         verify {
             sys.scheduleShowReminder(
-                unixTime(2015, 1, 26, 22, 30),
+                utcTime(2015, 1, 26, 22, 30),
                 h2,
                 any()
             )
@@ -95,21 +94,21 @@ class ReminderSchedulerTest : BaseUnitTest() {
 
     @Test
     fun testSchedule_atSpecificTime() {
-        val atTime = unixTime(2015, 1, 30, 11, 30)
-        val expectedCheckmarkTime = unixTime(2015, 1, 30, 0, 0)
+        val atTime = utcTime(2015, 1, 30, 11, 30)
+        val expectedCheckmarkTime = utcTime(2015, 1, 30, 0, 0)
         habit.reminder = Reminder(8, 30, WeekdayList.EVERY_DAY)
         scheduleAndVerify(atTime, expectedCheckmarkTime, atTime)
     }
 
     @Test
     fun testSchedule_withSnooze() {
-        val now = removeTimezone(unixTime(2015, 1, 1, 15, 0))
+        val now = removeTimezone(utcTime(2015, 1, 1, 15, 0))
         setFixedLocalTime(now)
-        val snoozeTimeInFuture = unixTime(2015, 1, 1, 21, 0)
-        val snoozeTimeInPast = unixTime(2015, 1, 1, 7, 0)
-        val regularReminderTime = DateUtils.applyTimezone(unixTime(2015, 1, 2, 8, 30))
-        val todayCheckmarkTime = unixTime(2015, 1, 1, 0, 0)
-        val tomorrowCheckmarkTime = unixTime(2015, 1, 2, 0, 0)
+        val snoozeTimeInFuture = utcTime(2015, 1, 1, 21, 0)
+        val snoozeTimeInPast = utcTime(2015, 1, 1, 7, 0)
+        val regularReminderTime = DateUtils.applyTimezone(utcTime(2015, 1, 2, 8, 30))
+        val todayCheckmarkTime = utcTime(2015, 1, 1, 0, 0)
+        val tomorrowCheckmarkTime = utcTime(2015, 1, 2, 0, 0)
         habit.reminder = Reminder(8, 30, WeekdayList.EVERY_DAY)
         every { widgetPreferences.getSnoozeTime(habitId) } returns snoozeTimeInFuture
         reminderScheduler.schedule(habit)
@@ -123,20 +122,20 @@ class ReminderSchedulerTest : BaseUnitTest() {
 
     @Test
     fun testSchedule_laterToday() {
-        val now = unixTime(2015, 1, 26, 6, 30)
+        val now = utcTime(2015, 1, 26, 6, 30)
         setFixedLocalTime(now)
-        val expectedCheckmarkTime = unixTime(2015, 1, 26, 0, 0)
-        val expectedReminderTime = unixTime(2015, 1, 26, 12, 30)
+        val expectedCheckmarkTime = utcTime(2015, 1, 26, 0, 0)
+        val expectedReminderTime = utcTime(2015, 1, 26, 12, 30)
         habit.reminder = Reminder(8, 30, WeekdayList.EVERY_DAY)
         scheduleAndVerify(null, expectedCheckmarkTime, expectedReminderTime)
     }
 
     @Test
     fun testSchedule_tomorrow() {
-        val now = unixTime(2015, 1, 26, 13, 0)
+        val now = utcTime(2015, 1, 26, 13, 0)
         setFixedLocalTime(now)
-        val expectedCheckmarkTime = unixTime(2015, 1, 27, 0, 0)
-        val expectedReminderTime = unixTime(2015, 1, 27, 12, 30)
+        val expectedCheckmarkTime = utcTime(2015, 1, 27, 0, 0)
+        val expectedReminderTime = utcTime(2015, 1, 27, 12, 30)
         habit.reminder = Reminder(8, 30, WeekdayList.EVERY_DAY)
         scheduleAndVerify(null, expectedCheckmarkTime, expectedReminderTime)
     }

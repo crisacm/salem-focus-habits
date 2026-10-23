@@ -16,30 +16,41 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.isoron.uhabits.core.utils
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import org.isoron.platform.Synchronized
 import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.computeToday
 import org.isoron.platform.time.setToday
 import org.isoron.uhabits.core.AppScope
 import org.isoron.uhabits.core.io.Logging
 import org.isoron.uhabits.core.preferences.Preferences
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 /**
- * A class that emits events when a new day starts.
+ * A class that emits events when a new day starts. It only runs between [onResume] and [onPause],
+ * which the app calls when its screen comes to the foreground and leaves it.
  */
 @AppScope
 @Inject
 open class MidnightTimer(
     logging: Logging,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
     private val listeners = mutableListOf<MidnightListener>()
-    private lateinit var executor: ScheduledExecutorService
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+    private var job: Job? = null
     private val logger = logging.getLogger("MidnightTimer")
 
     @Synchronized
@@ -48,38 +59,49 @@ open class MidnightTimer(
     }
 
     @Synchronized
-    open fun onPause(): MutableList<Runnable>? {
+    open fun onPause() {
         logger.info("Pausing timer")
-        return executor.shutdownNow()
+        job?.cancel()
+        job = null
     }
 
     @Synchronized
-    open fun onResume(
-        delayOffsetInMillis: Long = DateUtils.SECOND_LENGTH,
-        testExecutor: ScheduledExecutorService? = null
-    ) {
-        executor = testExecutor ?: Executors.newSingleThreadScheduledExecutor()
-        val initialDelay = DateUtils.millisecondsUntilTomorrowWithOffset(preferences.midnightDelayHours, 0) + delayOffsetInMillis
-        logger.info("Scheduling refresh for $initialDelay ms from now")
-        executor.scheduleAtFixedRate(
-            { notifyListeners() },
-            initialDelay,
-            DateUtils.DAY_LENGTH,
-            TimeUnit.MILLISECONDS
-        )
+    open fun onResume(delayOffsetInMillis: Long = DateUtils.SECOND_LENGTH) {
+        job?.cancel()
+        job = scope.launch {
+            while (isActive) {
+                // Recomputed every lap, so days of 23 or 25 hours do not shift the notification
+                val nextDelay = millisecondsUntilMidnight() + delayOffsetInMillis
+                logger.info("Scheduling refresh for $nextDelay ms from now")
+                delay(nextDelay)
+                notifyListeners()
+            }
+        }
     }
 
     @Synchronized
     open fun removeListener(listener: MidnightListener) = this.listeners.remove(listener)
 
-    @Synchronized
     private fun notifyListeners() {
         logger.info("Midnight refresh")
         setToday(computeToday(preferences.midnightDelayHours, 0))
-        for (l in listeners) {
-            l.atMidnight()
+        val snapshot = synchronizedCopy()
+        for (l in snapshot) {
+            try {
+                l.atMidnight()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
+
+    private fun millisecondsUntilMidnight(): Long =
+        DateUtils.millisecondsUntilTomorrowWithOffset(preferences.midnightDelayHours, 0)
+
+    @Synchronized
+    private fun synchronizedCopy(): List<MidnightListener> = listeners.toList()
 
     fun interface MidnightListener {
         fun atMidnight()
