@@ -19,13 +19,21 @@
 
 package io.github.crisacm.salem.ui.compose
 
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import io.github.crisacm.salem.HabitsApplication
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.views.DarkTheme
+import io.github.crisacm.salem.core.ui.views.LightTheme
+import io.github.crisacm.salem.core.ui.views.PureBlackTheme
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.gui.Color as CoreColor
 
@@ -55,4 +63,29 @@ fun Theme.toColorScheme(): ColorScheme {
 @Composable
 fun SalemTheme(theme: Theme, content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = theme.toColorScheme(), content = content)
+}
+
+/** The theme [ThemeSwitcher] would pick for these preferences, without touching any activity. */
+fun resolveTheme(preferences: Preferences, systemIsDark: Boolean): Theme {
+    val userTheme = preferences.theme
+    val night = userTheme == ThemeSwitcher.THEME_DARK ||
+        systemIsDark && userTheme == ThemeSwitcher.THEME_AUTOMATIC
+    return when {
+        !night -> LightTheme()
+        preferences.isPureBlackEnabled -> PureBlackTheme()
+        else -> DarkTheme()
+    }
+}
+
+/**
+ * Whether the system is in night mode as [io.github.crisacm.salem.activities.AndroidThemeSwitcher] sees
+ * it: before Android 10 the activities never follow the system, so neither do the dialogs.
+ */
+fun systemIsDark(sdkInt: Int, nightMode: Boolean) = sdkInt >= 29 && nightMode
+
+/** [SalemTheme] using the theme chosen in the preferences, for views hosted outside an activity theme switch. */
+@Composable
+fun SalemTheme(content: @Composable () -> Unit) {
+    val preferences = (LocalContext.current.applicationContext as HabitsApplication).component.preferences
+    SalemTheme(resolveTheme(preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())), content)
 }
