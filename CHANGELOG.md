@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the top bar of the habit list (add, filter, sort, search and overflow menus) and the multi-selection bar to Compose, replacing the Android menus and the action mode. The label of the hide completed filter now follows the skip setting too. The new "More options" and "Close" labels are not translated yet
 - Move the empty state and the hint banner of the habit list to Compose, the first piece of the list to migrate
 - Move the create and edit habit screen to Compose, with its form state and validation in `salem-core` (`EditHabitForm`, tested). A blank name or an invalid target is now rejected, and the unit and the target type are kept across a rotation
 - Move the frequency picker and the target type and numerical frequency lists of the edit screen to Compose; the rules that turn the typed numbers into a frequency are unchanged and now covered by tests (an invalid or empty entry still becomes every day)
