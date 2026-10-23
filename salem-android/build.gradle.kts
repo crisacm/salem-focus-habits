@@ -111,7 +111,6 @@ mokkery {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.appIntro)
     implementation(libs.annotation)
     implementation(libs.kotlin.inject.runtime)
     implementation(libs.kotlinx.coroutines.android)

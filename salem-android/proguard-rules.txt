@@ -16,7 +16,6 @@
 -dontnote sun.security.**
 
 -keep class com.getpebble.** { *; }
--keep class com.github.paolorotolo.** { *; }
 -keep class io.socket.** { *; }
 -keep class okhttp3.** { *; }
 -keep class okio.** { *; }
