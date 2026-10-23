@@ -71,6 +71,20 @@ object CommonSteps : BaseUserInterfaceTest() {
         device.waitForIdle()
     }
 
+    /** Clicks the Compose element with the given `testTag` (exposed as a resource id). */
+    fun clickTag(tag: String) {
+        assertTrue("Tag not found: $tag", device.wait(Until.hasObject(By.res(tag)), 5000))
+        device.findObject(By.res(tag)).click()
+        device.waitForIdle()
+    }
+
+    /** Replaces the text of the Compose field with the given `testTag`. */
+    fun setTagText(tag: String, text: String) {
+        assertTrue("Tag not found: $tag", device.wait(Until.hasObject(By.res(tag)), 5000))
+        device.findObject(By.res(tag)).text = text
+        device.waitForIdle()
+    }
+
     /** Like [clickComposeText], for buttons whose label case may change (Compose does not capitalize them). */
     fun clickComposeTextIgnoreCase(text: String) {
         val pattern = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE)
@@ -183,8 +197,8 @@ object CommonSteps : BaseUserInterfaceTest() {
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
             Screen.EDIT_HABIT ->
-                Espresso.onView(ViewMatchers.withId(R.id.questionInput))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                // The form is drawn by Compose; its fields are exposed by their test tag as resource ids.
+                assertTrue(device.wait(Until.hasObject(By.res("questionInput")), 5000))
 
             Screen.SELECT_HABIT_TYPE -> {
                 // The dialog is drawn by Compose, which Espresso view matchers cannot see.

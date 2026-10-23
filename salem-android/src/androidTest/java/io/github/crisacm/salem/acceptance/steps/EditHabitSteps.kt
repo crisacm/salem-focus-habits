@@ -28,22 +28,22 @@ import io.github.crisacm.salem.R
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeTextIgnoreCase
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickLastComposeText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickTag
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.setTagText
 
 object EditHabitSteps {
     fun clickSave() {
-        Espresso.onView(ViewMatchers.withId(R.id.buttonSave)).perform(ViewActions.click())
+        clickTag("buttonSave")
     }
 
     // The frequency dialog is drawn by Compose, which Espresso view matchers cannot see.
     fun pickFrequency() {
-        Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
-            .perform(ViewActions.click())
+        clickTag("frequencyPicker")
         clickComposeTextIgnoreCase("Save")
     }
 
     fun pickMonthFrequency() {
-        Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
-            .perform(ViewActions.click())
+        clickTag("frequencyPicker")
         clickComposeText(textAfterNumber(R.string.x_times_per_month))
         val field = BaseUserInterfaceTest.device.findObject(By.clazz("android.widget.EditText").text("10"))
         field.text = "1"
@@ -51,8 +51,7 @@ object EditHabitSteps {
     }
 
     fun pickDailyFrequency() {
-        Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
-            .perform(ViewActions.click())
+        clickTag("frequencyPicker")
         clickLastComposeText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.every_day))
         clickComposeTextIgnoreCase("Save")
     }
@@ -62,30 +61,30 @@ object EditHabitSteps {
         InstrumentationRegistry.getInstrumentation().targetContext.getString(id).substringAfter("%d").trim()
 
     fun pickColor(color: Int) {
-        Espresso.onView(ViewMatchers.withId(R.id.colorButton)).perform(ViewActions.click())
+        clickTag("colorButton")
         BaseUserInterfaceTest.device.findObject(By.descStartsWith(String.format("Color %d", color)))
             .click()
     }
 
     fun typeName(name: String) {
-        typeTextWithId(R.id.nameInput, name)
+        setTagText("nameInput", name)
     }
 
     fun typeQuestion(name: String) {
-        typeTextWithId(R.id.questionInput, name)
+        setTagText("questionInput", name)
     }
 
     fun typeDescription(description: String) {
-        typeTextWithId(R.id.notesInput, description)
+        setTagText("notesInput", description)
     }
 
     fun setReminder() {
-        Espresso.onView(ViewMatchers.withId(R.id.reminderTimePicker)).perform(ViewActions.click())
+        clickTag("reminderTimePicker")
         Espresso.onView(ViewMatchers.withId(R.id.done_button)).perform(ViewActions.click())
     }
 
     fun clickReminderDays() {
-        Espresso.onView(ViewMatchers.withId(R.id.reminderDatePicker)).perform(ViewActions.click())
+        clickTag("reminderDatePicker")
     }
 
     fun unselectAllDays() {
@@ -96,13 +95,5 @@ object EditHabitSteps {
         clickComposeText("Wednesday")
         clickComposeText("Thursday")
         clickComposeText("Friday")
-    }
-
-    private fun typeTextWithId(id: Int, name: String) {
-        Espresso.onView(ViewMatchers.withId(id)).perform(
-            ViewActions.clearText(),
-            ViewActions.typeText(name),
-            ViewActions.closeSoftKeyboard()
-        )
     }
 }
