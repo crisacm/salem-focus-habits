@@ -56,6 +56,7 @@ private class RecordingSystem : ReminderScheduler.SystemScheduler {
 class HabitCompletionRearmerTest : BaseUnitTest() {
     private val system = RecordingSystem()
     private lateinit var rearmer: HabitCompletionRearmer
+    private lateinit var rearmerScheduler: ReminderScheduler
     private val today = LocalDate(2015, 1, 26)
 
     @BeforeTest
@@ -65,8 +66,8 @@ class HabitCompletionRearmerTest : BaseUnitTest() {
         setToday(today)
         // Monday 2015-01-26 06:00; the reminder is at 08:30
         DateUtils.setFixedLocalTime(utcTime(2015, 1, 26, 6, 0))
-        val scheduler = ReminderScheduler(commandRunner, habitList, system, mock<WidgetPreferences>())
-        rearmer = HabitCompletionRearmer(scheduler)
+        rearmerScheduler = ReminderScheduler(commandRunner, habitList, system, mock<WidgetPreferences>())
+        rearmer = HabitCompletionRearmer(rearmerScheduler)
     }
 
     @AfterTest
@@ -127,6 +128,26 @@ class HabitCompletionRearmerTest : BaseUnitTest() {
         h.reminder = null
         check(h, Entry.YES_MANUAL)
         assertEquals(emptyList(), system.times)
+    }
+
+    @Test
+    fun testWithTheMidnightDelayYesterdayIsStillTheHabitDay() {
+        // 01:00 on Tuesday with a 3 hour delay: the habit day is still Monday 2015-01-26
+        rearmer = HabitCompletionRearmer(rearmerScheduler) { 3 }
+        DateUtils.setFixedLocalTime(utcTime(2015, 1, 27, 1, 0))
+        check(habit(), Entry.YES_MANUAL)
+        // Tuesday's 08:30 reminder is for the next habit day and must stay
+        assertEquals(listOf(utcTime(2015, 1, 27, 8, 30)), system.times)
+    }
+
+    @Test
+    fun testWithTheMidnightDelayTheNewHabitDayMovesTheReminder() {
+        rearmer = HabitCompletionRearmer(rearmerScheduler) { 3 }
+        val tuesday = LocalDate(2015, 1, 27)
+        setToday(tuesday)
+        DateUtils.setFixedLocalTime(utcTime(2015, 1, 27, 4, 0))
+        check(habit(), Entry.YES_MANUAL, tuesday)
+        assertEquals(listOf(utcTime(2015, 1, 28, 8, 30)), system.times)
     }
 
     @Test

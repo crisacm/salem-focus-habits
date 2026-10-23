@@ -32,9 +32,12 @@ import org.isoron.uhabits.core.reminders.ReminderScheduler
  * not shown. On iOS the pending notification would be shown anyway, so when today's habit is
  * completed the next reminder is moved to the following day, and unchecking brings today's back.
  * Register it with `CommandRunner.addListener`.
+ *
+ * @param midnightDelayHours the "midnight delay" preference, which moves the start of the habit day
  */
 class HabitCompletionRearmer(
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val midnightDelayHours: () -> Int = { 0 }
 ) : CommandRunner.Listener {
     override fun onCommandFinished(command: Command) {
         if (command !is CreateRepetitionCommand) return
@@ -51,6 +54,10 @@ class HabitCompletionRearmer(
         }
     }
 
-    private fun isToday(time: Long): Boolean =
-        DateUtils.getStartOfDay(DateUtils.removeTimezone(time)) == DateUtils.getStartOfDay(DateUtils.getLocalTime())
+    // The habit day starts [midnightDelayHours] after the calendar day
+    private fun isToday(time: Long): Boolean {
+        val delay = midnightDelayHours() * DateUtils.HOUR_LENGTH
+        val timeDay = DateUtils.getStartOfDay(DateUtils.removeTimezone(time) - delay)
+        return timeDay == DateUtils.getStartOfDay(DateUtils.getLocalTime() - delay)
+    }
 }

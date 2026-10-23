@@ -19,6 +19,7 @@
 
 package org.isoron.platform.notifications
 
+import org.isoron.platform.Synchronized
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
@@ -42,6 +43,7 @@ class AppleSystemTray(
 ) : NotificationTray.SystemTray {
     private val shown = HashMap<Int, Long>()
 
+    @Synchronized
     override fun showNotification(habit: Habit, notificationId: Int, date: LocalDate, reminderTime: Long) {
         val habitId = habit.id ?: return
         shown[notificationId] = habitId
@@ -57,6 +59,7 @@ class AppleSystemTray(
         )
     }
 
+    @Synchronized
     override fun removeNotification(notificationId: Int) {
         val habitId = shown.remove(notificationId) ?: notificationId.toLong()
         center.removeDelivered(shownIdentifierOf(habitId))

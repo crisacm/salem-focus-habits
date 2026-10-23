@@ -31,7 +31,9 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.Synchronized
 import org.isoron.platform.time.DateUtils
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.computeToday
+import org.isoron.platform.time.getToday
 import org.isoron.platform.time.setToday
 import org.isoron.uhabits.core.AppScope
 import org.isoron.uhabits.core.io.Logging
@@ -46,7 +48,8 @@ import org.isoron.uhabits.core.preferences.Preferences
 open class MidnightTimer(
     logging: Logging,
     private val preferences: Preferences,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val todayProvider: () -> LocalDate = { computeToday(preferences.midnightDelayHours, 0) }
 ) {
     private val listeners = mutableListOf<MidnightListener>()
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -79,12 +82,22 @@ open class MidnightTimer(
         }
     }
 
+    /**
+     * Runs the midnight refresh now if the day changed since it was last set. For platforms where
+     * the app can be suspended across midnight and the timer cannot fire. Returns whether it ran.
+     */
+    open fun notifyIfDayChanged(): Boolean {
+        if (todayProvider() == getToday()) return false
+        notifyListeners()
+        return true
+    }
+
     @Synchronized
     open fun removeListener(listener: MidnightListener) = this.listeners.remove(listener)
 
     private fun notifyListeners() {
         logger.info("Midnight refresh")
-        setToday(computeToday(preferences.midnightDelayHours, 0))
+        setToday(todayProvider())
         val snapshot = synchronizedCopy()
         for (l in snapshot) {
             try {
