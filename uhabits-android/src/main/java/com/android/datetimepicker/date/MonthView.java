@@ -33,7 +33,7 @@ import androidx.customview.widget.ExploreByTouchHelper;
 import com.android.datetimepicker.*;
 import com.android.datetimepicker.date.MonthAdapter.*;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 import java.security.*;
 import java.util.*;

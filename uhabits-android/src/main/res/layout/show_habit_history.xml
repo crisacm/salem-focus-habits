@@ -29,7 +29,7 @@
         style="@style/CardHeader"
         android:text="@string/calendar"/>
 
-    <org.isoron.platform.gui.AndroidDataView
+    <io.github.crisacm.salem.platform.gui.AndroidDataView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="160dp"/>

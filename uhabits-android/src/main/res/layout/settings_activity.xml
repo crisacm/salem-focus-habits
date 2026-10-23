@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="org.isoron.uhabits.activities.settings.SettingsFragment"
+        android:name="io.github.crisacm.salem.activities.settings.SettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"

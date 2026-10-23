@@ -183,7 +183,7 @@
                 app:iconSpaceReserved="false">
             <intent
                     android:action="android.intent.action.VIEW"
-                    android:targetClass="org.isoron.uhabits.activities.about.AboutActivity"
+                    android:targetClass="io.github.crisacm.salem.activities.about.AboutActivity"
                     android:targetPackage="io.github.crisacm.salem" />
         </Preference>
 

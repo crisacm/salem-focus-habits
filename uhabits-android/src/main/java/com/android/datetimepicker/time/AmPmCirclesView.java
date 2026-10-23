@@ -25,8 +25,8 @@ import android.view.*;
 
 import com.android.datetimepicker.*;
 
-import org.isoron.uhabits.R;
-import org.isoron.uhabits.utils.StyledResources;
+import io.github.crisacm.salem.R;
+import io.github.crisacm.salem.utils.StyledResources;
 
 import java.text.*;
 

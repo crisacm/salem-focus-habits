@@ -23,7 +23,7 @@
     android:layout_height="match_parent"
     android:background="#ffff00">
 
-    <org.isoron.platform.gui.AndroidTestView
+    <io.github.crisacm.salem.platform.gui.AndroidTestView
         android:layout_width="500dp"
         android:layout_height="400dp" />
 </LinearLayout>

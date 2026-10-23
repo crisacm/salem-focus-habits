@@ -24,7 +24,7 @@
         style="@style/CardHeader"
         android:text="@string/target"/>
 
-    <org.isoron.uhabits.activities.common.views.TargetChart
+    <io.github.crisacm.salem.activities.common.views.TargetChart
         android:id="@+id/targetChart"
         android:layout_width="match_parent"
         android:layout_height="300dp"/>

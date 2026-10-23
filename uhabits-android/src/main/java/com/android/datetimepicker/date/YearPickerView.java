@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import com.android.datetimepicker.date.DatePickerDialog.OnDateChangedListener;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 import java.util.ArrayList;
 import java.util.List;

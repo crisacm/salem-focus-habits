@@ -30,7 +30,7 @@ import android.view.View;
 
 import com.android.datetimepicker.Utils;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 /**
  * View to show what number is selected. This will draw a blue circle over the number, with a blue

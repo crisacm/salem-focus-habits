@@ -3,13 +3,13 @@
 # Remove a line when its stub is implemented. One pattern per line (class or class.method).
 
 # Blocked by createTestCanvas / iOS Canvas (appleTest TestPlatformHelper.kt); the chart tests render to a canvas
-org.isoron.platform.gui.CanvasTest
-org.isoron.uhabits.core.ui.views.BarChartTest
-org.isoron.uhabits.core.ui.views.HistoryChartTest
+io.github.crisacm.salem.platform.gui.CanvasTest
+io.github.crisacm.salem.core.ui.views.BarChartTest
+io.github.crisacm.salem.core.ui.views.HistoryChartTest
 
 # Blocked by sqliter: the error of a failed step() is just "sqlite3_step failed" (the error code is private),
 # and these tests expect the SQLite message to contain "constraint". Needs a different driver or sqlite3_errmsg.
-org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNewRepsWithInvalidRef
-org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNullTimestamp
-org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNullHabit
-org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNewDuplicateTimestamps
+io.github.crisacm.salem.core.database.migrations.Version22Test.testDisallowNewRepsWithInvalidRef
+io.github.crisacm.salem.core.database.migrations.Version22Test.testDisallowNullTimestamp
+io.github.crisacm.salem.core.database.migrations.Version22Test.testDisallowNullHabit
+io.github.crisacm.salem.core.database.migrations.Version22Test.testDisallowNewDuplicateTimestamps

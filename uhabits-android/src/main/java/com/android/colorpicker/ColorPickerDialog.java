@@ -28,7 +28,7 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.android.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 /**
  * A dialog which takes in as input an array of palette and creates a palette allowing the user to

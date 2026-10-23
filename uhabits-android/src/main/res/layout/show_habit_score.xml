@@ -42,7 +42,7 @@
             android:layout_alignParentTop="true"
             android:text="@string/score"/>
 
-        <org.isoron.uhabits.activities.common.views.ScoreChart
+        <io.github.crisacm.salem.activities.common.views.ScoreChart
             android:id="@+id/scoreView"
             android:layout_width="match_parent"
             android:layout_height="220dp"

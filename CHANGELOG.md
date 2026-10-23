@@ -28,6 +28,7 @@ attribution.
 
 ### Changed
 
+- Rename the Kotlin packages from `org.isoron.*` to `io.github.crisacm.salem.*` (the Android `namespace` is now the same as the application id); the intent actions, the `content://org.isoron.uhabits` URI and the database file name are unchanged
 - Remove the JavaScript (browser) target from `uhabits-core`; the focus is Android and iOS
 - Remove unused dependencies (Ktor, Jackson, Guava, OpenCSV, Apache Commons, JSR305 and others) from the app and `uhabits-core`
 - Add an Android target to `uhabits-core` and a source set shared by the jvm and android targets

@@ -50,7 +50,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 
 - **Salem - Focus & Habit Tracker** is a fork of [Loop Habit Tracker](https://github.com/iSoron/uhabits) (iSoron/uhabits), GPLv3. Goal: migrate to Jetpack Compose + Kotlin Multiplatform (KMP) and ship on the App Store (iOS) as well as Android. Original authorship must stay credited.
 - **Current state: still the original Android app** (XML layouts + custom Views). There is no Compose and no iOS app yet (`uhabits-core` already has iOS targets with stub actuals). Open placeholders and TODOs are tracked in `docs/PENDING.md`.
-- Identity: `applicationId = io.github.crisacm.salem`; `namespace` and all Kotlin packages are still `org.isoron.uhabits` (the package move is deferred to the KMP migration). App display name: `Salem`.
+- Identity: `applicationId = io.github.crisacm.salem`; `namespace` (the Android app) is the same id, and the Kotlin packages are `io.github.crisacm.salem` (Android code in the root package), `io.github.crisacm.salem.core` and `io.github.crisacm.salem.platform`; the Gradle modules are still called `uhabits-*` (renamed in step 5b). App display name: `Salem`.
 - Repository: `github.com/crisacm/salem-focus-habits`. Branches: `develop` (day-to-day work, PRs target it) and `main`.
 - Docs for humans: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/GUIDELINES.md`, `docs/BUILD.md`, `docs/TEST.md`, `docs/PENDING.md`, `CHANGELOG.md`. Do not duplicate them here; link to them.
 
@@ -78,9 +78,9 @@ Everything below this line is project-specific knowledge for agents maintaining 
 ### 3.1 Modules
 `uhabits-android` → `uhabits-core`. Core is platform-agnostic: it talks to the platform only through interfaces and `expect/actual` declarations. The Android module implements those interfaces and owns all UI, Android services and DI wiring.
 
-### 3.2 uhabits-core (`src/<set>/kotlin/org/isoron/...`; `jvmMain` and `jvmTest` use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
-- `commonMain/platform/` — platform abstractions: `gui` (Canvas, Color, Image, View, FontAwesome), `io` (Database, Files, Strings `format`, Zip), `time` (`LocalDate`, `DayOfWeek`, `LocalDateFormatter`, `getToday/setToday`), `utils`. `JvmAnnotations.kt` declares `expect` `Synchronized`/`JvmStatic`.
-- `commonMain/uhabits/core/`:
+### 3.2 uhabits-core (`src/<set>/kotlin/io/github/crisacm/salem/...`; `jvmMain` and `jvmTest` use `src/jvmMain/java` and `src/jvmTest/java` but contain Kotlin)
+- `commonMain/.../salem/platform/` — platform abstractions: `gui` (Canvas, Color, Image, View, FontAwesome), `io` (Database, Files, Strings `format`, Zip), `time` (`LocalDate`, `DayOfWeek`, `LocalDateFormatter`, `getToday/setToday`), `utils`. `JvmAnnotations.kt` declares `expect` `Synchronized`/`JvmStatic`.
+- `commonMain/.../salem/core/`:
   - `models/` — domain model; `models/memory/` (in-memory) and `models/sqlite/` (SQLite-backed) implementations behind `ModelFactory`.
   - `commands/` — `Command { run() }` implementations (Archive, Unarchive, ChangeHabitColor, CreateHabit, CreateRepetition, DeleteHabits, EditHabit) executed by `CommandRunner`.
   - `database/` — `HabitRepository`, `EntryRepository`, `SQLParser`, `UnsupportedDatabaseVersionException`.
@@ -105,10 +105,10 @@ Everything below this line is project-specific knowledge for agents maintaining 
 - `Database`/`DatabaseOpener`/`PreparedStatement` abstraction (`platform/io/Database.kt`); schema version via `PRAGMA user_version`. Migrations are numbered SQL files run in order up to `DATABASE_VERSION`. iOS = `SqliterDatabase` over sqliter (`co.touchlab:sqliter-driver`, the engine under SQLDelight's native driver; SQLDelight's `SqlDriver` API was rejected because its cursor has no column count and it does not see uncommitted rows after a raw `BEGIN`). The iOS opener reads `user_version` from the SQLite file header first, because sqliter rewrites the version of a file when it is opened with a newer one; it opens with `JournalMode.DELETE` (single file) and a new file reports version 0. JVM = JDBC (sqlite-jdbc, test dependency), Android = `AndroidDatabase`/`AndroidDatabaseOpener`.
 - No sync code, no JSON export. Backups: `HabitsBackupAgent` (Google backup), `AutoBackup` (daily, keeps 5, optional SAF folder), CSV zip export, DB export/import tasks.
 
-### 3.5 uhabits-android (`src/main/java/org/isoron/uhabits`)
+### 3.5 uhabits-android (`src/main/java/io/github/crisacm/salem`)
 - Entry: `HabitsApplication` (builds the DI component, initializes/repairs the DB, starts widget/reminder/notification listeners). Launcher alias `.MainActivity` → `ListHabitsActivity`.
 - DI: kotlin-inject + KSP. `inject/HabitsApplicationComponent` (`@AppScope`, constructed with `@AppContext Context` and the db file) and `HabitsActivityComponent` (`@ActivityScope`, parent = app component, `@ActivityContext`). Non-activity classes get the global via `HabitsApplication.component`. `ReceiverScope` exists in `receivers/`.
-- UI: programmatic Views + ~48 XML layouts + view binding in some screens + canvas-drawn charts (`activities/common/views/*Chart`, via `org/isoron/platform/gui/AndroidCanvas`). Pattern per screen: core `*Behavior`/presenter + Android `*Screen` / `*RootView` / `*Menu` / `*Adapter` implementing core interfaces (see `activities/habits/list`, `activities/habits/show`, `activities/about`, `automation/`).
+- UI: programmatic Views + ~48 XML layouts + view binding in some screens + canvas-drawn charts (`activities/common/views/*Chart`, via `platform/gui/AndroidCanvas`). Pattern per screen: core `*Behavior`/presenter + Android `*Screen` / `*RootView` / `*Menu` / `*Adapter` implementing core interfaces (see `activities/habits/list`, `activities/habits/show`, `activities/about`, `automation/`).
 - Other packages: `widgets/` (6 widget types, `WidgetUpdater`, RemoteViews bitmaps, `StackWidgetService`, picker dialogs), `receivers/` (`ReminderReceiver`, `WidgetReceiver`, `ReminderController`), `intents/` (`IntentFactory`, `IntentParser`, `IntentScheduler` using exact alarms, `PendingIntentFactory`), `notifications/`, `database/`, `preferences/` (SharedPreferences storage), `tasks/`, `automation/` (Tasker/Locale plugin), `utils/`.
 
 ### 3.6 Design patterns in use
@@ -124,7 +124,7 @@ Versions come from `gradle/libs.versions.toml` — **add or bump dependencies on
 - UI/Android: AppCompat 1.7.0, Material 1.12.0, AppIntro 6.3.1, Konfetti 2.0.2, `legacy-support-v4`, `legacy-preference-v14`, `documentfile`.
 - Data/utils: no third-party utility libraries (Guava, OpenCSV, Apache Commons, JSR305 were unused and removed); CSV is parsed and written in `platform/io/Strings.kt` and `core/io`.
 - Tests: kotlin.test, JUnit 4/Jupiter, Hamcrest, Mokkery 3.3.0 (autofill mocks, class inheritance and concrete instantiation allowed), Espresso, UiAutomator, `androidx.test` rules, sqlite-jdbc.
-- Lint/format: ktlint-gradle plugin 11.6.1 with defaults (no `.editorconfig`), Android lint (`abortOnError = false`, large `lint-baseline.xml`), ProGuard `-dontobfuscate` with `-keep class org.isoron.** {*;}`.
+- Lint/format: ktlint-gradle plugin 11.6.1 with defaults (no `.editorconfig`), Android lint (`abortOnError = false`, large `lint-baseline.xml`), ProGuard `-dontobfuscate` with `-keep class io.github.crisacm.salem.** {*;}`.
 
 ## 5. Commands
 
@@ -168,11 +168,11 @@ Release signing reads env vars `LOOP_KEY_ALIAS`, `LOOP_KEY_PASSWORD`, `LOOP_KEY_
 
 ## 8. Known limitations and gotchas
 
-- Core is an Android library (`namespace org.isoron.uhabits.core`, `androidTarget` with `com.android.library`). Its `jvmMain` dependencies no longer reach the app at runtime, so the app declares what it uses (e.g. `androidx.annotation`). D8 (R8 8.9.35 in AGP 8.9.2) prints `Unexpected error during rewriting of Kotlin metadata` warnings for Kotlin 2.3 classes; they existed before and are harmless.
+- Core is an Android library (`namespace io.github.crisacm.salem.core`, `androidTarget` with `com.android.library`). Its `jvmMain` dependencies no longer reach the app at runtime, so the app declares what it uses (e.g. `androidx.annotation`). D8 (R8 8.9.35 in AGP 8.9.2) prints `Unexpected error during rewriting of Kotlin metadata` warnings for Kotlin 2.3 classes; they existed before and are harmless.
 - No Compose and no iOS app. CI is limited to `.github/workflows/ci.yml`: an ubuntu job (build, tests, ktlint) and a macOS job that compiles the iOS targets and runs the shared tests on the iOS simulator (no instrumented tests). The migration PRs #14-#25 were merged in order and the CI run of each push to `develop` passed (including the shared tests on the iOS simulator). The CI runs on every pull request, on pushes to `develop` and on manual runs, but `workflow_dispatch` only becomes available once the workflow file reaches `main`, the default branch. Core `jvmTest` pins the locale to en-US so tests do not depend on the machine; data written to files (CSV, migration file names) uses `formatInvariant`, not the locale-sensitive `format` (which is for UI text).
-- `applicationId` ≠ `namespace`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
-- Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) — change them only together and deliberately.
-- `HabitsApplication.isTestMode()` detects tests by `Class.forName("org.isoron.uhabits.BaseAndroidTest")`.
+- `applicationId` is the same as the Android `namespace` (`io.github.crisacm.salem`); the core library namespace is `io.github.crisacm.salem.core`. Keep these consistent: FileProvider authority is `${applicationId}` in the manifest and `packageName` in `ViewExtensions.showSendFileScreen`; `BackupManager.dataChanged(requireContext().packageName)`; `res/xml/preferences.xml` hardcodes `targetPackage="io.github.crisacm.salem"`; `build.sh` has `PACKAGE_NAME=io.github.crisacm.salem`; androidTest constants use the new id.
+- Intent actions `org.isoron.uhabits.ACTION_*` and the URI `content://org.isoron.uhabits/habit/<id>` (`Habit.uriString`, manifest `<data android:host>`) are an external protocol (Tasker, widgets) and deliberately keep Loop's `org.isoron.uhabits` name after the package rename — change them only together and deliberately.
+- `HabitsApplication.isTestMode()` detects tests by `Class.forName("io.github.crisacm.salem.BaseAndroidTest")`.
 - `ReminderScheduler` (takes a `SystemScheduler` interface), `MidnightTimer` (coroutine based, runs between `onResume` and `onPause`) and `DateUtils` (over the `ZoneOffsets` abstraction, with `expect` system zone, zone by id and clock) are in commonMain; the platform pieces that actually fire reminders are `IntentScheduler` on Android and `AppleSystemScheduler` over `UNUserNotificationCenter` on iOS (see 3.2). `HabitFixtures` is in commonMain.
 - Database changes: add `NN+1.sql`, bump `DATABASE_VERSION`, add a migration test, and keep importers working (`LoopDBImporter` rejects newer versions and migrates older).
 - Manifest still contains Loop's `com.google.android.backup.api_key` meta-data; `build.sh` still prints Loop branding, lists removed legacy dirs and names backups `Loop Habits Backup *.db`. Treat as to-do, not as intended design.

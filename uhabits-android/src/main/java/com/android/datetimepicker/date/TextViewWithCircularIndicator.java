@@ -25,7 +25,7 @@ import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 /**
  * A text view which, when pressed or activated, displays a blue circle around the text.

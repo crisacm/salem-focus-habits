@@ -39,7 +39,7 @@ import com.android.datetimepicker.HapticFeedbackController;
 import com.android.datetimepicker.Utils;
 import com.android.datetimepicker.date.MonthAdapter.CalendarDay;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

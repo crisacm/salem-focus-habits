@@ -23,7 +23,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 /**
  * Creates a circular swatch of a specified color.  Adds a checkmark if marked as checked.

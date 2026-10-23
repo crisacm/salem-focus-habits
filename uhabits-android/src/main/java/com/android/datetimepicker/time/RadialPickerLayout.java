@@ -30,7 +30,7 @@ import android.widget.*;
 
 import com.android.datetimepicker.*;
 
-import org.isoron.uhabits.R;
+import io.github.crisacm.salem.R;
 
 /**
  * The primary layout to hold the circular picker, and the am/pm buttons. This view well measure
