@@ -99,6 +99,13 @@ class DateUtilsCommonTest {
     }
 
     @Test
+    fun testMillisecondsUntilTomorrowOnADayOf23Hours() {
+        DateUtils.setFixedTimeZone(sydney())
+        DateUtils.setFixedLocalTime(utcTime(2017, 10, 1) + 1)
+        assertEquals(23 * hour - 1, DateUtils.millisecondsUntilTomorrowWithOffset(0, 0))
+    }
+
+    @Test
     fun testMillisecondsUntilTomorrow() {
         DateUtils.setFixedTimeZone(gmt())
         DateUtils.setFixedLocalTime(jan1 + 23 * hour + 59 * minute)

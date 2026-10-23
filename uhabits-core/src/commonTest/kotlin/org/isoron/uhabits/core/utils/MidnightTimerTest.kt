@@ -22,6 +22,7 @@ package org.isoron.uhabits.core.utils
 import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -37,8 +38,15 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MidnightTimerTest : BaseUnitTest() {
+    private var timers = mutableListOf<MidnightTimer>()
+
+    private fun newTimer(scheduler: TestCoroutineScheduler) =
+        MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(scheduler)).also { timers.add(it) }
+
     @AfterTest
     fun tearDown() {
+        // A failed assertion must not leave a loop running in the test scheduler
+        timers.forEach { it.onPause() }
         DateUtils.setFixedLocalTime(null)
         DateUtils.setFixedTimeZone(null)
     }
@@ -52,15 +60,43 @@ class MidnightTimerTest : BaseUnitTest() {
     @Test
     fun testNotifiesListenersAtMidnightAndThenEveryDay() = runTest {
         fixClockBeforeMidnight()
-        val timer = MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(testScheduler))
+        val timer = newTimer(testScheduler)
         var calls = 0
-        timer.addListener { calls++ }
+        timer.addListener {
+            calls++
+            // The wall clock one millisecond after the midnight that just happened
+            DateUtils.setFixedLocalTime(utcTime(2017, 1, 1 + calls) + 1)
+        }
         timer.onResume(delayOffsetInMillis = 1)
 
         advanceTimeBy(1)
         runCurrent()
         assertEquals(0, calls)
         advanceTimeBy(1)
+        runCurrent()
+        assertEquals(1, calls)
+        advanceTimeBy(DateUtils.DAY_LENGTH - 1)
+        runCurrent()
+        assertEquals(1, calls)
+        advanceTimeBy(1)
+        runCurrent()
+        assertEquals(2, calls)
+        timer.onPause()
+    }
+
+    @Test
+    fun testAListenerThatThrowsDoesNotStopTheOthersOrTheNextDays() = runTest {
+        fixClockBeforeMidnight()
+        val timer = newTimer(testScheduler)
+        var calls = 0
+        timer.addListener { throw IllegalStateException("broken listener") }
+        timer.addListener {
+            calls++
+            DateUtils.setFixedLocalTime(utcTime(2017, 1, 1 + calls) + 1)
+        }
+        timer.onResume(delayOffsetInMillis = 1)
+
+        advanceTimeBy(2)
         runCurrent()
         assertEquals(1, calls)
         advanceTimeBy(DateUtils.DAY_LENGTH)
@@ -70,9 +106,34 @@ class MidnightTimerTest : BaseUnitTest() {
     }
 
     @Test
+    fun testTheNextNotificationFollowsTheLengthOfTheDay() = runTest {
+        // 2017-10-01 has 23 hours in Sydney: daylight saving starts at 02:00.
+        DateUtils.setFixedTimeZone(zoneOffsetsOf("Australia/Sydney"))
+        DateUtils.setFixedLocalTime(utcTime(2017, 9, 30, 23, 59) + DateUtils.MINUTE_LENGTH - 1)
+        val timer = newTimer(testScheduler)
+        var calls = 0
+        timer.addListener {
+            calls++
+            DateUtils.setFixedLocalTime(utcTime(2017, 10, 1) + 1)
+        }
+        timer.onResume(delayOffsetInMillis = 1)
+
+        advanceTimeBy(2)
+        runCurrent()
+        assertEquals(1, calls)
+        advanceTimeBy(23 * DateUtils.HOUR_LENGTH - 1)
+        runCurrent()
+        assertEquals(1, calls)
+        advanceTimeBy(1)
+        runCurrent()
+        assertEquals(2, calls)
+        timer.onPause()
+    }
+
+    @Test
     fun testPauseStopsTheNotifications() = runTest {
         fixClockBeforeMidnight()
-        val timer = MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(testScheduler))
+        val timer = newTimer(testScheduler)
         var calls = 0
         timer.addListener { calls++ }
         timer.onResume(delayOffsetInMillis = 1)
@@ -85,7 +146,7 @@ class MidnightTimerTest : BaseUnitTest() {
     @Test
     fun testResumeTwiceKeepsASingleSchedule() = runTest {
         fixClockBeforeMidnight()
-        val timer = MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(testScheduler))
+        val timer = newTimer(testScheduler)
         var calls = 0
         timer.addListener { calls++ }
         timer.onResume(delayOffsetInMillis = 1)
@@ -99,7 +160,7 @@ class MidnightTimerTest : BaseUnitTest() {
     @Test
     fun testRemovedListenersAreNotNotified() = runTest {
         fixClockBeforeMidnight()
-        val timer = MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(testScheduler))
+        val timer = newTimer(testScheduler)
         var calls = 0
         val listener = MidnightTimer.MidnightListener { calls++ }
         timer.addListener(listener)

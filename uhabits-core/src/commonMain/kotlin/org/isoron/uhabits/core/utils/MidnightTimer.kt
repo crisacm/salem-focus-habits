@@ -19,6 +19,7 @@
 
 package org.isoron.uhabits.core.utils
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,13 +68,13 @@ open class MidnightTimer(
     @Synchronized
     open fun onResume(delayOffsetInMillis: Long = DateUtils.SECOND_LENGTH) {
         job?.cancel()
-        val initialDelay = DateUtils.millisecondsUntilTomorrowWithOffset(preferences.midnightDelayHours, 0) + delayOffsetInMillis
-        logger.info("Scheduling refresh for $initialDelay ms from now")
         job = scope.launch {
-            delay(initialDelay)
             while (isActive) {
+                // Recomputed every lap, so days of 23 or 25 hours do not shift the notification
+                val nextDelay = millisecondsUntilMidnight() + delayOffsetInMillis
+                logger.info("Scheduling refresh for $nextDelay ms from now")
+                delay(nextDelay)
                 notifyListeners()
-                delay(DateUtils.DAY_LENGTH)
             }
         }
     }
@@ -86,9 +87,18 @@ open class MidnightTimer(
         setToday(computeToday(preferences.midnightDelayHours, 0))
         val snapshot = synchronizedCopy()
         for (l in snapshot) {
-            l.atMidnight()
+            try {
+                l.atMidnight()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
+
+    private fun millisecondsUntilMidnight(): Long =
+        DateUtils.millisecondsUntilTomorrowWithOffset(preferences.midnightDelayHours, 0)
 
     @Synchronized
     private fun synchronizedCopy(): List<MidnightListener> = listeners.toList()
