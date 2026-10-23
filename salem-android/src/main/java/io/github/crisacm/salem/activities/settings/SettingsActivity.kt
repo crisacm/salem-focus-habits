@@ -16,34 +16,118 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.settings
 
+import android.app.backup.BackupManager
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.provider.Settings
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.preference.PreferenceManager
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
-import io.github.crisacm.salem.core.models.PaletteColor
-import io.github.crisacm.salem.databinding.SettingsActivityBinding
-import io.github.crisacm.salem.utils.applyRootViewInsets
-import io.github.crisacm.salem.utils.setupToolbar
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.utils.startActivitySafely
+import io.github.crisacm.salem.widgets.WidgetUpdater
+import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var prefs: Preferences
+    private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var widgetUpdater: WidgetUpdater
+    private var showDeveloper by mutableStateOf(false)
+
+    private val changeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == PREF_WIDGET_OPACITY) widgetUpdater.updateWidgets()
+        BackupManager.dataChanged(packageName)
+    }
+
+    private val backupFolderPicker =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data ?: return@registerForActivityResult
+            val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            contentResolver.takePersistableUriPermission(uri, flags)
+            sharedPrefs.edit().putString(PREF_PUBLIC_BACKUP_FOLDER, uri.toString()).apply()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val component = (application as HabitsApplication).component
-        val themeSwitcher = AndroidThemeSwitcher(this, component.preferences)
+        prefs = component.preferences
+        widgetUpdater = component.widgetUpdater
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val themeSwitcher = AndroidThemeSwitcher(this, prefs)
         themeSwitcher.apply()
 
-        val binding = SettingsActivityBinding.inflate(LayoutInflater.from(this))
-        binding.root.setupToolbar(
-            toolbar = binding.toolbar,
-            title = resources.getString(R.string.settings),
-            color = PaletteColor(11),
-            theme = themeSwitcher.currentTheme
+        val weekdayNames = JavaLocalDateFormatter(Locale.getDefault())
+            .longWeekdayNames(DayOfWeek.SATURDAY).toList()
+        val actions = SettingsActions(
+            onBack = { finish() },
+            onResult = {
+                setResult(it)
+                finish()
+            },
+            onCustomizeNotification = ::showNotificationSettings,
+            onPickBackupFolder = ::pickBackupFolder,
+            onHelp = { openUrl(R.string.helpURL) },
+            onRate = { openUrl(R.string.playStoreURL) },
+            onAbout = { startActivity(component.intentFactory.startAboutActivity(this)) }
         )
-        binding.root.applyRootViewInsets()
-        setContentView(binding.root)
+        setContent {
+            SalemTheme(themeSwitcher.currentTheme) {
+                SettingsContent(
+                    weekdayNames = weekdayNames,
+                    defaultFirstWeekday = prefs.firstWeekday.daysSinceSunday + 1,
+                    showDeveloper = showDeveloper,
+                    actions = actions
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sharedPrefs.registerOnSharedPreferenceChangeListener(changeListener)
+        showDeveloper = prefs.isDeveloper
+    }
+
+    override fun onPause() {
+        sharedPrefs.unregisterOnSharedPreferenceChangeListener(changeListener)
+        super.onPause()
+    }
+
+    private fun openUrl(url: Int) =
+        startActivitySafely(Intent(Intent.ACTION_VIEW, Uri.parse(getString(url))))
+
+    private fun showNotificationSettings() {
+        createAndroidNotificationChannel(this)
+        val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, NotificationTray.REMINDERS_CHANNEL_ID)
+        startActivity(intent)
+    }
+
+    private fun pickBackupFolder() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        intent.addFlags(
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        )
+        backupFolderPicker.launch(intent)
     }
 }

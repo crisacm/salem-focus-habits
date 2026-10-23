@@ -26,7 +26,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import io.github.crisacm.salem.BaseUserInterfaceTest
-import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysText
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.ABOUT
@@ -60,7 +60,7 @@ class AboutTest : BaseUserInterfaceTest() {
     fun shouldDisplayAboutScreenFromSettings() {
         launchApp()
         clickMenu(SETTINGS)
-        clickText("About")
+        clickComposeText("About")
         verifyDisplaysText("Translators")
     }
 }

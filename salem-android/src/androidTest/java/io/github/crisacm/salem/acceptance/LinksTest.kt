@@ -21,6 +21,7 @@ package io.github.crisacm.salem.acceptance
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import io.github.crisacm.salem.BaseUserInterfaceTest
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyOpensWebsite
@@ -67,7 +68,7 @@ class LinksTest : BaseUserInterfaceTest() {
     fun shouldLinkToHelpFromSettings() {
         launchApp()
         clickMenu(SETTINGS)
-        clickText("Help & FAQ")
+        clickComposeText("Help & FAQ")
         verifyOpensWebsite("github.com")
     }
 }
