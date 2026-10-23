@@ -27,6 +27,7 @@ import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.DateUtils.removeTimezone
 import org.isoron.platform.time.DateUtils.setFixedLocalTime
 import org.isoron.platform.time.DateUtils.setFixedTimeZone
+import org.isoron.platform.time.fixedOffsetZone
 import org.isoron.platform.time.unixTime
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.Habit
@@ -36,7 +37,6 @@ import org.isoron.uhabits.core.preferences.WidgetPreferences
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.util.TimeZone
 
 class ReminderSchedulerTest : BaseUnitTest() {
     private val habitId = 10L
@@ -54,7 +54,7 @@ class ReminderSchedulerTest : BaseUnitTest() {
         habit.id = habitId
         reminderScheduler =
             ReminderScheduler(commandRunner, habitList, sys, widgetPreferences)
-        setFixedTimeZone(TimeZone.getTimeZone("GMT-4"))
+        setFixedTimeZone(fixedOffsetZone(-4 * DateUtils.HOUR_LENGTH))
     }
 
     @After

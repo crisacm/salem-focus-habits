@@ -5,6 +5,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.isoron.platform.time.DateUtils
+import org.isoron.platform.time.fixedOffsetZone
 import org.isoron.platform.time.unixTime
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.io.StandardLogging
@@ -12,7 +13,6 @@ import org.isoron.uhabits.core.preferences.Preferences
 import org.junit.After
 import org.junit.Test
 import java.util.Calendar
-import java.util.TimeZone
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -33,7 +33,7 @@ class MidnightTimerTest : BaseUnitTest() {
         val dispatcher = executor.asCoroutineDispatcher()
 
         withContext(dispatcher) {
-            DateUtils.setFixedTimeZone(TimeZone.getTimeZone("GMT"))
+            DateUtils.setFixedTimeZone(fixedOffsetZone(0))
             DateUtils.setFixedLocalTime(
                 unixTime(
                     2017,
