@@ -21,6 +21,7 @@ package org.isoron.platform.notifications
 
 import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.DayOfWeek
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.fixedOffsetZone
 import org.isoron.platform.time.utcTime
 import org.isoron.uhabits.core.BaseUnitTest
@@ -61,13 +62,16 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
     override fun setUp() {
         super.setUp()
         DateUtils.setFixedTimeZone(fixedOffsetZone(0))
-        scheduler = AppleSystemScheduler(center, "Time to check in", { now }, { logs.add(it) }, limit = 3)
+        scheduler = scheduler(limit = 64)
     }
 
     @AfterTest
     fun tearDown() {
         DateUtils.setFixedTimeZone(null)
     }
+
+    private fun scheduler(limit: Int, horizon: Int = 7) =
+        AppleSystemScheduler(center, "Time to check in", { now }, { logs.add(it) }, limit, horizon)
 
     private fun habit(id: Long, name: String = "Habit $id", question: String = "", days: WeekdayList = WeekdayList.EVERY_DAY): Habit {
         val habit = fixtures.createEmptyHabit()
@@ -78,39 +82,71 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
         return habit
     }
 
+    private fun idOf(habitId: Long, year: Int, month: Int, day: Int) =
+        AppleSystemScheduler.identifierOf(habitId, LocalDate(year, month, day))
+
     private val monday830 = utcTime(2015, 1, 26, 8, 30)
     private val monday0 = utcTime(2015, 1, 26)
+    private val dayLength = DateUtils.DAY_LENGTH
 
     @Test
     fun testSchedulesTheReminderWithItsContent() {
         val result = scheduler.scheduleShowReminder(monday830, habit(7, "Read", "Did you read?"), monday0)
         assertEquals(SchedulerResult.OK, result)
         assertEquals(
-            ReminderRequest("reminder-7", "Read", "Did you read?", monday830, 7, monday0, true),
-            center.requests["reminder-7"]
+            ReminderRequest(idOf(7, 2015, 1, 26), "Read", "Did you read?", monday830, 7, monday0, true),
+            center.requests[idOf(7, 2015, 1, 26)]
         )
+    }
+
+    @Test
+    fun testSchedulesOneRequestPerDayOfTheHorizon() {
+        scheduler.scheduleShowReminder(monday830, habit(7), monday0)
+        assertEquals(7, center.requests.size)
+        for (k in 0L..6L) {
+            val request = center.requests.values.toList()[k.toInt()]
+            assertEquals(monday830 + k * dayLength, request.fireTimeMillis)
+            assertEquals(monday0 + k * dayLength, request.timestamp)
+        }
+        assertEquals(idOf(7, 2015, 2, 1), center.requests.values.last().identifier)
+    }
+
+    @Test
+    fun testTheHorizonIsConfigurable() {
+        scheduler(limit = 64, horizon = 2).scheduleShowReminder(monday830, habit(7), monday0)
+        assertEquals(setOf(idOf(7, 2015, 1, 26), idOf(7, 2015, 1, 27)), center.requests.keys)
     }
 
     @Test
     fun testUsesTheDefaultBodyWhenThereIsNoQuestion() {
         scheduler.scheduleShowReminder(monday830, habit(7, "Read", "  "), monday0)
-        assertEquals("Time to check in", center.requests["reminder-7"]?.body)
+        assertEquals("Time to check in", center.requests[idOf(7, 2015, 1, 26)]?.body)
     }
 
     @Test
-    fun testSchedulingAgainReplacesTheRequestOfTheHabit() {
+    fun testSchedulingAgainReplacesTheRequestsOfTheHabit() {
         val h = habit(7)
         scheduler.scheduleShowReminder(monday830, h, monday0)
-        scheduler.scheduleShowReminder(monday830 + DateUtils.DAY_LENGTH, h, monday0 + DateUtils.DAY_LENGTH)
-        assertEquals(1, center.requests.size)
-        assertEquals(monday830 + DateUtils.DAY_LENGTH, center.requests["reminder-7"]?.fireTimeMillis)
+        scheduler.scheduleShowReminder(monday830 + dayLength, h, monday0 + dayLength)
+        // Today's request is gone and the horizon now starts tomorrow
+        assertEquals(7, center.requests.size)
+        assertEquals(false, idOf(7, 2015, 1, 26) in center.requests)
+        assertEquals(true, idOf(7, 2015, 2, 2) in center.requests)
     }
 
     @Test
-    fun testTimesInThePastAreIgnored() {
-        now = monday830
-        assertEquals(SchedulerResult.IGNORED, scheduler.scheduleShowReminder(monday830, habit(7), monday0))
-        assertEquals(SchedulerResult.IGNORED, scheduler.scheduleShowReminder(monday830 - 1, habit(7), monday0))
+    fun testTimesInThePastAreSkipped() {
+        now = utcTime(2015, 1, 26, 9, 0)
+        scheduler.scheduleShowReminder(monday830, habit(7), monday0)
+        assertEquals(6, center.requests.size)
+        assertEquals(false, idOf(7, 2015, 1, 26) in center.requests)
+    }
+
+    @Test
+    fun testOnlyPastTimesAreIgnored() {
+        now = utcTime(2015, 1, 26, 9, 0)
+        val result = scheduler(limit = 64, horizon = 1).scheduleShowReminder(monday830, habit(7), monday0)
+        assertEquals(SchedulerResult.IGNORED, result)
         assertEquals(0, center.requests.size)
     }
 
@@ -124,16 +160,17 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
     }
 
     @Test
-    fun testMovesTheReminderToTheNextEnabledDay() {
-        val h = habit(7, days = daysOnly(DayOfWeek.WEDNESDAY))
+    fun testOnlyTheEnabledDaysAreScheduled() {
+        val h = habit(7, days = daysOnly(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY))
         assertEquals(SchedulerResult.OK, scheduler.scheduleShowReminder(monday830, h, monday0))
-        val request = center.requests["reminder-7"]
+        assertEquals(setOf(idOf(7, 2015, 1, 28), idOf(7, 2015, 1, 30)), center.requests.keys)
+        val request = center.requests[idOf(7, 2015, 1, 28)]
         assertEquals(utcTime(2015, 1, 28, 8, 30), request?.fireTimeMillis)
         assertEquals(utcTime(2015, 1, 28), request?.timestamp)
     }
 
     @Test
-    fun testAHabitWithNoEnabledDayRemovesItsRequest() {
+    fun testAHabitWithNoEnabledDayRemovesItsRequests() {
         val h = habit(7)
         scheduler.scheduleShowReminder(monday830, h, monday0)
         h.reminder = Reminder(8, 30, daysOnly())
@@ -142,28 +179,42 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
     }
 
     @Test
-    fun testKeepsTheEarliestRemindersWhenOverTheLimit() {
-        val hour = DateUtils.HOUR_LENGTH
-        scheduler.scheduleShowReminder(monday830 + 3 * hour, habit(1), monday0)
-        scheduler.scheduleShowReminder(monday830 + 1 * hour, habit(2), monday0)
-        scheduler.scheduleShowReminder(monday830 + 2 * hour, habit(3), monday0)
-        assertEquals(
-            SchedulerResult.OK,
-            scheduler.scheduleShowReminder(monday830, habit(4), monday0)
-        )
-        assertEquals(setOf("reminder-2", "reminder-3", "reminder-4"), center.requests.keys)
-        assertEquals(true, logs.any { "reminder-1" in it })
+    fun testASnoozedTimeIsScheduledOnlyOnce() {
+        val snoozed = utcTime(2015, 1, 26, 21, 15)
+        scheduler.scheduleShowReminder(snoozed, habit(7), monday0)
+        assertEquals(setOf(idOf(7, 2015, 1, 26)), center.requests.keys)
+        assertEquals(snoozed, center.requests.values.single().fireTimeMillis)
     }
 
     @Test
-    fun testTheNewReminderIsIgnoredWhenItIsTheLatestOverTheLimit() {
-        val hour = DateUtils.HOUR_LENGTH
-        for (id in 1L..3L) scheduler.scheduleShowReminder(monday830 + id * hour, habit(id), monday0)
+    fun testKeepsTheEarliestRemindersAcrossHabitsWhenOverTheLimit() {
+        val small = scheduler(limit = 3, horizon = 2)
+        small.scheduleShowReminder(monday830, habit(1), monday0)
+        assertEquals(2, center.requests.size)
+        // Habit 2 at 09:00 today and tomorrow: only the earliest three of the four stay
+        val h2 = habit(2).also { it.reminder = Reminder(9, 0, WeekdayList.EVERY_DAY) }
+        assertEquals(
+            SchedulerResult.OK,
+            small.scheduleShowReminder(utcTime(2015, 1, 26, 9, 0), h2, monday0)
+        )
+        assertEquals(
+            setOf(idOf(1, 2015, 1, 26), idOf(2, 2015, 1, 26), idOf(1, 2015, 1, 27)),
+            center.requests.keys
+        )
+        assertEquals(true, logs.any { "reminder-2-" in it })
+    }
+
+    @Test
+    fun testTheNewHabitIsIgnoredWhenAllItsRemindersAreTheLatest() {
+        val small = scheduler(limit = 2, horizon = 2)
+        small.scheduleShowReminder(monday830, habit(1), monday0)
+        val late = habit(2).also { it.reminder = Reminder(23, 0, WeekdayList.EVERY_DAY) }
+        // Habit 2 fires after both of habit 1's, so it does not fit
         assertEquals(
             SchedulerResult.IGNORED,
-            scheduler.scheduleShowReminder(monday830 + 9 * hour, habit(4), monday0)
+            small.scheduleShowReminder(utcTime(2015, 1, 27, 23, 0), late, monday0)
         )
-        assertEquals(setOf("reminder-1", "reminder-2", "reminder-3"), center.requests.keys)
+        assertEquals(setOf(idOf(1, 2015, 1, 26), idOf(1, 2015, 1, 27)), center.requests.keys)
     }
 
     @Test
@@ -172,7 +223,7 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
         scheduler.clear()
         assertEquals(1, center.cleared)
         scheduler.scheduleShowReminder(monday830, habit(4), monday0)
-        assertEquals(setOf("reminder-4"), center.requests.keys)
+        assertEquals(setOf(4L), center.requests.values.map { it.habitId }.toSet())
     }
 
     @Test

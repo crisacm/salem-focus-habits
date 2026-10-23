@@ -101,7 +101,8 @@ class AppForegroundRefresherTest : BaseUnitTest() {
         setToday(LocalDate(2000, 1, 1))
         refresher.onLaunch()
         assertEquals(calendarDay, getToday())
-        assertEquals(setOf("reminder-7"), center.requests.keys)
+        assertEquals(7, center.requests.size)
+        assertTrue(center.requests.keys.all { it.startsWith("reminder-7-") })
     }
 
     @Test
@@ -109,7 +110,9 @@ class AppForegroundRefresherTest : BaseUnitTest() {
         refresher.onLaunch()
         center.events.clear()
         refresher.onForeground()
-        assertEquals(listOf("removeAll", "add reminder-7"), center.events)
+        assertEquals("removeAll", center.events.first())
+        assertEquals(7, center.events.count { it.startsWith("add reminder-7-") })
+        assertEquals(8, center.events.size)
     }
 
     @Test
