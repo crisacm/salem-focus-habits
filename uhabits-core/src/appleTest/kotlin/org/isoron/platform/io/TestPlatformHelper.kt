@@ -24,7 +24,10 @@ import org.isoron.platform.time.LocalDateFormatter
 
 // Stubs so the commonTest sources link on iOS. The real implementations come in migration steps 3 and 4.
 
-actual fun createTestFileOpener(): FileOpener = TODO("iOS: step 4")
+actual fun createTestFileOpener(): FileOpener = AppleFileOpener(
+    userDir = tempPath("salem-test-files"),
+    resourceRoots = listOf("${assetsDir()}/main", "${assetsDir()}/test")
+)
 
 actual fun createTestDatabaseOpener(): DatabaseOpener = SqliterDatabaseOpener()
 

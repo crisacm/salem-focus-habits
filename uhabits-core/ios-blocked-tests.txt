@@ -2,15 +2,6 @@
 # They are excluded from `iosSimulatorArm64Test`; run them anyway with `-PiosRunBlocked=true`.
 # Remove a line when its stub is implemented. One pattern per line (class or class.method).
 
-# Blocked by createTestFileOpener / iOS FileOpener, UserFile and ResourceFile (appleTest TestPlatformHelper.kt).
-# Version22Test and Version23Test also call format, which is implemented.
-org.isoron.platform.io.FilesTest
-org.isoron.uhabits.core.database.migrations.Version22Test
-org.isoron.uhabits.core.database.migrations.Version23Test
-org.isoron.uhabits.core.io.ImportTest
-org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitMenuPresenterTest.testOnExport
-org.isoron.uhabits.core.utils.FileExtensionsTest
-
 # Blocked by createTestDateFormatter / iOS LocalDateFormatter (appleTest TestPlatformHelper.kt)
 org.isoron.platform.time.LocalDateFormatterTest
 org.isoron.uhabits.core.ui.views.BarChartTest
@@ -22,5 +13,13 @@ org.isoron.platform.gui.CanvasTest
 # Blocked by ZipWriter / ZipReader (AppleZip.kt)
 org.isoron.platform.io.ZipTest
 org.isoron.uhabits.core.io.HabitsCSVExporterTest
+org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitMenuPresenterTest.testOnExport
 org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV
 org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsBehaviorTest.testOnExportCSV_fail
+
+# Blocked by sqliter: the error of a failed step() is just "sqlite3_step failed" (the error code is private),
+# and these tests expect the SQLite message to contain "constraint". Needs a different driver or sqlite3_errmsg.
+org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNewRepsWithInvalidRef
+org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNullTimestamp
+org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNullHabit
+org.isoron.uhabits.core.database.migrations.Version22Test.testDisallowNewDuplicateTimestamps
