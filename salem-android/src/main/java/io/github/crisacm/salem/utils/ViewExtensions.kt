@@ -31,10 +31,8 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Handler
 import android.os.SystemClock
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
@@ -95,11 +93,6 @@ fun RelativeLayout.addAtTop(
     }
     view.id = View.generateViewId()
     this.addView(view)
-}
-
-fun ViewGroup.buildToolbar(): Toolbar {
-    val inflater = LayoutInflater.from(context)
-    return inflater.inflate(R.layout.toolbar, null) as Toolbar
 }
 
 fun View.showMessage(msg: String) {

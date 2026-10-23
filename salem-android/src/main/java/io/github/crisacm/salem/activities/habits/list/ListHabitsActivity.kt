@@ -25,8 +25,6 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -74,7 +72,6 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
     private lateinit var menu: ListHabitsMenu
 
     override fun onQuestionMarksChanged() {
-        invalidateOptionsMenu()
         menu.behavior.onPreferencesChanged()
     }
 
@@ -153,16 +150,6 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
 
     private fun scheduleReminders() {
         appComponent.reminderScheduler.scheduleAll()
-    }
-
-    override fun onCreateOptionsMenu(m: Menu): Boolean {
-        menu.onCreate(menuInflater, m)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        invalidateOptionsMenu()
-        return menu.onItemSelected(item)
     }
 
     @Deprecated("Deprecated in Java")

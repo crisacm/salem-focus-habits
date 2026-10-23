@@ -25,6 +25,9 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Until
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.BaseUserInterfaceTest.Companion.device
 import io.github.crisacm.salem.R
@@ -35,27 +38,50 @@ import org.hamcrest.Matcher
 import java.util.LinkedList
 
 object ListHabitsSteps {
+    // The top bar and the selection bar of the list are drawn by Compose, which Espresso view matchers
+    // cannot see: their buttons are found by test tag. The screen of a habit still has an action bar
+    // made of Views, so the steps that both screens share look for the Compose button first.
     fun clickMenu(item: MenuItem?) {
         when (item) {
-            MenuItem.ABOUT -> clickTextInsideOverflowMenu(R.string.about)
-            MenuItem.HELP -> clickTextInsideOverflowMenu(R.string.help)
-            MenuItem.SETTINGS -> clickTextInsideOverflowMenu(R.string.settings)
-            MenuItem.ADD -> clickViewWithId(R.id.actionCreateHabit)
-            MenuItem.EDIT -> clickViewWithId(R.id.action_edit_habit)
-            MenuItem.DELETE -> clickTextInsideOverflowMenu(R.string.delete)
-            MenuItem.ARCHIVE -> clickTextInsideOverflowMenu(R.string.archive)
-            MenuItem.UNARCHIVE -> clickTextInsideOverflowMenu(R.string.unarchive)
+            MenuItem.ABOUT -> clickInOverflow("overflowMenu", R.string.about)
+            MenuItem.HELP -> clickInOverflow("overflowMenu", R.string.help)
+            MenuItem.SETTINGS -> clickInOverflow("overflowMenu", R.string.settings)
+            MenuItem.ADD -> CommonSteps.clickTag("actionCreateHabit")
+            MenuItem.EDIT -> {
+                if (hasComposeButton("action_edit_habit")) {
+                    CommonSteps.clickTag("action_edit_habit")
+                } else {
+                    clickViewWithId(R.id.action_edit_habit)
+                }
+            }
+            MenuItem.DELETE -> clickInOverflow("selectionOverflow", R.string.delete)
+            MenuItem.ARCHIVE -> clickInOverflow("selectionOverflow", R.string.archive)
+            MenuItem.UNARCHIVE -> clickInOverflow("selectionOverflow", R.string.unarchive)
             MenuItem.TOGGLE_ARCHIVED -> {
-                clickViewWithId(R.id.action_filter)
-                CommonSteps.clickText(R.string.hide_archived)
+                CommonSteps.clickTag("action_filter")
+                CommonSteps.clickComposeText(string(R.string.hide_archived))
             }
             MenuItem.TOGGLE_COMPLETED -> {
-                clickViewWithId(R.id.action_filter)
-                CommonSteps.clickText(R.string.hide_completed)
+                CommonSteps.clickTag("action_filter")
+                CommonSteps.clickComposeText(string(R.string.hide_completed))
             }
             else -> throw RuntimeException()
         }
         device.waitForIdle()
+    }
+
+    // Compose needs a moment to show the selection bar after a long press, so wait before falling back to the Views.
+    private fun hasComposeButton(tag: String) = device.wait(Until.hasObject(By.res(tag)), 1500)
+
+    private fun string(id: Int) = InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
+
+    private fun clickInOverflow(tag: String, id: Int) {
+        if (hasComposeButton(tag)) {
+            CommonSteps.clickTag(tag)
+            CommonSteps.clickComposeText(string(id))
+        } else {
+            clickTextInsideOverflowMenu(id)
+        }
     }
 
     private fun clickTextInsideOverflowMenu(id: Int) {
@@ -122,9 +148,9 @@ object ListHabitsSteps {
     }
 
     fun changeSort(sortText: String) {
-        clickViewWithId(R.id.action_filter)
-        Espresso.onView(ViewMatchers.withText("Sort")).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText(sortText)).perform(ViewActions.click())
+        CommonSteps.clickTag("action_filter")
+        CommonSteps.clickComposeText("Sort")
+        CommonSteps.clickComposeText(sortText)
     }
 
     enum class MenuItem {

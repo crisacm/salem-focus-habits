@@ -78,6 +78,14 @@ object CommonSteps : BaseUserInterfaceTest() {
         device.waitForIdle()
     }
 
+    /** Waits until the selection bar of the habit list shows [count] selected habits. */
+    fun verifySelectionCount(count: Int) {
+        assertTrue(
+            "Selection count $count not shown",
+            device.wait(Until.hasObject(By.res("selectionCount").text(count.toString())), 5000)
+        )
+    }
+
     /** Replaces the text of the Compose field with the given `testTag`. */
     fun setTagText(tag: String, text: String) {
         assertTrue("Tag not found: $tag", device.wait(Until.hasObject(By.res(tag)), 5000))
