@@ -31,7 +31,7 @@ private const val MILLIS_PER_DAY = 86_400_000L
 /**
  * [NotificationTray.SystemTray] over local notifications. A shown notification has its own
  * identifier, so it never replaces the pending reminder of the habit; removing it also removes the
- * delivered notification of the scheduled reminder, so one habit never leaves two behind. Android's
+ * delivered notifications of the scheduled reminders, so one habit never leaves two behind. Android's
  * "sticky" notifications have no iOS equivalent and are ignored.
  *
  * @param defaultBody text of the notification for habits without a question
@@ -62,8 +62,7 @@ class AppleSystemTray(
     @Synchronized
     override fun removeNotification(notificationId: Int) {
         val habitId = shown.remove(notificationId) ?: notificationId.toLong()
-        center.removeDelivered(shownIdentifierOf(habitId))
-        center.removeDelivered(AppleSystemScheduler.identifierOf(habitId))
+        center.removeDeliveredOfHabit(habitId)
     }
 
     override fun log(msg: String) = logger("AppleSystemTray: $msg")

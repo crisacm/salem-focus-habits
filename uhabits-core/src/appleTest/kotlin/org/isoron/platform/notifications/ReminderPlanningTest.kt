@@ -29,7 +29,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class ReminderPlanningTest {
     @AfterTest
@@ -47,36 +46,44 @@ class ReminderPlanningTest {
     // 2015-01-26 is a Monday
     private val monday8 = utcTime(2015, 1, 26, 8, 0)
 
-    @Test
-    fun testEveryDayKeepsTheTime() {
-        DateUtils.setFixedTimeZone(fixedOffsetZone(0))
-        assertEquals(monday8, nextEnabledReminderTime(monday8, WeekdayList.EVERY_DAY))
-    }
+    private val day = DateUtils.DAY_LENGTH
 
     @Test
-    fun testAnEnabledDayKeepsTheTime() {
-        DateUtils.setFixedTimeZone(fixedOffsetZone(0))
-        assertEquals(monday8, nextEnabledReminderTime(monday8, days(DayOfWeek.MONDAY)))
-    }
-
-    @Test
-    fun testAdvancesToTheNextEnabledDay() {
+    fun testEveryDayGivesOneTimePerDayOfTheHorizon() {
         DateUtils.setFixedTimeZone(fixedOffsetZone(0))
         assertEquals(
-            utcTime(2015, 1, 28, 8, 0),
-            nextEnabledReminderTime(monday8, days(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY))
+            (0L..6L).map { monday8 + it * day },
+            upcomingReminderTimes(monday8, WeekdayList.EVERY_DAY, 7)
         )
-        // The week wraps around: from Monday to the previous Sunday is six days.
+        assertEquals(listOf(monday8, monday8 + day), upcomingReminderTimes(monday8, WeekdayList.EVERY_DAY, 2))
+    }
+
+    @Test
+    fun testTheFirstTimeIsKeptWhenItsDayIsEnabled() {
+        DateUtils.setFixedTimeZone(fixedOffsetZone(0))
+        // The next Monday is eight days away, outside the horizon
+        assertEquals(listOf(monday8), upcomingReminderTimes(monday8, days(DayOfWeek.MONDAY), 7))
+    }
+
+    @Test
+    fun testOnlyEnabledDaysAreReturned() {
+        DateUtils.setFixedTimeZone(fixedOffsetZone(0))
         assertEquals(
-            utcTime(2015, 2, 1, 8, 0),
-            nextEnabledReminderTime(monday8, days(DayOfWeek.SUNDAY))
+            listOf(utcTime(2015, 1, 28, 8, 0), utcTime(2015, 1, 30, 8, 0)),
+            upcomingReminderTimes(monday8, days(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY), 7)
+        )
+        // The week wraps around: from Monday to the following Sunday is six days.
+        assertEquals(
+            listOf(utcTime(2015, 2, 1, 8, 0)),
+            upcomingReminderTimes(monday8, days(DayOfWeek.SUNDAY), 7)
         )
     }
 
     @Test
-    fun testNoEnabledDayGivesNull() {
+    fun testNoEnabledDayOrNoHorizonGivesNothing() {
         DateUtils.setFixedTimeZone(fixedOffsetZone(0))
-        assertNull(nextEnabledReminderTime(monday8, days()))
+        assertEquals(emptyList(), upcomingReminderTimes(monday8, days(), 7))
+        assertEquals(emptyList(), upcomingReminderTimes(monday8, WeekdayList.EVERY_DAY, 0))
     }
 
     @Test
@@ -84,11 +91,8 @@ class ReminderPlanningTest {
         // 02:00 UTC on Monday is still Sunday evening at UTC-5.
         DateUtils.setFixedTimeZone(fixedOffsetZone(-5 * DateUtils.HOUR_LENGTH))
         val mondayUtc = utcTime(2015, 1, 26, 2, 0)
-        assertEquals(mondayUtc, nextEnabledReminderTime(mondayUtc, days(DayOfWeek.SUNDAY)))
-        assertEquals(
-            mondayUtc + DateUtils.DAY_LENGTH,
-            nextEnabledReminderTime(mondayUtc, days(DayOfWeek.MONDAY))
-        )
+        assertEquals(listOf(mondayUtc), upcomingReminderTimes(mondayUtc, days(DayOfWeek.SUNDAY), 7))
+        assertEquals(listOf(mondayUtc + day), upcomingReminderTimes(mondayUtc, days(DayOfWeek.MONDAY), 7))
     }
 
     @Test
@@ -98,8 +102,12 @@ class ReminderPlanningTest {
         val saturday = utcTime(2017, 9, 29, 22, 30)
         // Sunday 08:30 is UTC+11, so only 23 hours later.
         assertEquals(
-            utcTime(2017, 9, 30, 21, 30),
-            nextEnabledReminderTime(saturday, days(DayOfWeek.SUNDAY))
+            listOf(utcTime(2017, 9, 30, 21, 30)),
+            upcomingReminderTimes(saturday, days(DayOfWeek.SUNDAY), 7)
+        )
+        assertEquals(
+            listOf(saturday, utcTime(2017, 9, 30, 21, 30), utcTime(2017, 10, 1, 21, 30)),
+            upcomingReminderTimes(saturday, WeekdayList.EVERY_DAY, 3)
         )
     }
 

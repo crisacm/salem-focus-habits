@@ -30,7 +30,7 @@ import org.isoron.uhabits.core.utils.MidnightTimer
 /**
  * What Android does in `HabitsApplication.onCreate` and `ListHabitsActivity.onResume/onPause`, for
  * an iOS app that has no background timers and can stay suspended across midnight: on launch and
- * every time the app returns to the foreground it re-checks the day, the first weekday and the
+ * every time the app returns from the background it re-checks the day, the first weekday and the
  * reminders. Pending reminders are cleared first, so those of habits that lost theirs disappear
  * and the scheduler's count of pending requests starts from zero.
  *
@@ -43,20 +43,42 @@ class AppForegroundRefresher(
     private val systemScheduler: AppleSystemScheduler,
     private val todayProvider: () -> LocalDate = { computeToday(preferences.midnightDelayHours, 0) }
 ) {
+    private var launched = false
+    private var wasInBackground = false
+
+    /**
+     * Sets up the day, the first weekday, the timer and the reminders. Call it once when the app starts.
+     */
     fun onLaunch() {
+        launched = true
+        wasInBackground = false
         setToday(todayProvider())
         setFirstWeekday(preferences.firstWeekday)
-        rescheduleAll()
-    }
-
-    fun onForeground() {
-        setFirstWeekday(preferences.firstWeekday)
-        midnightTimer.notifyIfDayChanged()
         midnightTimer.onResume()
         rescheduleAll()
     }
 
+    /**
+     * The app became active. The first activation after [onLaunch] only checks the day; after the
+     * app was in the background (or a new day started) the reminders are scheduled again too.
+     * Launches first if [onLaunch] has not run.
+     */
+    fun onForeground() {
+        if (!launched) {
+            onLaunch()
+            return
+        }
+        setFirstWeekday(preferences.firstWeekday)
+        val dayChanged = midnightTimer.notifyIfDayChanged()
+        if (wasInBackground || dayChanged) {
+            wasInBackground = false
+            midnightTimer.onResume()
+            rescheduleAll()
+        }
+    }
+
     fun onBackground() {
+        wasInBackground = true
         midnightTimer.onPause()
     }
 

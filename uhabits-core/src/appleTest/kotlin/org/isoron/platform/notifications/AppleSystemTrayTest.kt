@@ -32,19 +32,23 @@ import kotlin.test.assertEquals
 
 private class FakeDeliveredCenter : DeliveredNotificationCenter {
     val shown = LinkedHashMap<String, ShownNotification>()
-    val removed = mutableListOf<String>()
+    val removedHabits = mutableListOf<Long>()
 
     // Requests that are waiting for their time; posting with the same identifier replaces them, as iOS does
     val pending = LinkedHashMap<String, String>()
+
+    // Notifications of the scheduled reminders that were already delivered
+    val deliveredReminders = mutableSetOf<String>()
 
     override fun post(notification: ShownNotification) {
         pending.remove(notification.identifier)
         shown[notification.identifier] = notification
     }
 
-    override fun removeDelivered(identifier: String) {
-        removed.add(identifier)
-        shown.remove(identifier)
+    override fun removeDeliveredOfHabit(habitId: Long) {
+        removedHabits.add(habitId)
+        shown.remove("shown-$habitId")
+        deliveredReminders.removeAll { it.startsWith("reminder-$habitId-") }
     }
 }
 
@@ -108,8 +112,15 @@ class AppleSystemTrayTest : BaseUnitTest() {
     fun testRemovesTheDeliveredNotificationOfTheHabit() {
         tray.showNotification(habit(7), 7, date, 0)
         tray.removeNotification(7)
-        assertEquals(listOf("shown-7", "reminder-7"), center.removed)
+        assertEquals(listOf(7L), center.removedHabits)
         assertEquals(0, center.shown.size)
+    }
+
+    @Test
+    fun testRemovingKeepsTheDeliveredNotificationsOfOtherHabits() {
+        center.deliveredReminders.addAll(listOf("reminder-7-5500", "reminder-70-5500", "reminder-8-5500"))
+        tray.removeNotification(7)
+        assertEquals(setOf("reminder-70-5500", "reminder-8-5500"), center.deliveredReminders)
     }
 
     @Test
@@ -122,7 +133,13 @@ class AppleSystemTrayTest : BaseUnitTest() {
     @Test
     fun testRemovingAnUnknownIdUsesTheHabitIdentifier() {
         tray.removeNotification(12)
-        assertEquals(listOf("shown-12", "reminder-12"), center.removed)
+        assertEquals(listOf(12L), center.removedHabits)
+    }
+
+    @Test
+    fun testIdentifiersOfAHabitDoNotMatchOtherHabitsWithTheSamePrefix() {
+        val identifiers = listOf("shown-7", "shown-70", "reminder-7-5500", "reminder-70-5500", "reminder-8-5500", "other")
+        assertEquals(listOf("shown-7", "reminder-7-5500"), identifiersOfHabit(identifiers, 7))
     }
 
     @Test

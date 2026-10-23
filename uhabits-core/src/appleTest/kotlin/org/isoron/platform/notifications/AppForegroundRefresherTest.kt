@@ -26,6 +26,7 @@ import org.isoron.platform.time.fixedOffsetZone
 import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
 import org.isoron.platform.time.resetFirstWeekday
+import org.isoron.platform.time.resetToday
 import org.isoron.platform.time.setToday
 import org.isoron.platform.time.utcTime
 import org.isoron.uhabits.core.BaseUnitTest
@@ -101,21 +102,26 @@ class AppForegroundRefresherTest : BaseUnitTest() {
         setToday(LocalDate(2000, 1, 1))
         refresher.onLaunch()
         assertEquals(calendarDay, getToday())
-        assertEquals(setOf("reminder-7"), center.requests.keys)
+        assertEquals(7, center.requests.size)
+        assertTrue(center.requests.keys.all { it.startsWith("reminder-7-") })
     }
 
     @Test
     fun testPendingRemindersAreClearedBeforeSchedulingAgain() {
         refresher.onLaunch()
         center.events.clear()
+        refresher.onBackground()
         refresher.onForeground()
-        assertEquals(listOf("removeAll", "add reminder-7"), center.events)
+        assertEquals("removeAll", center.events.first())
+        assertEquals(7, center.events.count { it.startsWith("add reminder-7-") })
+        assertEquals(8, center.events.size)
     }
 
     @Test
     fun testRemindersOfHabitsThatLostTheirsDisappear() {
         refresher.onLaunch()
         habitList.getByPosition(0).reminder = null
+        refresher.onBackground()
         refresher.onForeground()
         assertEquals(emptySet(), center.requests.keys)
     }
@@ -147,6 +153,31 @@ class AppForegroundRefresherTest : BaseUnitTest() {
         storage.putString("pref_first_weekday", "2")
         refresher.onForeground()
         assertEquals(DayOfWeek.MONDAY, getFirstWeekday())
+    }
+
+    @Test
+    fun testForegroundBeforeLaunchLaunches() {
+        resetToday()
+        refresher.onForeground()
+        assertEquals(calendarDay, getToday())
+        assertEquals(7, center.requests.size)
+    }
+
+    @Test
+    fun testTheForegroundThatFollowsTheLaunchDoesNotRescheduleAgain() {
+        refresher.onLaunch()
+        center.events.clear()
+        refresher.onForeground()
+        assertEquals(emptyList(), center.events)
+    }
+
+    @Test
+    fun testAForegroundAfterANewDayReschedulesEvenWithoutBackground() {
+        refresher.onLaunch()
+        center.events.clear()
+        calendarDay = LocalDate(2015, 1, 27)
+        refresher.onForeground()
+        assertEquals("removeAll", center.events.first())
     }
 
     @Test

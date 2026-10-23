@@ -103,8 +103,18 @@ interface DeliveredNotificationCenter {
      */
     fun post(notification: ShownNotification)
 
-    fun removeDelivered(identifier: String)
+    /**
+     * Removes the delivered notifications of the habit: the shown one and those of its scheduled reminders.
+     */
+    fun removeDeliveredOfHabit(habitId: Long)
 }
+
+/**
+ * The identifiers, among [identifiers], of the notifications of the habit: `shown-<id>` and
+ * `reminder-<id>-<day>` (and not those of habit 70 when the habit is 7).
+ */
+internal fun identifiersOfHabit(identifiers: List<String>, habitId: Long): List<String> =
+    identifiers.filter { it == AppleSystemTray.shownIdentifierOf(habitId) || it.startsWith("reminder-$habitId-") }
 
 internal fun buildImmediateRequest(notification: ShownNotification): UNNotificationRequest {
     val content = UNMutableNotificationContent()
@@ -141,8 +151,12 @@ class UNDeliveredNotificationCenter(
         center.addNotificationRequest(buildImmediateRequest(notification), withCompletionHandler = null)
     }
 
-    override fun removeDelivered(identifier: String) {
-        center.removeDeliveredNotificationsWithIdentifiers(listOf(identifier))
+    override fun removeDeliveredOfHabit(habitId: Long) {
+        center.getDeliveredNotificationsWithCompletionHandler { delivered ->
+            val identifiers = delivered.orEmpty().map { (it as UNNotification).request.identifier }
+            val ours = identifiersOfHabit(identifiers, habitId)
+            if (ours.isNotEmpty()) center.removeDeliveredNotificationsWithIdentifiers(ours)
+        }
     }
 }
 
