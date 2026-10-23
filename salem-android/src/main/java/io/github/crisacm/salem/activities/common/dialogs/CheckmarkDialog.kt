@@ -19,84 +19,105 @@
 
 package io.github.crisacm.salem.activities.common.dialogs
 
-import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.core.models.Entry.Companion.NO
-import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
-import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
-import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
-import io.github.crisacm.salem.databinding.CheckmarkPopupBinding
+import io.github.crisacm.salem.core.models.Entry
+import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
 import io.github.crisacm.salem.utils.InterfaceUtils.getFontAwesome
-import io.github.crisacm.salem.utils.sres
 
-class CheckmarkDialog : AppCompatDialogFragment() {
+class CheckmarkDialog : ComposeDialogFragment() {
     var onToggle: (Int, String) -> Unit = { _, _ -> }
     var onDismiss: () -> Unit = {}
 
-    private var dismissedViaSaveAction = false
-    private var originalNotes: String = ""
-    private var originalValue: Int = 0
-    private lateinit var view: CheckmarkPopupBinding
+    private var savedViaAction = false
+    private var originalNotes = ""
+    private var originalValue = 0
+    private var currentNotes = ""
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val appComponent = (requireActivity().application as HabitsApplication).component
-        val prefs = appComponent.preferences
-        view = CheckmarkPopupBinding.inflate(LayoutInflater.from(context))
-        val color = requireArguments().getInt("color")
-        arrayOf(view.yesBtn, view.skipBtn).forEach {
-            it.setTextColor(color)
-        }
-        arrayOf(view.noBtn, view.unknownBtn).forEach {
-            it.setTextColor(view.root.sres.getColor(R.attr.contrast60))
-        }
-        arrayOf(view.yesBtn, view.noBtn, view.skipBtn, view.unknownBtn).forEach {
-            it.typeface = getFontAwesome(requireContext())
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         originalNotes = requireArguments().getString("notes")!!
         originalValue = requireArguments().getInt("value")
-        view.notes.setText(originalNotes)
-        if (!prefs.isSkipEnabled) view.skipBtn.visibility = GONE
-        if (!prefs.areQuestionMarksEnabled) view.unknownBtn.visibility = GONE
-        view.booleanButtons.visibility = VISIBLE
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(view.root)
-        dialog.window?.apply {
-            setBackgroundDrawableResource(android.R.color.transparent)
-        }
-        fun onClick(v: Int) {
-            dismissedViaSaveAction = true
-            val notes = view.notes.text.toString().trim()
-            onToggle(v, notes)
-            requireDialog().dismiss()
-        }
-        view.yesBtn.setOnClickListener { onClick(YES_MANUAL) }
-        view.noBtn.setOnClickListener { onClick(NO) }
-        view.skipBtn.setOnClickListener { onClick(SKIP) }
-        view.unknownBtn.setOnClickListener { onClick(UNKNOWN) }
-        view.notes.setOnEditorActionListener { v, actionId, event ->
-            onClick(requireArguments().getInt("value"))
-            true
-        }
+        currentNotes = originalNotes
+        // The callbacks are not saved: a popup restored after a rotation could not report anything.
+        if (savedInstanceState != null) dismissAllowingStateLoss()
+    }
 
-        return dialog
+    @Composable
+    override fun Content() {
+        val context = LocalContext.current
+        val prefs = remember { (context.applicationContext as HabitsApplication).component.preferences }
+        val habitColor = Color(requireArguments().getInt("color"))
+        val neutral = MaterialTheme.colorScheme.onSurfaceVariant
+        val glyphs = remember { getFontAwesome(context)?.let { FontFamily(it) } }
+        var notes by remember { mutableStateOf(originalNotes) }
+        val options = checkmarkOptions(prefs.isSkipEnabled, prefs.areQuestionMarksEnabled)
+
+        PopupCard(onDismiss = ::dismiss) {
+            NotesField(
+                notes = notes,
+                onChange = {
+                    notes = it
+                    currentNotes = it
+                },
+                onDone = { choose(originalValue) }
+            )
+            ButtonRow {
+                options.forEachIndexed { index, value ->
+                    if (index > 0) VerticalDivider(modifier = Modifier.fillMaxHeight().padding(vertical = 0.dp))
+                    PopupButton(
+                        text = stringResource(glyphOf(value)),
+                        color = if (value == Entry.YES_MANUAL || value == Entry.SKIP) habitColor else neutral,
+                        description = stringResource(descriptionOf(value)),
+                        glyph = glyphs
+                    ) { choose(value) }
+                }
+            }
+        }
+    }
+
+    private fun choose(value: Int) {
+        savedViaAction = true
+        onToggle(value, currentNotes.trim())
+        dismiss()
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-
-        if (!dismissedViaSaveAction) {
-            val currentNotes = view.notes.text.toString().trim()
-            if (currentNotes != originalNotes) {
-                onToggle(originalValue, currentNotes)
-            }
+        if (shouldSaveNotesOnDismiss(savedViaAction, originalNotes, currentNotes)) {
+            onToggle(originalValue, currentNotes.trim())
         }
         onDismiss()
+    }
+
+    private fun glyphOf(value: Int) = when (value) {
+        Entry.YES_MANUAL -> R.string.fa_check
+        Entry.SKIP -> R.string.fa_skipped
+        Entry.NO -> R.string.fa_times
+        else -> R.string.fa_question
+    }
+
+    private fun descriptionOf(value: Int) = when (value) {
+        Entry.YES_MANUAL -> R.string.yes
+        Entry.SKIP -> R.string.skip_day
+        Entry.NO -> R.string.no
+        else -> R.string.unknown
     }
 }

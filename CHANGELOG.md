@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the delete confirmation and the checkmark and number popups to Compose; closing a popup without choosing still saves changed notes. The buttons of the checkmark popup now have accessibility labels, and the new "Unknown" label is not translated yet
 - Move the habit type, weekday, colour and snooze dialogs to Compose and remove the vendored AOSP colour picker; the colours keep their layout and accessibility labels. The snooze dialog no longer crashes when the habit is missing
 - Move the Intro screen to Compose and remove the AppIntro library; the slides, colours and behaviour are the same, and the Next button label is not translated yet
 - Move the Settings screen to Compose with reusable preference rows; the preference keys and the results returned to the habit list are unchanged. The unused sync server, sync key and encryption key settings and the hidden reminder sound row are gone
