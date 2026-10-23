@@ -19,6 +19,8 @@
 
 package org.isoron.platform.notifications
 
+import org.isoron.platform.time.DateUtils
+import org.isoron.platform.time.LocalDate
 import platform.Foundation.NSNumber
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotification
@@ -45,10 +47,19 @@ const val ACTION_NO = "NO"
  * [timestamp] is the start of the day the reminder was about.
  */
 sealed class NotificationAction {
-    data class Check(val habitId: Long, val timestamp: Long) : NotificationAction()
-    data class Uncheck(val habitId: Long, val timestamp: Long) : NotificationAction()
+    data class Check(val habitId: Long, val timestamp: Long) : NotificationAction() {
+        val date: LocalDate get() = dayOf(timestamp)
+    }
+
+    data class Uncheck(val habitId: Long, val timestamp: Long) : NotificationAction() {
+        val date: LocalDate get() = dayOf(timestamp)
+    }
+
     data class Open(val habitId: Long) : NotificationAction()
 }
+
+private fun dayOf(timestamp: Long): LocalDate =
+    LocalDate((timestamp.floorDiv(DateUtils.DAY_LENGTH) - 10_957L).toInt())
 
 /**
  * Translates the response of the notification center. Returns null for actions that are not ours

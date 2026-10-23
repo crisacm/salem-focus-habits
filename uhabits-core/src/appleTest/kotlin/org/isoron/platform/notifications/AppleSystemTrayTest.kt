@@ -34,7 +34,11 @@ private class FakeDeliveredCenter : DeliveredNotificationCenter {
     val shown = LinkedHashMap<String, ShownNotification>()
     val removed = mutableListOf<String>()
 
+    // Requests that are waiting for their time; posting with the same identifier replaces them, as iOS does
+    val pending = LinkedHashMap<String, String>()
+
     override fun post(notification: ShownNotification) {
+        pending.remove(notification.identifier)
         shown[notification.identifier] = notification
     }
 
@@ -76,21 +80,21 @@ class AppleSystemTrayTest : BaseUnitTest() {
     fun testShowsTheReminderWithActionsForYesNoHabits() {
         tray.showNotification(habit(7), 7, date, utcTime(2015, 1, 26, 8, 30))
         assertEquals(
-            ShownNotification("reminder-7", "Read", "Did you read?", 7, dayStart, true),
-            center.shown["reminder-7"]
+            ShownNotification("shown-7", "Read", "Did you read?", 7, dayStart, true),
+            center.shown["shown-7"]
         )
     }
 
     @Test
     fun testNumericalHabitsHaveNoYesNoActions() {
         tray.showNotification(habit(7, numerical = true), 7, date, 0)
-        assertEquals(false, center.shown["reminder-7"]?.withActions)
+        assertEquals(false, center.shown["shown-7"]?.withActions)
     }
 
     @Test
     fun testUsesTheDefaultBodyWithoutQuestion() {
         tray.showNotification(habit(7, question = ""), 7, date, 0)
-        assertEquals("Time to check in", center.shown["reminder-7"]?.body)
+        assertEquals("Time to check in", center.shown["shown-7"]?.body)
     }
 
     @Test
@@ -104,14 +108,21 @@ class AppleSystemTrayTest : BaseUnitTest() {
     fun testRemovesTheDeliveredNotificationOfTheHabit() {
         tray.showNotification(habit(7), 7, date, 0)
         tray.removeNotification(7)
-        assertEquals(listOf("reminder-7"), center.removed)
+        assertEquals(listOf("shown-7", "reminder-7"), center.removed)
         assertEquals(0, center.shown.size)
+    }
+
+    @Test
+    fun testShowingDoesNotReplaceThePendingReminderOfTheHabit() {
+        center.pending["reminder-7"] = "tomorrow 08:30"
+        tray.showNotification(habit(7), 7, date, 0)
+        assertEquals(setOf("reminder-7"), center.pending.keys)
     }
 
     @Test
     fun testRemovingAnUnknownIdUsesTheHabitIdentifier() {
         tray.removeNotification(12)
-        assertEquals(listOf("reminder-12"), center.removed)
+        assertEquals(listOf("shown-12", "reminder-12"), center.removed)
     }
 
     @Test

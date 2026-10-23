@@ -28,8 +28,9 @@ private const val DAYS_FROM_1970_TO_2000 = 10_957L
 private const val MILLIS_PER_DAY = 86_400_000L
 
 /**
- * [NotificationTray.SystemTray] over local notifications. A shown notification uses the identifier
- * of the scheduled reminder of the habit, so it replaces it instead of appearing twice. Android's
+ * [NotificationTray.SystemTray] over local notifications. A shown notification has its own
+ * identifier, so it never replaces the pending reminder of the habit; removing it also removes the
+ * delivered notification of the scheduled reminder, so one habit never leaves two behind. Android's
  * "sticky" notifications have no iOS equivalent and are ignored.
  *
  * @param defaultBody text of the notification for habits without a question
@@ -39,15 +40,14 @@ class AppleSystemTray(
     private val defaultBody: String,
     private val logger: (String) -> Unit = { platform.Foundation.NSLog("%@", it) }
 ) : NotificationTray.SystemTray {
-    private val shown = HashMap<Int, String>()
+    private val shown = HashMap<Int, Long>()
 
     override fun showNotification(habit: Habit, notificationId: Int, date: LocalDate, reminderTime: Long) {
         val habitId = habit.id ?: return
-        val identifier = AppleSystemScheduler.identifierOf(habitId)
-        shown[notificationId] = identifier
+        shown[notificationId] = habitId
         center.post(
             ShownNotification(
-                identifier,
+                shownIdentifierOf(habitId),
                 habit.name,
                 habit.question.ifBlank { defaultBody },
                 habitId,
@@ -58,9 +58,14 @@ class AppleSystemTray(
     }
 
     override fun removeNotification(notificationId: Int) {
-        val identifier = shown.remove(notificationId) ?: AppleSystemScheduler.identifierOf(notificationId.toLong())
-        center.removeDelivered(identifier)
+        val habitId = shown.remove(notificationId) ?: notificationId.toLong()
+        center.removeDelivered(shownIdentifierOf(habitId))
+        center.removeDelivered(AppleSystemScheduler.identifierOf(habitId))
     }
 
     override fun log(msg: String) = logger("AppleSystemTray: $msg")
+
+    companion object {
+        fun shownIdentifierOf(habitId: Long) = "shown-$habitId"
+    }
 }

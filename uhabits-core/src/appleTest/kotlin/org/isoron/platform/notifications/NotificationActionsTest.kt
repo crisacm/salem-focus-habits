@@ -19,6 +19,7 @@
 
 package org.isoron.platform.notifications
 
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.utcTime
 import platform.UserNotifications.UNNotificationDefaultActionIdentifier
 import platform.UserNotifications.UNNotificationDismissActionIdentifier
@@ -35,6 +36,14 @@ class NotificationActionsTest {
     fun testYesAndNoBecomeCheckAndUncheck() {
         assertEquals(NotificationAction.Check(7, 1_422_230_400_000L), parseNotificationResponse(ACTION_YES, info))
         assertEquals(NotificationAction.Uncheck(7, 1_422_230_400_000L), parseNotificationResponse(ACTION_NO, info))
+    }
+
+    @Test
+    fun testCheckAndUncheckExposeTheDayOfTheTimestamp() {
+        val day = utcTime(2015, 1, 26)
+        assertEquals(LocalDate(2015, 1, 26), NotificationAction.Check(7, day).date)
+        assertEquals(LocalDate(2015, 1, 26), NotificationAction.Uncheck(7, day).date)
+        assertEquals(LocalDate(1999, 12, 31), NotificationAction.Check(7, utcTime(1999, 12, 31)).date)
     }
 
     @Test
