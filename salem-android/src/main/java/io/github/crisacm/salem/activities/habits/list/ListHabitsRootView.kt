@@ -20,18 +20,20 @@
 package io.github.crisacm.salem.activities.habits.list
 
 import android.content.Context
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.ScrollableChart
 import io.github.crisacm.salem.activities.common.views.TaskProgressBar
-import io.github.crisacm.salem.activities.habits.list.views.EmptyListView
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListView
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListViewFactory
 import io.github.crisacm.salem.activities.habits.list.views.HeaderView
-import io.github.crisacm.salem.activities.habits.list.views.HintView
 import io.github.crisacm.salem.core.models.ModelObservable
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -40,6 +42,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.HintListFactory
 import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
+import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.utils.addAtBottom
 import io.github.crisacm.salem.utils.addAtTop
 import io.github.crisacm.salem.utils.addBelow
@@ -69,20 +72,25 @@ class ListHabitsRootView(
 ) : FrameLayout(context), ModelObservable.Listener {
 
     val listView: HabitCardListView = habitCardListViewFactory.create()
-    val llEmpty = EmptyListView(context)
+    private val emptyState = mutableStateOf(EmptyListState.HIDDEN)
+    val llEmpty = ComposeView(context).apply {
+        visibility = View.GONE
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent { SalemTheme { EmptyListContent(emptyState.value) } }
+    }
     val tbar = buildToolbar()
     val konfettiView = KonfettiView(context).apply {
         translationZ = 10f
     }
     val progressBar = TaskProgressBar(context, runner)
-    val hintView: HintView
+    private val hintList = hintListFactory.create(context.resources.getStringArray(R.array.hints))
+    val hintView = ComposeView(context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent { SalemTheme { HintContent(hintList) } }
+    }
     val header = HeaderView(context, preferences, midnightTimer)
 
     init {
-        val hints = resources.getStringArray(R.array.hints)
-        val hintList = hintListFactory.create(hints)
-        hintView = HintView(context, hintList)
-
         val rootView = RelativeLayout(context).apply {
             background = sres.getDrawable(R.attr.windowBackgroundColor)
             addAtTop(konfettiView)
@@ -148,14 +156,8 @@ class ListHabitsRootView(
     }
 
     private fun updateEmptyView() {
-        if (listAdapter.itemCount == 0) {
-            if (listAdapter.hasNoHabit()) {
-                llEmpty.showEmpty()
-            } else {
-                llEmpty.showDone()
-            }
-        } else {
-            llEmpty.hide()
-        }
+        val state = emptyListState(listAdapter.itemCount, listAdapter.hasNoHabit())
+        emptyState.value = state
+        llEmpty.visibility = if (state == EmptyListState.HIDDEN) View.GONE else View.VISIBLE
     }
 }

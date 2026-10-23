@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the empty state and the hint banner of the habit list to Compose, the first piece of the list to migrate
 - Move the create and edit habit screen to Compose, with its form state and validation in `salem-core` (`EditHabitForm`, tested). A blank name or an invalid target is now rejected, and the unit and the target type are kept across a rotation
 - Move the frequency picker and the target type and numerical frequency lists of the edit screen to Compose; the rules that turn the typed numbers into a frequency are unchanged and now covered by tests (an invalid or empty entry still becomes every day)
 - Move the delete confirmation and the checkmark and number popups to Compose; closing a popup without choosing still saves changed notes. The buttons of the checkmark popup now have accessibility labels, and the new "Unknown" label is not translated yet
