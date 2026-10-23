@@ -90,7 +90,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.isoron.uhabits.core"
+    namespace = "io.github.crisacm.salem.core"
     compileSdk = 36
 
     defaultConfig {

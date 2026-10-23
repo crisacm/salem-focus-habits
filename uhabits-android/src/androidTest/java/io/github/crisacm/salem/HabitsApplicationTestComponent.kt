@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2016-2025 Álinson Santos Xavier <git@axavier.org>
+ *
+ * This file is part of Loop Habit Tracker.
+ *
+ * Loop Habit Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * Loop Habit Tracker is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.github.crisacm.salem
+
+import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
+import io.github.crisacm.salem.core.AppScope
+import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
+import io.github.crisacm.salem.core.tasks.TaskRunner
+import io.github.crisacm.salem.inject.AppContext
+import io.github.crisacm.salem.inject.HabitsApplicationComponent
+import io.github.crisacm.salem.intents.IntentScheduler
+import java.io.File
+
+@AppScope
+@Component
+abstract class HabitsApplicationTestComponent(
+    @get:Provides @get:AppContext
+    appContext: Context,
+    @get:Provides dbFile: File
+) : HabitsApplicationComponent(appContext, dbFile) {
+
+    abstract val intentScheduler: IntentScheduler?
+
+    @AppScope
+    @Provides
+    override fun taskRunner(): TaskRunner = CoroutineTaskRunner(
+        mainDispatcher = Dispatchers.Main,
+        ioDispatcher = Dispatchers.IO
+    )
+}

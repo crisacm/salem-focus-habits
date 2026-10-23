@@ -41,7 +41,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.isoron.uhabits"
+    namespace = "io.github.crisacm.salem"
     compileSdk = 36
 
     sourceSets {

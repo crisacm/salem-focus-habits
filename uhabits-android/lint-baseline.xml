@@ -7,7 +7,7 @@
         errorLine1="            notificationManager.notify(notificationId, notification)"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/notifications/AndroidNotificationTray.kt"
+            file="src/main/java/io/github/crisacm/salem/notifications/AndroidNotificationTray.kt"
             line="75"
             column="13"/>
     </issue>
@@ -18,7 +18,7 @@
         errorLine1="            notificationManager.notify(notificationId, n)"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/notifications/AndroidNotificationTray.kt"
+            file="src/main/java/io/github/crisacm/salem/notifications/AndroidNotificationTray.kt"
             line="88"
             column="13"/>
     </issue>
@@ -29,7 +29,7 @@
         errorLine1="        context.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/receivers/ReminderController.kt"
+            file="src/main/java/io/github/crisacm/salem/receivers/ReminderController.kt"
             line="79"
             column="17"/>
     </issue>
@@ -40,7 +40,7 @@
         errorLine1="                val lines = DateUtils.formatHeaderDate(day).toUpperCase().split(&quot;\n&quot;)"
         errorLine2="                                                            ~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HeaderView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HeaderView.kt"
             line="144"
             column="61"/>
     </issue>
@@ -161,7 +161,7 @@
         errorLine1="        val sr = StyledResources(context!!)"
         errorLine2="                                 ~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/settings/SettingsFragment.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/settings/SettingsFragment.kt"
             line="92"
             column="34"/>
     </issue>
@@ -183,7 +183,7 @@
         errorLine1="        val entireView = inflater.inflate(R.layout.widget_wrapper, null)"
         errorLine2="                                                                   ~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/widgets/BaseWidget.kt"
+            file="src/main/java/io/github/crisacm/salem/widgets/BaseWidget.kt"
             line="129"
             column="68"/>
     </issue>
@@ -216,7 +216,7 @@
         errorLine1="    return inflater.inflate(R.layout.toolbar, null) as Toolbar"
         errorLine2="                                              ~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/utils/ViewExtensions.kt"
+            file="src/main/java/io/github/crisacm/salem/utils/ViewExtensions.kt"
             line="99"
             column="47"/>
     </issue>
@@ -227,7 +227,7 @@
         errorLine1="        val saveButton = findViewById&lt;Button>(R.id.buttonSave)"
         errorLine2="                                              ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/widgets/activities/HabitPickerDialog.kt"
+            file="src/main/java/io/github/crisacm/salem/widgets/activities/HabitPickerDialog.kt"
             line="84"
             column="47"/>
     </issue>
@@ -373,7 +373,7 @@
         errorLine1="    freqDen == 30 || freqDen == 31 -> resources.getString(R.string.x_times_per_month, freqNum)"
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/edit/EditHabitActivity.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/edit/EditHabitActivity.kt"
             line="63"
             column="39"/>
         <location
@@ -389,7 +389,7 @@
         errorLine1="    freqDen == 7 -> resources.getString(R.string.x_times_per_week, freqNum)"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/edit/EditHabitActivity.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/edit/EditHabitActivity.kt"
             line="67"
             column="21"/>
         <location
@@ -1537,7 +1537,7 @@
         errorLine1="        notifyDataSetChanged()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardListAdapter.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListAdapter.kt"
             line="74"
             column="9"/>
     </issue>
@@ -1548,7 +1548,7 @@
         errorLine1="        notifyDataSetChanged()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardListAdapter.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListAdapter.kt"
             line="256"
             column="9"/>
     </issue>
@@ -1559,7 +1559,7 @@
         errorLine1="            val inStream = activity.contentResolver.openInputStream(data.data!!)!!"
         errorLine2="                                                    ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/ListHabitsScreen.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/ListHabitsScreen.kt"
             line="136"
             column="53"/>
     </issue>
@@ -5325,7 +5325,7 @@
         errorLine1="class CheckmarkButtonView("
         errorLine2="      ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/CheckmarkButtonView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/CheckmarkButtonView.kt"
             line="55"
             column="7"/>
     </issue>
@@ -5336,7 +5336,7 @@
         errorLine1="class CheckmarkPanelView("
         errorLine2="      ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/CheckmarkPanelView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/CheckmarkPanelView.kt"
             line="39"
             column="7"/>
     </issue>
@@ -5358,7 +5358,7 @@
         errorLine1="class GraphWidgetView(context: Context?, val dataView: View) : HabitWidgetView(context) {"
         errorLine2="      ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/widgets/views/GraphWidgetView.kt"
+            file="src/main/java/io/github/crisacm/salem/widgets/views/GraphWidgetView.kt"
             line="27"
             column="7"/>
     </issue>
@@ -5369,7 +5369,7 @@
         errorLine1="class HabitCardListView("
         errorLine2="      ~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardListView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
             line="52"
             column="7"/>
     </issue>
@@ -5380,7 +5380,7 @@
         errorLine1="class HabitCardView("
         errorLine2="      ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardView.kt"
             line="61"
             column="7"/>
     </issue>
@@ -5391,7 +5391,7 @@
         errorLine1="class HeaderView("
         errorLine2="      ~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HeaderView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HeaderView.kt"
             line="42"
             column="7"/>
     </issue>
@@ -5402,7 +5402,7 @@
         errorLine1="class HintView("
         errorLine2="      ~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HintView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HintView.kt"
             line="34"
             column="7"/>
     </issue>
@@ -5413,7 +5413,7 @@
         errorLine1="class ListHabitsRootView @Inject constructor("
         errorLine2="      ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/ListHabitsRootView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/ListHabitsRootView.kt"
             line="60"
             column="7"/>
     </issue>
@@ -5424,7 +5424,7 @@
         errorLine1="class NumberButtonView("
         errorLine2="      ~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/NumberButtonView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/NumberButtonView.kt"
             line="69"
             column="7"/>
     </issue>
@@ -5435,7 +5435,7 @@
         errorLine1="class NumberPanelView("
         errorLine2="      ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/NumberPanelView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/NumberPanelView.kt"
             line="39"
             column="7"/>
     </issue>
@@ -5446,7 +5446,7 @@
         errorLine1="class TaskProgressBar("
         errorLine2="      ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/common/views/TaskProgressBar.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/common/views/TaskProgressBar.kt"
             line="28"
             column="7"/>
     </issue>
@@ -5479,7 +5479,7 @@
         errorLine1="    override fun onTouchEvent(event: MotionEvent) = detector.onTouchEvent(event)"
         errorLine2="                 ~~~~~~~~~~~~">
         <location
-            file="src/main/java/org/isoron/platform/gui/AndroidDataView.kt"
+            file="src/main/java/io/github/crisacm/salem/platform/gui/AndroidDataView.kt"
             line="47"
             column="18"/>
     </issue>
@@ -5490,7 +5490,7 @@
         errorLine1="        cardView.setOnTouchListener { _, ev ->"
         errorLine2="        ^">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardListView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
             line="105"
             column="9"/>
     </issue>
@@ -5501,7 +5501,7 @@
         errorLine1="        cardView.setOnTouchListener { _, ev ->"
         errorLine2="                                    ^">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardListView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
             line="105"
             column="37"/>
     </issue>
@@ -5512,7 +5512,7 @@
         errorLine1="            setOnTouchListener { v, event ->"
         errorLine2="                               ^">
         <location
-            file="src/main/java/org/isoron/uhabits/activities/habits/list/views/HabitCardView.kt"
+            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardView.kt"
             line="195"
             column="32"/>
     </issue>
@@ -8218,7 +8218,7 @@
         errorLine1="    @Ignore"
         errorLine2="    ~~~~~~~">
         <location
-            file="src/androidTest/java/org/isoron/uhabits/performance/PerformanceTest.kt"
+            file="src/androidTest/java/io/github/crisacm/salem/performance/PerformanceTest.kt"
             line="43"
             column="5"/>
     </issue>
@@ -8229,7 +8229,7 @@
         errorLine1="    @Ignore"
         errorLine2="    ~~~~~~~">
         <location
-            file="src/androidTest/java/org/isoron/uhabits/performance/PerformanceTest.kt"
+            file="src/androidTest/java/io/github/crisacm/salem/performance/PerformanceTest.kt"
             line="56"
             column="5"/>
     </issue>

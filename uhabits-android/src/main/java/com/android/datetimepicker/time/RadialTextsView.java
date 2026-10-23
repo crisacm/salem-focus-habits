@@ -30,8 +30,8 @@ import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 
-import org.isoron.uhabits.R;
-import org.isoron.uhabits.utils.StyledResources;
+import io.github.crisacm.salem.R;
+import io.github.crisacm.salem.utils.StyledResources;
 
 /**
  * A view to show a series of numbers in a circular pattern.

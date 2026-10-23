@@ -24,8 +24,8 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.View;
 
-import org.isoron.uhabits.R;
-import org.isoron.uhabits.utils.StyledResources;
+import io.github.crisacm.salem.R;
+import io.github.crisacm.salem.utils.StyledResources;
 
 /**
  * Draws a simple white circle on which the numbers will be drawn.

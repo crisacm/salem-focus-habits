@@ -44,8 +44,8 @@ import com.android.datetimepicker.HapticFeedbackController;
 import com.android.datetimepicker.Utils;
 import com.android.datetimepicker.time.RadialPickerLayout.OnValueSelectedListener;
 
-import org.isoron.uhabits.R;
-import org.isoron.uhabits.utils.StyledResources;
+import io.github.crisacm.salem.R;
+import io.github.crisacm.salem.utils.StyledResources;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
