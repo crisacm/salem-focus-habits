@@ -21,39 +21,45 @@ package io.github.crisacm.salem.acceptance.steps
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeTextIgnoreCase
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickLastComposeText
 
 object EditHabitSteps {
     fun clickSave() {
         Espresso.onView(ViewMatchers.withId(R.id.buttonSave)).perform(ViewActions.click())
     }
 
+    // The frequency dialog is drawn by Compose, which Espresso view matchers cannot see.
     fun pickFrequency() {
         Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
             .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("SAVE")).perform(ViewActions.click())
+        clickComposeTextIgnoreCase("Save")
     }
 
     fun pickMonthFrequency() {
         Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
             .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.xTimesPerMonthRadioButton))
-            .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.xTimesPerMonthTextView))
-            .perform(ViewActions.replaceText("1"))
-        Espresso.onView(ViewMatchers.withText("SAVE")).perform(ViewActions.click())
+        clickComposeText(textAfterNumber(R.string.x_times_per_month))
+        val field = BaseUserInterfaceTest.device.findObject(By.clazz("android.widget.EditText").text("10"))
+        field.text = "1"
+        clickComposeTextIgnoreCase("Save")
     }
 
     fun pickDailyFrequency() {
         Espresso.onView(ViewMatchers.withId(R.id.boolean_frequency_picker))
             .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.everyDayRadioButton))
-            .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("SAVE")).perform(ViewActions.click())
+        clickLastComposeText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.every_day))
+        clickComposeTextIgnoreCase("Save")
     }
+
+    /** The text of a "%d times per month" style string that follows the number. */
+    private fun textAfterNumber(id: Int) =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id).substringAfter("%d").trim()
 
     fun pickColor(color: Int) {
         Espresso.onView(ViewMatchers.withId(R.id.colorButton)).perform(ViewActions.click())

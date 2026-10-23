@@ -19,215 +19,161 @@
 
 package io.github.crisacm.salem.activities.common.dialogs
 
-import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.databinding.FrequencyPickerDialogBinding
+import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
+import io.github.crisacm.salem.ui.compose.DialogButton
+import io.github.crisacm.salem.ui.compose.DialogSurface
 
+private class NumberField(val value: String, val maxLength: Int, val onChange: (String) -> Unit)
+
+/** Dialog that lets the user pick how often a habit should be done; the result is a numerator and a denominator. */
 class FrequencyPickerDialog(
     var freqNumerator: Int,
     var freqDenominator: Int
-) : AppCompatDialogFragment() {
-    private var _binding: FrequencyPickerDialogBinding? = null
-    private val binding get() = _binding!!
-
+) : ComposeDialogFragment() {
     var onFrequencyPicked: (num: Int, den: Int) -> Unit = { _, _ -> }
 
     constructor() : this(1, 1)
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // The callback is not saved: a dialog restored after a rotation could not report anything.
+        if (savedInstanceState != null) dismissAllowingStateLoss()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        _binding = FrequencyPickerDialogBinding.inflate(LayoutInflater.from(requireActivity()))
-
-        addBeforeAfterText(
-            this.getString(R.string.every_x_days),
-            binding.everyXDaysContainer
-        )
-
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_week),
-            binding.xTimesPerWeekContainer
-        )
-
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_month),
-            binding.xTimesPerMonthContainer
-        )
-
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_y_days),
-            binding.xTimesPerYDaysContainer
-        )
-
-        binding.everyDayRadioButton.setOnClickListener {
-            check(binding.everyDayRadioButton)
-        }
-
-        binding.everyXDaysRadioButton.setOnClickListener {
-            check(binding.everyXDaysRadioButton)
-            val everyXDaysTextView = binding.everyXDaysTextView
-            selectInputField(everyXDaysTextView)
-        }
-
-        binding.everyXDaysTextView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) check(binding.everyXDaysRadioButton)
-        }
-
-        binding.xTimesPerWeekRadioButton.setOnClickListener {
-            check(binding.xTimesPerWeekRadioButton)
-            selectInputField(binding.xTimesPerWeekTextView)
-        }
-
-        binding.xTimesPerWeekTextView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) check(binding.xTimesPerWeekRadioButton)
-        }
-
-        binding.xTimesPerMonthRadioButton.setOnClickListener {
-            check(binding.xTimesPerMonthRadioButton)
-            selectInputField(binding.xTimesPerMonthTextView)
-        }
-
-        binding.xTimesPerMonthTextView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) check(binding.xTimesPerMonthRadioButton)
-        }
-
-        binding.xTimesPerYDaysRadioButton.setOnClickListener {
-            check(binding.xTimesPerYDaysRadioButton)
-            selectInputField(binding.xTimesPerYDaysXTextView)
-        }
-
-        binding.xTimesPerYDaysXTextView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) check(binding.xTimesPerYDaysRadioButton)
-        }
-
-        binding.xTimesPerYDaysYTextView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) check(binding.xTimesPerYDaysRadioButton)
-        }
-
-        return AlertDialog.Builder(requireActivity())
-            .setView(binding.root)
-            .setPositiveButton(R.string.save) { _, _ -> onSaveClicked() }
-            .create()
-    }
-
-    private fun addBeforeAfterText(
-        str: String,
-        container: LinearLayout
-    ) {
-        val parts = str.split("%d")
-        for (i in parts.indices) {
-            container.addView(
-                TextView(activity).apply { text = parts[i].trim() },
-                2 * i + 1
+    @Composable
+    override fun Content() {
+        var input by remember { mutableStateOf(initialFrequencyInput(freqNumerator, freqDenominator)) }
+        DialogSurface(
+            title = null,
+            onDismiss = ::dismiss,
+            buttons = {
+                DialogButton(stringResource(R.string.save)) {
+                    val (num, den) = frequencyFromInput(input)
+                    onFrequencyPicked(num, den)
+                    dismiss()
+                }
+            }
+        ) {
+            ModeRow(input.mode == FrequencyMode.EVERY_DAY, { input = input.copy(mode = FrequencyMode.EVERY_DAY) }) {
+                Text(stringResource(R.string.every_day), color = MaterialTheme.colorScheme.onSurface)
+            }
+            NumberRow(
+                selected = input.mode == FrequencyMode.EVERY_X_DAYS,
+                onSelect = { input = input.copy(mode = FrequencyMode.EVERY_X_DAYS) },
+                format = stringResource(R.string.every_x_days),
+                fields = listOf(NumberField(input.everyXDays, 3) { input = input.copy(everyXDays = it) })
+            )
+            NumberRow(
+                selected = input.mode == FrequencyMode.X_TIMES_PER_WEEK,
+                onSelect = { input = input.copy(mode = FrequencyMode.X_TIMES_PER_WEEK) },
+                format = stringResource(R.string.x_times_per_week),
+                fields = listOf(NumberField(input.perWeek, 1) { input = input.copy(perWeek = it) })
+            )
+            NumberRow(
+                selected = input.mode == FrequencyMode.X_TIMES_PER_MONTH,
+                onSelect = { input = input.copy(mode = FrequencyMode.X_TIMES_PER_MONTH) },
+                format = stringResource(R.string.x_times_per_month),
+                fields = listOf(NumberField(input.perMonth, 2) { input = input.copy(perMonth = it) })
+            )
+            NumberRow(
+                selected = input.mode == FrequencyMode.X_TIMES_IN_Y_DAYS,
+                onSelect = { input = input.copy(mode = FrequencyMode.X_TIMES_IN_Y_DAYS) },
+                format = stringResource(R.string.x_times_per_y_days),
+                fields = listOf(
+                    NumberField(input.x, 3) { input = input.copy(x = it) },
+                    NumberField(input.y, 3) { input = input.copy(y = it) }
+                )
             )
         }
     }
+}
 
-    private fun onSaveClicked() {
-        var numerator = 1
-        var denominator = 1
-        when {
-            binding.everyDayRadioButton.isChecked -> {
-                // NOP
-            }
-
-            binding.everyXDaysRadioButton.isChecked -> {
-                if (binding.everyXDaysTextView.text.isNotEmpty()) {
-                    denominator = Integer.parseInt(binding.everyXDaysTextView.text.toString())
-                }
-            }
-
-            binding.xTimesPerWeekRadioButton.isChecked -> {
-                if (binding.xTimesPerWeekTextView.text.isNotEmpty()) {
-                    numerator = Integer.parseInt(binding.xTimesPerWeekTextView.text.toString())
-                    denominator = 7
-                }
-            }
-
-            binding.xTimesPerYDaysRadioButton.isChecked -> {
-                if (binding.xTimesPerYDaysXTextView.text.isNotEmpty() && binding.xTimesPerYDaysYTextView.text.isNotEmpty()) {
-                    numerator =
-                        Integer.parseInt(binding.xTimesPerYDaysXTextView.text.toString())
-                    denominator =
-                        Integer.parseInt(binding.xTimesPerYDaysYTextView.text.toString())
-                }
-            }
-
-            else -> {
-                if (binding.xTimesPerMonthTextView.text.isNotEmpty()) {
-                    numerator = Integer.parseInt(binding.xTimesPerMonthTextView.text.toString())
-                    denominator = 30
-                }
-            }
-        }
-        if (numerator >= denominator || numerator < 1) {
-            numerator = 1
-            denominator = 1
-        }
-        onFrequencyPicked(numerator, denominator)
-        dismiss()
+@Composable
+private fun ModeRow(selected: Boolean, onSelect: () -> Unit, content: @Composable () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.RadioButton, onClick = onSelect)
+            .padding(horizontal = 16.dp)
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        // The text and the fields wrap onto more lines with large fonts or long translations.
+        FlowRow(
+            modifier = Modifier.padding(start = 8.dp),
+            verticalArrangement = Arrangement.Center,
+            itemVerticalAlignment = Alignment.CenterVertically
+        ) { content() }
     }
+}
 
-    private fun check(view: RadioButton) {
-        uncheckAll()
-        view.isChecked = true
-        view.requestFocus()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        populateViews()
-    }
-
-    private fun populateViews() {
-        uncheckAll()
-        if (freqDenominator == 30 || freqDenominator == 31) {
-            binding.xTimesPerMonthRadioButton.isChecked = true
-            binding.xTimesPerMonthTextView.setText(freqNumerator.toString())
-            selectInputField(binding.xTimesPerMonthTextView)
-        } else {
-            if (freqNumerator == 1) {
-                if (freqDenominator == 1) {
-                    binding.everyDayRadioButton.isChecked = true
-                } else {
-                    binding.everyXDaysRadioButton.isChecked = true
-                    binding.everyXDaysTextView.setText(freqDenominator.toString())
-                    selectInputField(binding.everyXDaysTextView)
-                }
-            } else {
-                if (freqDenominator == 7) {
-                    binding.xTimesPerWeekRadioButton.isChecked = true
-                    binding.xTimesPerWeekTextView.setText(freqNumerator.toString())
-                    selectInputField(binding.xTimesPerWeekTextView)
-                } else {
-                    binding.xTimesPerYDaysRadioButton.isChecked = true
-                    binding.xTimesPerYDaysXTextView.setText(freqNumerator.toString())
-                    binding.xTimesPerYDaysYTextView.setText(freqDenominator.toString())
-                }
+/** A radio with a text such as "%d times per week" whose numbers are editable fields. */
+@Composable
+private fun NumberRow(selected: Boolean, onSelect: () -> Unit, format: String, fields: List<NumberField>) {
+    val first = remember { FocusRequester() }
+    val parts = format.split("%d")
+    ModeRow(selected, { onSelect().also { runCatching { first.requestFocus() } } }) {
+        parts.forEachIndexed { index, part ->
+            if (part.isNotBlank()) {
+                Text(part.trim(), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(horizontal = 4.dp))
+            }
+            fields.getOrNull(index)?.let { field ->
+                NumberBox(field, onFocus = onSelect, modifier = if (index == 0) Modifier.focusRequester(first) else Modifier)
             }
         }
     }
+}
 
-    private fun selectInputField(view: EditText) {
-        view.setSelection(view.text.length)
-    }
-
-    private fun uncheckAll() {
-        binding.everyDayRadioButton.isChecked = false
-        binding.everyXDaysRadioButton.isChecked = false
-        binding.xTimesPerWeekRadioButton.isChecked = false
-        binding.xTimesPerMonthRadioButton.isChecked = false
-        binding.xTimesPerYDaysRadioButton.isChecked = false
-    }
+@Composable
+private fun NumberBox(field: NumberField, onFocus: () -> Unit, modifier: Modifier) {
+    BasicTextField(
+        value = field.value,
+        onValueChange = { if (it.length <= field.maxLength && it.all(Char::isDigit)) field.onChange(it) },
+        singleLine = true,
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp, textAlign = TextAlign.Center),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = modifier
+            .size(width = 50.dp, height = 40.dp)
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(4.dp))
+            .padding(horizontal = 4.dp, vertical = 8.dp)
+            .onFocusChanged { if (it.isFocused) onFocus() }
+    )
 }
