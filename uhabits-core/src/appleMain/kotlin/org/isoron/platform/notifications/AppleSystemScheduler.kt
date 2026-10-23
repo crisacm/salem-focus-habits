@@ -19,6 +19,7 @@
 
 package org.isoron.platform.notifications
 
+import org.isoron.platform.Synchronized
 import org.isoron.platform.time.DateUtils
 import org.isoron.platform.time.currentTimeMillis
 import org.isoron.uhabits.core.models.Habit
@@ -43,6 +44,7 @@ class AppleSystemScheduler(
 ) : SystemScheduler {
     private val scheduled = LinkedHashMap<String, Long>()
 
+    @Synchronized
     override fun scheduleShowReminder(reminderTime: Long, habit: Habit, timestamp: Long): SchedulerResult {
         val habitId = habit.id ?: return SchedulerResult.IGNORED
         val reminder = habit.reminder ?: return SchedulerResult.IGNORED
@@ -80,6 +82,7 @@ class AppleSystemScheduler(
     /**
      * Removes every pending reminder.
      */
+    @Synchronized
     fun clear() {
         scheduled.clear()
         center.removeAll()
