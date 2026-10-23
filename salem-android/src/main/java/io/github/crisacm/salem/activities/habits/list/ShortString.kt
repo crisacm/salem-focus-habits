@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.list.views
+package io.github.crisacm.salem.activities.habits.list
 
 import java.text.DecimalFormat
 

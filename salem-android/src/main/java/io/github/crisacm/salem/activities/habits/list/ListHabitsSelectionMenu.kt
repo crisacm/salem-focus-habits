@@ -23,8 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListController
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
@@ -40,13 +38,13 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 @ActivityScope
 class ListHabitsSelectionMenu(
-    private val listAdapter: HabitCardListAdapter,
+    private val listState: HabitListState,
     var commandRunner: CommandRunner,
     private val prefs: Preferences,
     private val behavior: ListHabitsSelectionMenuBehavior,
-    private val listController: Lazy<HabitCardListController>,
+    private val listController: Lazy<HabitListController>,
     private val notificationTray: NotificationTray
-) {
+) : SelectionListener {
     var active by mutableStateOf(false)
         private set
     var selectedCount by mutableIntStateOf(0)
@@ -54,14 +52,14 @@ class ListHabitsSelectionMenu(
     var actions by mutableStateOf(SelectionActions.NONE)
         private set
 
-    fun onSelectionStart() {
+    override fun onSelectionStart() {
         active = true
         refresh()
     }
 
-    fun onSelectionChange() = refresh()
+    override fun onSelectionChange() = refresh()
 
-    fun onSelectionFinish() {
+    override fun onSelectionFinish() {
         active = false
         selectedCount = 0
         actions = SelectionActions.NONE
@@ -81,11 +79,11 @@ class ListHabitsSelectionMenu(
     fun onDelete() = behavior.onDeleteHabits()
 
     fun onNotify() {
-        for (habit in listAdapter.selected) notificationTray.show(habit, getToday(), 0)
+        for (habit in listState.getSelected()) notificationTray.show(habit, getToday(), 0)
     }
 
     private fun refresh() {
-        selectedCount = listAdapter.selected.size
+        selectedCount = listState.selectedIds.size
         actions = SelectionActions(
             canEdit = behavior.canEdit(),
             canArchive = behavior.canArchive(),

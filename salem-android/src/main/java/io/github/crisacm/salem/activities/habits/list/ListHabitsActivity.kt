@@ -30,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
 import io.github.crisacm.salem.BaseExceptionHandler
 import io.github.crisacm.salem.HabitsApplication
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.ThemeSwitcher.Companion.THEME_DARK
@@ -52,7 +51,7 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
     lateinit var appComponent: HabitsApplicationComponent
     lateinit var component: HabitsActivityComponent
     lateinit var taskRunner: TaskRunner
-    lateinit var adapter: HabitCardListAdapter
+    lateinit var adapter: HabitListState
     lateinit var rootView: ListHabitsRootView
     lateinit var screen: ListHabitsScreen
     lateinit var prefs: Preferences
@@ -90,14 +89,20 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         pureBlack = prefs.isPureBlackEnabled
         midnightTimer = appComponent.midnightTimer
         rootView = component.listHabitsRootView
+        savedInstanceState?.let { rootView.restoreDataOffset(it.getInt(KEY_DATA_OFFSET)) }
         screen = component.listHabitsScreen
-        adapter = component.habitCardListAdapter
+        adapter = component.habitListState
         taskRunner = appComponent.taskRunner
         menu = component.listHabitsMenu
         Thread.setDefaultUncaughtExceptionHandler(BaseExceptionHandler(this))
         component.listHabitsBehavior.onStartup()
         rootView.applyRootViewInsets()
         setContentView(rootView)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_DATA_OFFSET, rootView.dataOffset)
     }
 
     override fun onPause() {
@@ -179,5 +184,6 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
 
     companion object {
         const val ACTION_EDIT = "org.isoron.uhabits.ACTION_EDIT"
+        private const val KEY_DATA_OFFSET = "dataOffset"
     }
 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -114,6 +115,7 @@ fun CheckmarkCell(
         modifier = modifier
             .size(CellSize)
             .semantics { contentDescription = description }
+            .testTag("checkmark_$value")
             .combinedClickable(
                 onClick = if (shortToggle) toggle else onEdit,
                 onLongClick = if (shortToggle) onEdit else toggle

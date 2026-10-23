@@ -193,6 +193,10 @@ class HabitCardListCache(
         filteredHabits = allHabits.getFiltered(matcher)
     }
 
+    /** Whether [candidate] is the listener now, so a screen that is leaving does not detach its successor. */
+    @Synchronized
+    fun isListener(candidate: Listener) = listener === candidate
+
     @Synchronized
     fun setListener(listener: Listener) {
         this.listener = listener

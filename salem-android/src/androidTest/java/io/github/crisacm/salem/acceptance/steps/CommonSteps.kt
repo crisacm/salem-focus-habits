@@ -31,6 +31,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
@@ -38,6 +40,7 @@ import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.ListHabitsActivity
 import org.hamcrest.CoreMatchers
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import java.util.regex.Pattern
 
@@ -46,7 +49,31 @@ object CommonSteps : BaseUserInterfaceTest() {
         device.pressBack()
     }
 
+    // The rows of the habit list are drawn by Compose, which Espresso view matchers cannot see, so while
+    // the list is on screen the helpers that take a text look for it with UiAutomator.
+    private fun isHabitListShown() = device.hasObject(By.res("habitRow"))
+
+    private fun scrollListTo(text: String) {
+        val scrollable = UiScrollable(UiSelector().scrollable(true))
+        try {
+            if (scrollable.exists()) scrollable.scrollIntoView(UiSelector().text(text))
+        } catch (e: UiObjectNotFoundException) {
+            // The assertion that follows reports the missing text.
+        }
+    }
+
+    private fun findListText(text: String): UiObject2 {
+        scrollListTo(text)
+        assertTrue("Text not found: $text", device.wait(Until.hasObject(By.text(text)), 5000))
+        return device.findObject(By.text(text))
+    }
+
     fun clickText(text: String?) {
+        if (text != null && isHabitListShown()) {
+            findListText(text).click()
+            device.waitForIdle()
+            return
+        }
         scrollToText(text)
         Espresso.onView(ViewMatchers.withText(text)).perform(ViewActions.click())
         device.waitForIdle()
@@ -114,6 +141,11 @@ object CommonSteps : BaseUserInterfaceTest() {
     }
 
     fun longClickText(text: String?) {
+        if (text != null && isHabitListShown()) {
+            findListText(text).longClick()
+            device.waitForIdle()
+            return
+        }
         scrollToText(text)
         Espresso.onView(ViewMatchers.withText(text)).perform(ViewActions.longClick())
         device.waitForIdle()
@@ -133,6 +165,10 @@ object CommonSteps : BaseUserInterfaceTest() {
     }
 
     fun scrollToText(text: String?) {
+        if (text != null && isHabitListShown()) {
+            scrollListTo(text)
+            return
+        }
         try {
             if (device
                 .findObject(UiSelector().className(RecyclerView::class.java))
@@ -157,12 +193,25 @@ object CommonSteps : BaseUserInterfaceTest() {
     }
 
     fun verifyDisplaysText(text: String?) {
+        if (text != null && isHabitListShown()) {
+            findListText(text)
+            return
+        }
         scrollToText(text)
         Espresso.onView(ViewMatchers.withText(text))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
     }
 
     fun verifyDisplaysTextInSequence(vararg text: String?) {
+        if (isHabitListShown()) {
+            var previous = findListText(text[0]!!).visibleBounds
+            for (i in 1 until text.size) {
+                val bounds = findListText(text[i]!!).visibleBounds
+                assertTrue("${text[i]} is not below ${text[i - 1]}", bounds.top >= previous.bottom)
+                previous = bounds
+            }
+            return
+        }
         verifyDisplaysText(text[0])
         for (i in 1 until text.size) {
             verifyDisplaysText(text[i])
@@ -184,6 +233,8 @@ object CommonSteps : BaseUserInterfaceTest() {
 
     fun verifyDoesNotDisplayText(text: String?) {
         Espresso.onView(ViewMatchers.withText(text)).check(ViewAssertions.doesNotExist())
+        // Espresso does not see text drawn by Compose, so UiAutomator checks the whole screen too.
+        if (text != null) assertTrue("Text still shown: $text", device.wait(Until.gone(By.text(text)), 3000))
         device.waitForIdle()
     }
 
@@ -225,12 +276,8 @@ object CommonSteps : BaseUserInterfaceTest() {
 
     fun verifyDisplaysCheckmarks(habitName: String, vals: List<Int>) {
         scrollToText(habitName)
-        Espresso.onView(
-            CoreMatchers.allOf(
-                ViewMatchers.hasDescendant(ViewMatchers.withText(habitName)),
-                ViewMatchers.withClassName(CoreMatchers.endsWith("HabitCardView"))
-            )
-        ).check(HasButtonsViewAssertion(vals))
+        val actual = ListHabitsSteps.checkmarkValues(habitName)
+        assertEquals("Checkmarks of $habitName", vals, actual.take(vals.size))
     }
 
     fun createHabit(habitName: String) {

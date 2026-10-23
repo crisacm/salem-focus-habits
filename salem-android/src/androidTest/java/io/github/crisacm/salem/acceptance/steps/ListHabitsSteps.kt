@@ -18,24 +18,18 @@
  */
 package io.github.crisacm.salem.acceptance.steps
 
-import android.view.View
-import android.view.ViewGroup
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
-import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.BaseUserInterfaceTest.Companion.device
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.habits.list.views.CheckmarkButtonView
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.endsWith
-import org.hamcrest.Matcher
-import java.util.LinkedList
+import java.util.regex.Pattern
 
 object ListHabitsSteps {
     // The top bar and the selection bar of the list are drawn by Compose, which Espresso view matchers
@@ -104,48 +98,36 @@ object ListHabitsSteps {
         Espresso.onView(ViewMatchers.withId(id)).perform(ViewActions.click())
     }
 
-    private fun longClickDescendantWithClass(cls: Class<*>, count: Int): ViewAction {
-        return object : ViewAction {
-            override fun getConstraints(): Matcher<View> {
-                return ViewMatchers.isEnabled()
-            }
+    /**
+     * The checkmark cells of the row of [habitName], from left to right. The rows and cells are drawn by
+     * Compose: a cell is found by its test tag (`checkmark_<value>`) and belongs to the row whose vertical
+     * span contains the name of the habit.
+     */
+    fun checkmarkCells(habitName: String): List<UiObject2> {
+        val name = device.findObject(By.text(habitName)) ?: throw AssertionError("Habit not shown: $habitName")
+        val y = name.visibleBounds.centerY()
+        val row = device.findObjects(By.res("habitRow")).map { it.visibleBounds }.firstOrNull { y in it.top..it.bottom }
+            ?: throw AssertionError("Row of $habitName not found")
+        return device.findObjects(By.res(CHECKMARK_CELL))
+            .filter { it.visibleBounds.centerY() in row.top..row.bottom }
+            .sortedBy { it.visibleBounds.left }
+    }
 
-            override fun getDescription(): String {
-                return "perform on children"
-            }
+    /** The values of the checkmark cells of the row of [habitName], from today backwards. */
+    fun checkmarkValues(habitName: String): List<Int> =
+        checkmarkCells(habitName).map { it.resourceName.substringAfter("checkmark_").toInt() }
 
-            override fun perform(uiController: UiController, view: View) {
-                val stack = LinkedList<ViewGroup>()
-                if (view is ViewGroup) stack.push(view)
-                var countRemaining = count
-                while (!stack.isEmpty()) {
-                    val vg = stack.pop()
-                    for (i in 0 until vg.childCount) {
-                        val v = vg.getChildAt(i)
-                        if (v is ViewGroup) stack.push(v)
-                        if (cls.isInstance(v) && countRemaining > 0) {
-                            v.performLongClick()
-                            uiController.loopMainThreadUntilIdle()
-                            countRemaining--
-                        }
-                    }
-                }
-            }
+    /** Long presses the [count] first checkmarks (the most recent days) of a habit. */
+    fun longPressCheckmarks(habit: String, count: Int) {
+        CommonSteps.scrollToText(habit)
+        // The cells are found again each time because a long press recomposes the row.
+        for (i in 0 until count) {
+            checkmarkCells(habit)[i].longClick()
+            device.waitForIdle()
         }
     }
 
-    fun longPressCheckmarks(habit: String?, count: Int) {
-        CommonSteps.scrollToText(habit)
-        Espresso.onView(
-            allOf(
-                ViewMatchers.hasDescendant(ViewMatchers.withText(habit)),
-                ViewMatchers.withClassName(endsWith("HabitCardView"))
-            )
-        ).perform(
-            longClickDescendantWithClass(CheckmarkButtonView::class.java, count)
-        )
-        BaseUserInterfaceTest.device.waitForIdle()
-    }
+    private val CHECKMARK_CELL = Pattern.compile("checkmark_.*")
 
     fun changeSort(sortText: String) {
         CommonSteps.clickTag("action_filter")

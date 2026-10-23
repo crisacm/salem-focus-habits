@@ -32,11 +32,11 @@ import org.junit.Before
 import org.junit.Test
 
 open class BaseAndroidJVMTest {
-    private lateinit var habitList: HabitList
+    protected lateinit var habitList: HabitList
     protected lateinit var fixtures: HabitFixtures
     private lateinit var modelFactory: MemoryModelFactory
-    private lateinit var taskRunner: TaskRunner
-    private lateinit var commandRunner: CommandRunner
+    protected lateinit var taskRunner: TaskRunner
+    protected lateinit var commandRunner: CommandRunner
 
     @Before
     open fun setUp() {

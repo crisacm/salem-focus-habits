@@ -22,14 +22,11 @@ package io.github.crisacm.salem
 import android.content.Context
 import dev.mokkery.mock
 import io.github.crisacm.salem.activities.HabitsDirFinder
+import io.github.crisacm.salem.activities.habits.list.HabitListState
 import io.github.crisacm.salem.activities.habits.list.ListHabitsModule
 import io.github.crisacm.salem.activities.habits.list.ListHabitsScreen
-import io.github.crisacm.salem.activities.habits.list.views.CheckmarkButtonViewFactory
-import io.github.crisacm.salem.activities.habits.list.views.CheckmarkPanelViewFactory
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardViewFactory
-import io.github.crisacm.salem.activities.habits.list.views.NumberButtonViewFactory
-import io.github.crisacm.salem.activities.habits.list.views.NumberPanelViewFactory
+import io.github.crisacm.salem.activities.habits.list.ListHabitsSelectionMenu
+import io.github.crisacm.salem.activities.habits.list.SelectionListener
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
@@ -46,16 +43,10 @@ abstract class HabitsActivityTestComponent(
     @get:Provides @get:ActivityContext
     val activityContext: Context
 ) {
-    abstract fun getCheckmarkPanelViewFactory(): CheckmarkPanelViewFactory
-    abstract fun getHabitCardViewFactory(): HabitCardViewFactory
-    abstract fun getEntryButtonViewFactory(): CheckmarkButtonViewFactory
-    abstract fun getNumberButtonViewFactory(): NumberButtonViewFactory
-    abstract fun getNumberPanelViewFactory(): NumberPanelViewFactory
-
     @Provides
     open fun listHabitsBehavior(): ListHabitsBehavior = mock()
 
-    open val HabitCardListAdapter.bindAdapter: ListHabitsMenuBehavior.Adapter
+    open val HabitListState.bindAdapter: ListHabitsMenuBehavior.Adapter
         @Provides get() = this
 
     open val ListHabitsModule.bindBugReporter: ListHabitsBehavior.BugReporter
@@ -67,7 +58,10 @@ abstract class HabitsActivityTestComponent(
     open val ListHabitsScreen.bindScreen: ListHabitsBehavior.Screen
         @Provides get() = this
 
-    open val HabitCardListAdapter.bindSelMenuAdapter: ListHabitsSelectionMenuBehavior.Adapter
+    open val HabitListState.bindSelMenuAdapter: ListHabitsSelectionMenuBehavior.Adapter
+        @Provides get() = this
+
+    open val ListHabitsSelectionMenu.bindSelectionListener: SelectionListener
         @Provides get() = this
 
     open val ListHabitsScreen.bindSelMenuScreen: ListHabitsSelectionMenuBehavior.Screen
