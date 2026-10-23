@@ -38,23 +38,9 @@ import io.github.crisacm.salem.utils.drawNotesIndicator
 import io.github.crisacm.salem.utils.getFontAwesome
 import io.github.crisacm.salem.utils.sres
 import me.tatarka.inject.annotations.Inject
-import java.text.DecimalFormat
 
 private val BOLD_TYPEFACE = Typeface.create("sans-serif-condensed", Typeface.BOLD)
 private val NORMAL_TYPEFACE = Typeface.create("sans-serif-condensed", Typeface.NORMAL)
-
-fun Double.toShortString(): String = when {
-    this >= 1e9 -> String.format("%.1fG", this / 1e9)
-    this >= 1e8 -> String.format("%.0fM", this / 1e6)
-    this >= 1e7 -> String.format("%.1fM", this / 1e6)
-    this >= 1e6 -> String.format("%.1fM", this / 1e6)
-    this >= 1e5 -> String.format("%.0fk", this / 1e3)
-    this >= 1e4 -> String.format("%.1fk", this / 1e3)
-    this >= 1e3 -> String.format("%.1fk", this / 1e3)
-    this >= 1e2 -> DecimalFormat("#").format(this)
-    this >= 1e1 -> DecimalFormat("#.#").format(this)
-    else -> DecimalFormat("#.##").format(this)
-}
 
 @Inject
 class NumberButtonViewFactory(

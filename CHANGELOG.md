@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Move the day header of the habit list to Compose, and add the Compose cells (checkmark, number and score ring) that the rows will use next; the header no longer has a dead zone when dragged past today
 - Move the top bar of the habit list (add, filter, sort, search and overflow menus) and the multi-selection bar to Compose, replacing the Android menus and the action mode. The label of the hide completed filter now follows the skip setting too. The new "More options" and "Close" labels are not translated yet
 - Move the empty state and the hint banner of the habit list to Compose, the first piece of the list to migrate
 - Move the create and edit habit screen to Compose, with its form state and validation in `salem-core` (`EditHabitForm`, tested). A blank name or an invalid target is now rejected, and the unit and the target type are kept across a rotation

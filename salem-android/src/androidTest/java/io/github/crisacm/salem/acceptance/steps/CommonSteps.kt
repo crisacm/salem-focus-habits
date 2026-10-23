@@ -124,8 +124,12 @@ object CommonSteps : BaseUserInterfaceTest() {
         device.waitForIdle()
     }
 
+    /** Drags the day header (drawn by Compose, found by its test tag) to the left to show older days. */
     fun offsetHeaders() {
-        device.swipe(500, 160, 350, 160, 20)
+        assertTrue("Day header not found", device.wait(Until.hasObject(By.res("dayHeader")), 5000))
+        val bounds = device.findObject(By.res("dayHeader")).visibleBounds
+        val y = bounds.centerY()
+        device.swipe(bounds.right - bounds.width() / 4, y, bounds.right - bounds.width() / 2, y, 20)
     }
 
     fun scrollToText(text: String?) {

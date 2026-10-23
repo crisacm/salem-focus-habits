@@ -31,12 +31,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.common.views.ScrollableChart
 import io.github.crisacm.salem.activities.common.views.TaskProgressBar
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListView
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListViewFactory
-import io.github.crisacm.salem.activities.habits.list.views.HeaderView
 import io.github.crisacm.salem.core.models.ModelObservable
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -46,6 +44,7 @@ import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.utils.StyledResources
 import io.github.crisacm.salem.utils.addAtBottom
@@ -69,8 +68,8 @@ class ListHabitsRootView(
     hintListFactory: HintListFactory,
     menu: ListHabitsMenu,
     selectionMenu: ListHabitsSelectionMenu,
-    preferences: Preferences,
-    midnightTimer: MidnightTimer,
+    private val preferences: Preferences,
+    private val midnightTimer: MidnightTimer,
     runner: TaskRunner,
     private val listAdapter: HabitCardListAdapter,
     habitCardListViewFactory: HabitCardListViewFactory
@@ -100,7 +99,26 @@ class ListHabitsRootView(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent { SalemTheme { HintContent(hintList) } }
     }
-    val header = HeaderView(context, preferences, midnightTimer)
+    private val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {
+        listView.dataOffset = it
+    }
+    val header = ComposeView(context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        val styled = StyledResources(context)
+        val background = Color(styled.getColor(R.attr.headerBackgroundColor))
+        val text = Color(styled.getColor(R.attr.contrast60))
+        setContent { SalemTheme { HeaderContent(headerState, background, text) } }
+    }
+    private val preferencesListener = object : Preferences.Listener {
+        override fun onCheckmarkSequenceChanged() {
+            post { headerState.reversed = preferences.isCheckmarkSequenceReversed }
+        }
+    }
+    private val midnightListener = object : MidnightTimer.MidnightListener {
+        override fun atMidnight() {
+            post { headerState.today = getToday() }
+        }
+    }
 
     init {
         val rootView = RelativeLayout(context).apply {
@@ -139,31 +157,28 @@ class ListHabitsRootView(
         updateEmptyView()
     }
 
-    private fun setupControllers() {
-        header.setScrollController(
-            object : ScrollableChart.ScrollController {
-                override fun onDataOffsetChanged(newDataOffset: Int) {
-                    listView.dataOffset = newDataOffset
-                }
-            }
-        )
-    }
-
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setupControllers()
+        headerState.reversed = preferences.isCheckmarkSequenceReversed
+        headerState.today = getToday()
+        // The list restores its own offset when the screen is recreated, so the header starts from it.
+        headerState.restoreOffset(listView.dataOffset)
+        preferences.addListener(preferencesListener)
+        midnightTimer.addListener(midnightListener)
         listAdapter.observable.addListener(this)
     }
 
     override fun onDetachedFromWindow() {
         listAdapter.observable.removeListener(this)
+        midnightTimer.removeListener(midnightListener)
+        preferences.removeListener(preferencesListener)
         super.onDetachedFromWindow()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         val count = getCheckmarkCount()
-        header.buttonCount = count
-        header.setMaxDataOffset(max(MAX_CHECKMARK_COUNT - count, 0))
+        headerState.buttonCount = count
+        headerState.setMaxDataOffset(max(MAX_CHECKMARK_COUNT - count, 0))
         listView.checkmarkCount = count
         super.onSizeChanged(w, h, oldw, oldh)
     }
