@@ -41,7 +41,7 @@ the fork of Loop Habit Tracker. Check items off as they are completed.
 
 ## Code
 
-- [ ] Rename the Kotlin packages and `namespace` from `org.isoron.uhabits`, and the Gradle modules `uhabits-*` (planned for the KMP migration)
+- [ ] Rename the Gradle modules `uhabits-core` and `uhabits-android` to `salem-core` and `salem-android` (step 5b; the Kotlin packages are already `io.github.crisacm.salem`)
 - [ ] Decide what to do with the `org.isoron.uhabits.ACTION_*` intent actions and the `content://org.isoron.uhabits/...` URI (kept for Tasker compatibility)
 - [ ] Sync server: the default URL is empty; set up a server or remove the setting
 - [ ] Review `versionCode` and `versionName`

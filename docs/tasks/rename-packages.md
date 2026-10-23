@@ -21,14 +21,18 @@ Step 5 of `.specs/migration-kmp.md` and `.specs/rename.md`. The app id is alread
 - Import order after the rename (ktlint), matching of `lint-baseline.xml` paths, and the R8 keep rule are only known by running the builds (steps 3-4).
 
 ## Checklist
-- [ ] TASK-1: task doc and baseline — criterio: this file committed
-- [ ] TASK-2: mechanical move and text replacement — criterio: the whitelist is all that is left of `org.isoron`; `git diff -M` shows renames
-- [ ] TASK-3: `ktlintFormat` import re-sort — criterio: `ktlintCheck` green
-- [ ] TASK-4: full verification (`assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `jvmTest`, `iosSimulatorArm64Test`, `compileKotlinIosArm64`, `lintDebug`)
-- [ ] TASK-5: docs (AGENTS.md, README.md, PENDING.md, CHANGELOG.md) and re-index
+- [x] TASK-1: task doc and baseline — criterio: this file committed
+- [x] TASK-2: mechanical move and text replacement — criterio: the whitelist is all that is left of `org.isoron`; `git diff -M` shows renames
+- [x] TASK-3: `ktlintFormat` import re-sort — criterio: `ktlintCheck` green
+- [x] TASK-4: full verification (`assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `jvmTest`, `iosSimulatorArm64Test`, `compileKotlinIosArm64`, `lintDebug`)
+- [x] TASK-5: docs (AGENTS.md, README.md, PENDING.md, CHANGELOG.md) and re-index
 
 ## Estrategia de entrega
 `single-pr` of mechanical commits (moves and replacements first, formatting second, docs last) so that `git diff -M` stays readable; base `develop`.
 
 ## Evidencia
-(pending)
+- Baseline on `develop` (492aab8) and result after the rename are identical: `jvmTest` 313, `iosSimulatorArm64Test` 439, Android unit tests 5, 0 failures.
+- Mechanical commit: 417 renames and 453 files changed with the same number of insertions and deletions (2,341 each); `git diff -M` shows renames. After it, `git grep org.isoron` only finds the whitelist (intent actions, content URI and host, Loop store links in `README.md`, the stale `market://` entry of `lint-baseline.xml`, and text of the docs). Format commit: 174 files, only import lines moved (`ktlintFormat`, no non-import line changed).
+- Passed from a clean build: `assembleDebug`, `assembleRelease` (unsigned APK, so the new ProGuard keep rule works), `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `jvmTest`, `iosSimulatorArm64Test`, `compileKotlinIosArm64`, `ktlintCheck`, `lintDebug` (86 errors and 829 warnings, the same numbers as `develop`: the baseline still matches; `lintDebug` needs network because the offline cache lacks the androidTest classpath).
+- The four `Module was compiled with an incompatible version of Kotlin` messages of `assembleRelease` also appear on `develop` (checked in a separate worktree).
+- Not verified: instrumented tests, widgets, Tasker/Locale plugin, backup/restore and FileProvider on a device (no emulator here: only compiled). Component class names of widgets and receivers changed; harmless because the Salem application id was never published.
