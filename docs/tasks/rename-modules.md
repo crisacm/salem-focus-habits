@@ -17,14 +17,17 @@ Step 5 of `.specs/migration-kmp.md` and `.specs/rename.md`. The packages are alr
 - Baseline on `develop` (42ee686): `jvmTest` 313, `iosSimulatorArm64Test` 439, Android unit tests 5.
 
 ## Checklist
-- [ ] TASK-1: task doc — criterio: this file committed
-- [ ] TASK-2: `git mv` of the two module directories alone — criterio: `git diff -M` shows only renames
-- [ ] TASK-3: references updated (Gradle, CI, `build.sh`, translators script, comments) — criterio: `./gradlew projects` lists `:salem-android` and `:salem-core`
-- [ ] TASK-4: full verification — criterio: same test counts, builds and `ktlintCheck` green
-- [ ] TASK-5: docs and re-index
+- [x] TASK-1: task doc — criterio: this file committed
+- [x] TASK-2: `git mv` of the two module directories alone — criterio: `git diff -M` shows only renames
+- [x] TASK-3: references updated (Gradle, CI, `build.sh`, translators script, comments) — criterio: `./gradlew projects` lists `:salem-android` and `:salem-core`
+- [x] TASK-4: full verification — criterio: same test counts, builds and `ktlintCheck` green
+- [x] TASK-5: docs and re-index
 
 ## Estrategia de entrega
 `single-pr`, commits: task doc, moves only, references, docs; base `develop`.
 
 ## Evidencia
-(pending)
+- Same results as the baseline from a clean build: `jvmTest` 313, `iosSimulatorArm64Test` 439, Android unit tests 5, 0 failures; `assembleDebug`, `assembleRelease` (now `salem-android-release-unsigned.apk`), `compileDebugAndroidTestKotlin`, `compileKotlinIosArm64`, `ktlintCheck` pass; `lintDebug` gives 86 errors and 829 warnings, as before. `./gradlew projects` lists `:salem-android` and `:salem-core`. The four `incompatible version of Kotlin` lines of `assembleRelease` are the ones already present on `develop`.
+- The directory commit contains only renames (`git diff -M` shows 760 files, no content change). The duplicated `include` line of `settings.gradle.kts` is now a single line.
+- Left as they were on purpose: `build.sh` Loop branding and its legacy cleanup lines (`uhabits-android/uhabits-android`, `uhabits-core-legacy`; listed in `docs/PENDING.md`), historical `docs/tasks/*.md` and `CHANGELOG.md`.
+- Not verified: `build.sh` commands (they need emulators or devices), external scripts that use the old paths, CI of the PR.
