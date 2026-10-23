@@ -63,7 +63,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 | `uhabits-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `uhabits-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
 | `docs/` | Developer docs (see above). |
-| `.github/` | Issue templates, PR template and `workflows/ci.yml` (assemble, core JVM tests, Android unit tests, ktlint on PRs to `develop`). |
+| `.github/` | Issue templates, PR template and `workflows/ci.yml` (assemble, core JVM tests, Android unit tests, ktlint on every pull request, on pushes to `develop` and on manual runs). |
 | `gradle/` | Version catalog `libs.versions.toml`, `translators.gradle.kts`, wrapper (Gradle 8.11.1). |
 | `build.sh` | Legacy CI/emulator helper script (still Loop-branded). |
 | `tools/parseInstrument.py` | Parses `adb shell am instrument -r` logs. |

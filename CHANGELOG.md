@@ -19,7 +19,7 @@ attribution.
 - Add iOS reminders and notifications to `uhabits-core`: local notifications scheduled for the next 7 days (respecting the 64 pending limit and the weekdays of each reminder), Yes/No actions, and a refresh of the day and the reminders when the app returns to the foreground
 - Share `DateUtils`, `ReminderScheduler` and `MidnightTimer` between Android and iOS (they moved to `commonMain`)
 - Run the shared tests on the iOS simulator in CI (439 tests run locally; only the canvas and chart tests and four database migration cases wait for later steps, listed in `uhabits-core/ios-blocked-tests.txt`)
-- Add GitHub Actions CI on pull requests to `develop` (build, tests and ktlint)
+- Add GitHub Actions CI on pull requests (any base branch, so stacked pull requests are checked), on pushes to `develop` and on manual runs (build, tests and ktlint)
 
 ### Fixed
 
