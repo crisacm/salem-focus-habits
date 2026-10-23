@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.agp) apply false
     alias(libs.plugins.agp.library) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.ktlint.plugin) apply false
 }

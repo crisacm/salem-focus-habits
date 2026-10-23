@@ -30,7 +30,7 @@ class AboutScreen(
     private val prefs: Preferences
 ) {
 
-    private var developerCountdown = 5
+    private val developerCountdown = DeveloperCountdown()
 
     fun showRateAppWebsite() =
         activity.startActivitySafely(intents.rateApp(activity))
@@ -51,8 +51,7 @@ class AboutScreen(
         activity.startActivitySafely(intents.codeContributors(activity))
 
     fun onPressDeveloperCountdown() {
-        developerCountdown--
-        if (developerCountdown == 0) {
+        if (developerCountdown.onTap()) {
             prefs.isDeveloper = true
             activity.showMessage(activity.resources.getString(R.string.you_are_now_a_developer))
         }

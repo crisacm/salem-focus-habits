@@ -20,6 +20,7 @@
 plugins {
     alias(libs.plugins.agp)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktlint.plugin)
     alias(libs.plugins.mokkery)
@@ -95,7 +96,10 @@ android {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
-    buildFeatures.viewBinding = true
+    buildFeatures {
+        viewBinding = true
+        compose = true
+    }
     lint.abortOnError = false
 }
 
@@ -118,9 +122,17 @@ dependencies {
     implementation(libs.material)
     implementation(libs.documentfile)
     implementation(libs.konfetti.xml)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.activity.compose)
+    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
     implementation(project(":salem-core"))
     ksp(libs.kotlin.inject.compiler)
 
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.annotation)
     androidTestImplementation(libs.kotlin.inject.runtime)
     androidTestImplementation(libs.espresso.contrib)
@@ -128,6 +140,8 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.rules)
     androidTestImplementation(libs.uiautomator)
+
+    debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.kotlin.inject.runtime)
     testImplementation(libs.junit.junit)

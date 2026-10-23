@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Add Jetpack Compose (Material 3) to `salem-android` with `SalemTheme`, which maps the core `Theme` (light, dark, pure black), and move the About screen to Compose as the first screen of the migration; the developer-mode tap counter is now a tested class
 - Add an iOS preferences storage (`UserDefaultsStorage`) to `uhabits-core`, tested on the iOS simulator
 - Add an iOS database (`SqliterDatabase`, on sqliter) to `uhabits-core`; the database contract tests and the real migrations run on the iOS simulator
 - Add the iOS first-weekday and "today" calculation (`NSCalendar`/`NSTimeZone`) to `uhabits-core`, which unblocks the numerical score and streak tests on the iOS simulator
