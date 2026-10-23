@@ -21,11 +21,11 @@ package io.github.crisacm.salem.utils
 
 import android.content.Context
 import android.text.format.DateFormat
+import io.github.crisacm.salem.R
+import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.platform.time.DateFormats
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import io.github.crisacm.salem.R
-import io.github.crisacm.salem.core.models.WeekdayList
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

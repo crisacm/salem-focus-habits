@@ -18,13 +18,13 @@
  */
 package io.github.crisacm.salem.core.models.sqlite
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.core.database.EntryRepository
 import io.github.crisacm.salem.core.database.HabitRepository
 import io.github.crisacm.salem.core.models.EntryList
 import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.ScoreList
 import io.github.crisacm.salem.core.models.StreakList
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Factory that provides models backed by an SQLite database.

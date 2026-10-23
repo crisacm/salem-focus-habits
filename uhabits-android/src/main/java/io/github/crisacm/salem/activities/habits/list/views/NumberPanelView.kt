@@ -20,11 +20,11 @@
 package io.github.crisacm.salem.activities.habits.list.views
 
 import android.content.Context
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.inject.ActivityContext
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class NumberPanelViewFactory(

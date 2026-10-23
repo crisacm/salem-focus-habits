@@ -27,10 +27,10 @@ import android.media.RingtoneManager.getRingtone
 import android.net.Uri
 import android.preference.PreferenceManager
 import android.provider.Settings
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.inject.AppContext
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

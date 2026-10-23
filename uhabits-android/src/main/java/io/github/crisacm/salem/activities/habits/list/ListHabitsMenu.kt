@@ -25,7 +25,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -34,6 +33,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavio
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.utils.StyledResources
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @ActivityScope

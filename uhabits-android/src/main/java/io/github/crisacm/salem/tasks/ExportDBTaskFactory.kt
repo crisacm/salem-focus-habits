@@ -20,9 +20,9 @@
 package io.github.crisacm.salem.tasks
 
 import android.content.Context
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.inject.AppContext
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ExportDBTaskFactory(

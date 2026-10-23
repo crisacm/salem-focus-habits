@@ -35,11 +35,11 @@ import androidx.recyclerview.widget.ItemTouchHelper.START
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.BundleSavedState
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.inject.ActivityContext
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class HabitCardListViewFactory(

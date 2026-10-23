@@ -22,11 +22,11 @@ package io.github.crisacm.salem.widgets
 import android.app.PendingIntent
 import android.content.Context
 import android.view.View
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.activities.common.views.ScoreChart
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardPresenter
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
 
 class ScoreWidget(

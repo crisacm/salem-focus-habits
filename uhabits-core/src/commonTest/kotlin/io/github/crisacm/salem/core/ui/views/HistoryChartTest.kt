@@ -23,17 +23,17 @@ import dev.mokkery.mock
 import dev.mokkery.resetCalls
 import dev.mokkery.verify
 import dev.mokkery.verifyNoMoreCalls
-import kotlinx.coroutines.test.runTest
-import io.github.crisacm.salem.platform.gui.assertRenders
-import io.github.crisacm.salem.platform.io.createTestDateFormatter
-import io.github.crisacm.salem.platform.time.DayOfWeek
-import io.github.crisacm.salem.platform.time.DayOfWeek.SUNDAY
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.DIMMED
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.HATCHED
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.OFF
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.ON
+import io.github.crisacm.salem.platform.gui.assertRenders
+import io.github.crisacm.salem.platform.io.createTestDateFormatter
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.DayOfWeek.SUNDAY
+import io.github.crisacm.salem.platform.time.LocalDate
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class HistoryChartTest {

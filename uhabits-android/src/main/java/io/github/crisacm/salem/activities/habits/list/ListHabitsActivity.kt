@@ -30,9 +30,6 @@ import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.BaseExceptionHandler
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
@@ -44,9 +41,12 @@ import io.github.crisacm.salem.database.AutoBackup
 import io.github.crisacm.salem.inject.HabitsActivityComponent
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.inject.create
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.utils.applyRootViewInsets
 import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.restartWithFade
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
 

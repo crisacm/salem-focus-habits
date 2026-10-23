@@ -18,10 +18,10 @@
  */
 package io.github.crisacm.salem.core.preferences
 
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
+import io.github.crisacm.salem.platform.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

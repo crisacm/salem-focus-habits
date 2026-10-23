@@ -22,10 +22,10 @@ import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.mock
 import dev.mokkery.verify
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

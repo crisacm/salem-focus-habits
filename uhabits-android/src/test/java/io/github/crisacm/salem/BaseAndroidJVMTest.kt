@@ -18,15 +18,15 @@
  */
 package io.github.crisacm.salem
 
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.memory.MemoryModelFactory
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.test.HabitFixtures
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.setToday
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

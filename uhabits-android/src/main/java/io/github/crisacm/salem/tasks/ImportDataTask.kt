@@ -19,13 +19,13 @@
 package io.github.crisacm.salem.tasks
 
 import android.util.Log
-import io.github.crisacm.salem.platform.io.UserFile
-import io.github.crisacm.salem.platform.io.begin
-import io.github.crisacm.salem.platform.io.commit
 import io.github.crisacm.salem.core.io.GenericImporter
 import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.sqlite.SQLModelFactory
 import io.github.crisacm.salem.core.tasks.Task
+import io.github.crisacm.salem.platform.io.UserFile
+import io.github.crisacm.salem.platform.io.begin
+import io.github.crisacm.salem.platform.io.commit
 
 class ImportDataTask(
     private val importer: GenericImporter,

@@ -25,12 +25,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
-import me.tatarka.inject.annotations.Inject
-import nl.dionsegijn.konfetti.core.Party
-import nl.dionsegijn.konfetti.core.Position
-import nl.dionsegijn.konfetti.core.emitter.Emitter
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.io.JavaUserFile
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.dialogs.CheckmarkDialog
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
@@ -67,6 +61,8 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMe
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.intents.IntentFactory
+import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.io.JavaUserFile
 import io.github.crisacm.salem.tasks.ExportDBTaskFactory
 import io.github.crisacm.salem.tasks.ImportDataTask
 import io.github.crisacm.salem.tasks.ImportDataTaskFactory
@@ -78,6 +74,10 @@ import io.github.crisacm.salem.utils.restartWithFade
 import io.github.crisacm.salem.utils.showMessage
 import io.github.crisacm.salem.utils.showSendEmailScreen
 import io.github.crisacm.salem.utils.showSendFileScreen
+import me.tatarka.inject.annotations.Inject
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit

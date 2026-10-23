@@ -34,19 +34,19 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.RingView
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.ModelObservable
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.inject.ActivityContext
+import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.utils.currentTheme
 import io.github.crisacm.salem.utils.dp
 import io.github.crisacm.salem.utils.sres
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class HabitCardViewFactory(

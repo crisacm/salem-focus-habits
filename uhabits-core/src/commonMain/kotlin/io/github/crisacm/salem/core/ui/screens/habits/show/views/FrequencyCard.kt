@@ -19,11 +19,11 @@
 
 package io.github.crisacm.salem.core.ui.screens.habits.show.views
 
-import io.github.crisacm.salem.platform.time.DayOfWeek
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.LocalDate
 data class FrequencyCardState(
     val color: PaletteColor,
     val firstWeekday: DayOfWeek,

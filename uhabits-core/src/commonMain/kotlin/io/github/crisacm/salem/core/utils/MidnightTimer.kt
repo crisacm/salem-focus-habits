@@ -19,6 +19,15 @@
 
 package io.github.crisacm.salem.core.utils
 
+import io.github.crisacm.salem.core.AppScope
+import io.github.crisacm.salem.core.io.Logging
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.platform.Synchronized
+import io.github.crisacm.salem.platform.time.DateUtils
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.computeToday
+import io.github.crisacm.salem.platform.time.getToday
+import io.github.crisacm.salem.platform.time.setToday
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -29,15 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.Synchronized
-import io.github.crisacm.salem.platform.time.DateUtils
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.computeToday
-import io.github.crisacm.salem.platform.time.getToday
-import io.github.crisacm.salem.platform.time.setToday
-import io.github.crisacm.salem.core.AppScope
-import io.github.crisacm.salem.core.io.Logging
-import io.github.crisacm.salem.core.preferences.Preferences
 
 /**
  * A class that emits events when a new day starts. It only runs between [onResume] and [onPause],

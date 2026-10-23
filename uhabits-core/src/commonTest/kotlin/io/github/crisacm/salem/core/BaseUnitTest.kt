@@ -18,7 +18,13 @@
  */
 package io.github.crisacm.salem.core
 
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import io.github.crisacm.salem.core.commands.CommandRunner
+import io.github.crisacm.salem.core.models.HabitList
+import io.github.crisacm.salem.core.models.ModelFactory
+import io.github.crisacm.salem.core.models.memory.MemoryModelFactory
+import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
+import io.github.crisacm.salem.core.tasks.TaskRunner
+import io.github.crisacm.salem.core.test.HabitFixtures
 import io.github.crisacm.salem.platform.io.Database
 import io.github.crisacm.salem.platform.io.DatabaseOpener
 import io.github.crisacm.salem.platform.io.FileOpener
@@ -28,13 +34,7 @@ import io.github.crisacm.salem.platform.io.createTestDatabaseOpener
 import io.github.crisacm.salem.platform.io.createTestFileOpener
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.setToday
-import io.github.crisacm.salem.core.commands.CommandRunner
-import io.github.crisacm.salem.core.models.HabitList
-import io.github.crisacm.salem.core.models.ModelFactory
-import io.github.crisacm.salem.core.models.memory.MemoryModelFactory
-import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
-import io.github.crisacm.salem.core.tasks.TaskRunner
-import io.github.crisacm.salem.core.test.HabitFixtures
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.test.BeforeTest
 
 open class BaseUnitTest {

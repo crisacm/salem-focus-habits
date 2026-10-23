@@ -18,9 +18,6 @@
  */
 package io.github.crisacm.salem.core.reminders
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.Synchronized
-import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.commands.ChangeHabitColorCommand
 import io.github.crisacm.salem.core.commands.Command
@@ -30,6 +27,9 @@ import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.HabitMatcher
 import io.github.crisacm.salem.core.preferences.WidgetPreferences
+import io.github.crisacm.salem.platform.Synchronized
+import io.github.crisacm.salem.platform.time.DateUtils
+import me.tatarka.inject.annotations.Inject
 
 @AppScope
 @Inject

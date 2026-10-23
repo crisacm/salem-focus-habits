@@ -20,9 +20,9 @@ package io.github.crisacm.salem
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.inject.AppContext
 import io.github.crisacm.salem.utils.FileUtils
+import me.tatarka.inject.annotations.Inject
 import java.io.File
 
 @Inject

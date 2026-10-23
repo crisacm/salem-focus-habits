@@ -23,8 +23,6 @@ import dev.mokkery.every
 import dev.mokkery.mock
 import dev.mokkery.resetCalls
 import dev.mokkery.verify
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.Entry
@@ -32,6 +30,8 @@ import io.github.crisacm.salem.core.models.Entry.Companion.nextToggleValue
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import dev.mokkery.verify.VerifyMode.Companion.not as notCalled

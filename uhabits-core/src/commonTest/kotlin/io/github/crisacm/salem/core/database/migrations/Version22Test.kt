@@ -18,13 +18,13 @@
  */
 package io.github.crisacm.salem.core.database.migrations
 
-import kotlinx.coroutines.test.runTest
+import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.platform.io.Database
 import io.github.crisacm.salem.platform.io.format
 import io.github.crisacm.salem.platform.io.migrateTo
 import io.github.crisacm.salem.platform.io.querySingle
 import io.github.crisacm.salem.platform.io.run
-import io.github.crisacm.salem.core.BaseUnitTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

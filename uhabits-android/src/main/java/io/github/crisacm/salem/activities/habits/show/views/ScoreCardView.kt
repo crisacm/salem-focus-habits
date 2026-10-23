@@ -24,10 +24,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
 import io.github.crisacm.salem.databinding.ShowHabitScoreBinding
+import io.github.crisacm.salem.platform.gui.toInt
 
 class ScoreCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private var binding = ShowHabitScoreBinding.inflate(LayoutInflater.from(context), this)

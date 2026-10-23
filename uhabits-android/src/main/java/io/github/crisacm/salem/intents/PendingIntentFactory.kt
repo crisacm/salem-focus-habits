@@ -29,15 +29,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.activities.habits.list.ListHabitsActivity
 import io.github.crisacm.salem.activities.habits.show.ShowHabitActivity
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.inject.AppContext
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.receivers.ReminderReceiver
 import io.github.crisacm.salem.receivers.WidgetReceiver
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

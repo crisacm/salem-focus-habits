@@ -19,15 +19,15 @@
 package io.github.crisacm.salem
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.inject.AppContext
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.intents.IntentScheduler
+import kotlinx.coroutines.Dispatchers
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 import java.io.File
 
 @AppScope

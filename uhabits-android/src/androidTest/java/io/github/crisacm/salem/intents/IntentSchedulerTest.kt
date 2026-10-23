@@ -20,11 +20,11 @@ package io.github.crisacm.salem.intents
 
 import android.content.ContentUris.parseId
 import androidx.test.filters.MediumTest
-import org.hamcrest.Matchers.equalTo
 import io.github.crisacm.salem.BaseAndroidTest
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SchedulerResult.OK
 import io.github.crisacm.salem.receivers.ReminderReceiver
 import io.github.crisacm.salem.receivers.WidgetReceiver
+import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before

@@ -25,13 +25,13 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.endsWith
-import org.hamcrest.Matcher
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.BaseUserInterfaceTest.Companion.device
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.views.CheckmarkButtonView
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.endsWith
+import org.hamcrest.Matcher
 import java.util.LinkedList
 
 object ListHabitsSteps {

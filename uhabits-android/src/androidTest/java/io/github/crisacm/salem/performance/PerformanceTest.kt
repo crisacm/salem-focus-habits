@@ -20,14 +20,14 @@ package io.github.crisacm.salem.performance
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import io.github.crisacm.salem.platform.io.begin
-import io.github.crisacm.salem.platform.io.commit
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.BaseAndroidTest
 import io.github.crisacm.salem.core.commands.CreateHabitCommand
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.sqlite.SQLModelFactory
+import io.github.crisacm.salem.platform.io.begin
+import io.github.crisacm.salem.platform.io.commit
+import io.github.crisacm.salem.platform.time.LocalDate
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith

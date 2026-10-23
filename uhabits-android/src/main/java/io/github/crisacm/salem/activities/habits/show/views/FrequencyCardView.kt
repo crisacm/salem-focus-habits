@@ -22,9 +22,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.FrequencyCardState
 import io.github.crisacm.salem.databinding.ShowHabitFrequencyBinding
+import io.github.crisacm.salem.platform.gui.toInt
 
 class FrequencyCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 

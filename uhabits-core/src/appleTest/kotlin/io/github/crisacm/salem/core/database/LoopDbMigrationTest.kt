@@ -19,13 +19,13 @@
 
 package io.github.crisacm.salem.core.database
 
-import kotlinx.coroutines.test.runTest
+import io.github.crisacm.salem.core.DATABASE_VERSION
 import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.io.TestDatabaseHelper
 import io.github.crisacm.salem.platform.io.copyAssetToTemp
 import io.github.crisacm.salem.platform.io.getVersion
 import io.github.crisacm.salem.platform.io.migrateTo
-import io.github.crisacm.salem.core.DATABASE_VERSION
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

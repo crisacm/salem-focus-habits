@@ -18,8 +18,6 @@
  */
 package io.github.crisacm.salem
 
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import io.github.crisacm.salem.core.models.Frequency
@@ -30,6 +28,8 @@ import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.PaletteColor
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 
 class HabitFixtures(private val modelFactory: ModelFactory, private val habitList: HabitList) {
     var LONG_HABIT_ENTRIES = booleanArrayOf(

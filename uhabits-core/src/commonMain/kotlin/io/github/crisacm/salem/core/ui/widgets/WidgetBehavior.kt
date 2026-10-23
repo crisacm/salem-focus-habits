@@ -18,8 +18,6 @@
  */
 package io.github.crisacm.salem.core.ui.widgets
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.Entry
@@ -28,6 +26,8 @@ import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class WidgetBehavior(

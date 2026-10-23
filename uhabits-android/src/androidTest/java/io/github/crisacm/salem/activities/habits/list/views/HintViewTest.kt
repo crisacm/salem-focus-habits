@@ -23,10 +23,10 @@ import androidx.test.filters.MediumTest
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.mock
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintList
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

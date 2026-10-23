@@ -22,8 +22,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.view.WindowManager
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.inject.AppContext
+import me.tatarka.inject.annotations.Inject
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileWriter

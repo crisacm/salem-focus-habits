@@ -18,10 +18,10 @@
  */
 package io.github.crisacm.salem.core.commands
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.tasks.Task
 import io.github.crisacm.salem.core.tasks.TaskRunner
+import me.tatarka.inject.annotations.Inject
 
 @AppScope
 @Inject

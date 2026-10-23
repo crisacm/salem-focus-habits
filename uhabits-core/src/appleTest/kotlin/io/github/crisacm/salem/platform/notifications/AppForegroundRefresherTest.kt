@@ -19,6 +19,15 @@
 
 package io.github.crisacm.salem.platform.notifications
 
+import io.github.crisacm.salem.core.BaseUnitTest
+import io.github.crisacm.salem.core.io.StandardLogging
+import io.github.crisacm.salem.core.models.Reminder
+import io.github.crisacm.salem.core.models.WeekdayList
+import io.github.crisacm.salem.core.preferences.MemoryStorage
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.preferences.WidgetPreferences
+import io.github.crisacm.salem.core.reminders.ReminderScheduler
+import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
@@ -29,15 +38,6 @@ import io.github.crisacm.salem.platform.time.resetFirstWeekday
 import io.github.crisacm.salem.platform.time.resetToday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.platform.time.utcTime
-import io.github.crisacm.salem.core.BaseUnitTest
-import io.github.crisacm.salem.core.io.StandardLogging
-import io.github.crisacm.salem.core.models.Reminder
-import io.github.crisacm.salem.core.models.WeekdayList
-import io.github.crisacm.salem.core.preferences.MemoryStorage
-import io.github.crisacm.salem.core.preferences.Preferences
-import io.github.crisacm.salem.core.preferences.WidgetPreferences
-import io.github.crisacm.salem.core.reminders.ReminderScheduler
-import io.github.crisacm.salem.core.utils.MidnightTimer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

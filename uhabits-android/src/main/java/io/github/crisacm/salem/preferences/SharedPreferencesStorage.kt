@@ -22,11 +22,11 @@ package io.github.crisacm.salem.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.inject.AppContext
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

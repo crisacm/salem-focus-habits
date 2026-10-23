@@ -1,7 +1,7 @@
 package io.github.crisacm.salem.core.database
 
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.platform.io.TestDatabaseHelper
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

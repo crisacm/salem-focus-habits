@@ -19,8 +19,8 @@
 
 package io.github.crisacm.salem.core.ui.screens.habits.list
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.core.preferences.Preferences
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class HintListFactory(

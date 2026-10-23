@@ -1,9 +1,9 @@
 package io.github.crisacm.salem.core.database
 
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.platform.io.TestDatabaseHelper
 import io.github.crisacm.salem.platform.io.queryLong
 import io.github.crisacm.salem.platform.io.run
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

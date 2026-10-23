@@ -21,12 +21,12 @@
 
 package io.github.crisacm.salem.platform.io
 
+import io.github.crisacm.salem.platform.gui.Image
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
-import io.github.crisacm.salem.platform.gui.Image
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSBundle
 import platform.Foundation.NSData

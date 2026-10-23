@@ -21,11 +21,11 @@ package io.github.crisacm.salem.receivers
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verifyNoMoreCalls
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.BaseAndroidJVMTest
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.reminders.ReminderScheduler
 import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.platform.time.LocalDate
 import org.junit.Test
 
 class ReminderControllerTest : BaseAndroidJVMTest() {

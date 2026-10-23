@@ -1,7 +1,7 @@
 package io.github.crisacm.salem.platform.gui
 
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.platform.io.createTestCanvas
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class CanvasTest {

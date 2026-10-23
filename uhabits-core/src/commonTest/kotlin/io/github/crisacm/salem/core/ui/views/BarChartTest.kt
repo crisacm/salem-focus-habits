@@ -19,10 +19,10 @@
 
 package io.github.crisacm.salem.core.ui.views
 
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.platform.gui.assertRenders
 import io.github.crisacm.salem.platform.io.createTestDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class BarChartTest {

@@ -18,8 +18,8 @@
  */
 package io.github.crisacm.salem.core.io
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.platform.io.UserFile
+import me.tatarka.inject.annotations.Inject
 
 /**
  * A GenericImporter decides which implementation of AbstractImporter is able to

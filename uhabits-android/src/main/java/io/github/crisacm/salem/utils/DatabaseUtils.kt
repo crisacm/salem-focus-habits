@@ -22,11 +22,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
-import io.github.crisacm.salem.platform.time.DateFormats.Companion.getBackupDateFormat
 import io.github.crisacm.salem.HabitsApplication.Companion.isTestMode
 import io.github.crisacm.salem.HabitsDatabaseOpener
 import io.github.crisacm.salem.core.DATABASE_FILENAME
 import io.github.crisacm.salem.core.DATABASE_VERSION
+import io.github.crisacm.salem.platform.time.DateFormats.Companion.getBackupDateFormat
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException

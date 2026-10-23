@@ -22,9 +22,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDialogFragment
-import io.github.crisacm.salem.platform.gui.AndroidDataView
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
@@ -36,6 +33,9 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPres
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
+import io.github.crisacm.salem.platform.gui.AndroidDataView
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.getToday
 import java.util.Locale
 import kotlin.math.min
 

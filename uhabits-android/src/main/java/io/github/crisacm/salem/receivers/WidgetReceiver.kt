@@ -22,14 +22,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import me.tatarka.inject.annotations.Component
-import io.github.crisacm.salem.platform.time.computeToday
-import io.github.crisacm.salem.platform.time.setFirstWeekday
-import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.core.ui.widgets.WidgetBehavior
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.intents.IntentParser.CheckmarkIntentData
+import io.github.crisacm.salem.platform.time.computeToday
+import io.github.crisacm.salem.platform.time.setFirstWeekday
+import io.github.crisacm.salem.platform.time.setToday
+import me.tatarka.inject.annotations.Component
 
 @ReceiverScope
 @Component

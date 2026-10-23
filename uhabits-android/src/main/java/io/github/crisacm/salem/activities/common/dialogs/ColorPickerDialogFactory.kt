@@ -20,14 +20,14 @@ package io.github.crisacm.salem.activities.common.dialogs
 
 import android.content.Context
 import com.android.colorpicker.ColorPickerDialog.SIZE_SMALL
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.utils.StyledResources
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @ActivityScope

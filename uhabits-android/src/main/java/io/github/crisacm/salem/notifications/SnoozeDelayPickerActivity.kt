@@ -28,13 +28,13 @@ import android.widget.AdapterView.OnItemClickListener
 import androidx.fragment.app.FragmentActivity
 import com.android.datetimepicker.time.RadialPickerLayout
 import com.android.datetimepicker.time.TimePickerDialog
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.receivers.ReminderController
 import io.github.crisacm.salem.utils.SystemUtils
 import java.util.Calendar

@@ -23,8 +23,6 @@ import android.content.Context
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
-import me.tatarka.inject.annotations.Inject
-import nl.dionsegijn.konfetti.xml.KonfettiView
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.ScrollableChart
 import io.github.crisacm.salem.activities.common.views.TaskProgressBar
@@ -51,6 +49,8 @@ import io.github.crisacm.salem.utils.dim
 import io.github.crisacm.salem.utils.dp
 import io.github.crisacm.salem.utils.setupToolbar
 import io.github.crisacm.salem.utils.sres
+import me.tatarka.inject.annotations.Inject
+import nl.dionsegijn.konfetti.xml.KonfettiView
 import kotlin.math.max
 import kotlin.math.min
 

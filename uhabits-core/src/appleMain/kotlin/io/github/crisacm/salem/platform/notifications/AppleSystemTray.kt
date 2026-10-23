@@ -19,11 +19,11 @@
 
 package io.github.crisacm.salem.platform.notifications
 
-import io.github.crisacm.salem.platform.Synchronized
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.platform.Synchronized
+import io.github.crisacm.salem.platform.time.LocalDate
 
 private const val DAYS_FROM_1970_TO_2000 = 10_957L
 private const val MILLIS_PER_DAY = 86_400_000L

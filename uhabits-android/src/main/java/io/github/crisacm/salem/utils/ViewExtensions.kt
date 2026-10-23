@@ -50,12 +50,12 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.gui.toInt
 import java.io.File
 
 fun RelativeLayout.addBelow(

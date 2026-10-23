@@ -24,12 +24,12 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.screens.habits.list.HabitCardListCache
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
+import io.github.crisacm.salem.platform.time.getToday
 import org.junit.After
 import org.junit.Before
 

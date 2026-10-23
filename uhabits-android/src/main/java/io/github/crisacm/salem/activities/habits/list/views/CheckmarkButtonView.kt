@@ -28,7 +28,6 @@ import android.text.TextPaint
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Entry.Companion.NO
@@ -43,6 +42,7 @@ import io.github.crisacm.salem.utils.getFontAwesome
 import io.github.crisacm.salem.utils.sp
 import io.github.crisacm.salem.utils.sres
 import io.github.crisacm.salem.utils.toMeasureSpec
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class CheckmarkButtonViewFactory(

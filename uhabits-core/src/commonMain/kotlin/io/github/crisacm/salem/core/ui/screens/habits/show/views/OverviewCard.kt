@@ -19,11 +19,11 @@
 
 package io.github.crisacm.salem.core.ui.screens.habits.show.views
 
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.time.getToday
 
 data class OverviewCardState(
     val color: PaletteColor,

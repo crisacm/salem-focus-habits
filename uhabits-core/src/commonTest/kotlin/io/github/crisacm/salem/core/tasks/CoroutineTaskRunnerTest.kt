@@ -21,8 +21,8 @@ package io.github.crisacm.salem.core.tasks
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode.Companion.order
 import dev.mokkery.verifySuspend
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import io.github.crisacm.salem.core.BaseUnitTest
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 

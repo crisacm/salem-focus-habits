@@ -24,8 +24,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListController
@@ -35,6 +33,8 @@ import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
+import io.github.crisacm.salem.platform.time.getToday
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @ActivityScope

@@ -21,14 +21,14 @@ package io.github.crisacm.salem.activities.habits.list.views
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.core.models.Entry.Companion.NO
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.utils.PaletteUtils
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

@@ -27,12 +27,12 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.view.View.MeasureSpec.EXACTLY
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.ScrollableChart
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.utils.MidnightTimer
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.utils.dim
 import io.github.crisacm.salem.utils.dp
 import io.github.crisacm.salem.utils.isRTL

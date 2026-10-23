@@ -23,8 +23,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
@@ -33,6 +31,8 @@ import io.github.crisacm.salem.core.preferences.WidgetPreferences
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.inject.AppContext
 import io.github.crisacm.salem.intents.IntentScheduler
+import io.github.crisacm.salem.platform.time.DateUtils
+import me.tatarka.inject.annotations.Inject
 
 /**
  * A WidgetUpdater listens to the commands being executed by the application and

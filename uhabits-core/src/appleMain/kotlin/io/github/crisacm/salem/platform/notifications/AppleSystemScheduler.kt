@@ -19,14 +19,14 @@
 
 package io.github.crisacm.salem.platform.notifications
 
-import io.github.crisacm.salem.platform.Synchronized
-import io.github.crisacm.salem.platform.time.DateUtils
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.currentTimeMillis
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SchedulerResult
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SystemScheduler
+import io.github.crisacm.salem.platform.Synchronized
+import io.github.crisacm.salem.platform.time.DateUtils
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.currentTimeMillis
 import platform.Foundation.NSLog
 
 /**

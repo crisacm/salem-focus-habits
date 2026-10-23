@@ -28,7 +28,6 @@ import android.text.TextPaint
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -38,6 +37,7 @@ import io.github.crisacm.salem.utils.dim
 import io.github.crisacm.salem.utils.drawNotesIndicator
 import io.github.crisacm.salem.utils.getFontAwesome
 import io.github.crisacm.salem.utils.sres
+import me.tatarka.inject.annotations.Inject
 import java.text.DecimalFormat
 
 private val BOLD_TYPEFACE = Typeface.create("sans-serif-condensed", Typeface.BOLD)

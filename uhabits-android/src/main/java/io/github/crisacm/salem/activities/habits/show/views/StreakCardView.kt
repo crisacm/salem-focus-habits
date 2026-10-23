@@ -22,9 +22,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
 import io.github.crisacm.salem.databinding.ShowHabitStreakBinding
+import io.github.crisacm.salem.platform.gui.toInt
 
 class StreakCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val binding = ShowHabitStreakBinding.inflate(LayoutInflater.from(context), this)

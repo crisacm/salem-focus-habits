@@ -22,11 +22,11 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import io.github.crisacm.salem.platform.time.DayOfWeek.SUNDAY
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPresenter
 import io.github.crisacm.salem.core.ui.views.LightTheme
+import io.github.crisacm.salem.platform.time.DayOfWeek.SUNDAY
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

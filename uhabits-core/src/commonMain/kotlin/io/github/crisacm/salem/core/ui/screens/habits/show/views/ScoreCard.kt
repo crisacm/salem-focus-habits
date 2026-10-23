@@ -19,14 +19,14 @@
 
 package io.github.crisacm.salem.core.ui.screens.habits.show.views
 
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.TruncateField
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.models.Score
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.TruncateField
+import io.github.crisacm.salem.platform.time.getToday
 
 data class ScoreCardState(
     val scores: List<Score>,

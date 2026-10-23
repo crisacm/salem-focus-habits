@@ -18,7 +18,6 @@
  */
 package io.github.crisacm.salem.core.ui.screens.habits.list
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.core.commands.ArchiveHabitsCommand
 import io.github.crisacm.salem.core.commands.ChangeHabitColorCommand
 import io.github.crisacm.salem.core.commands.CommandRunner
@@ -29,6 +28,7 @@ import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ListHabitsSelectionMenuBehavior(

@@ -26,10 +26,10 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Streak
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.utils.InterfaceUtils.dpToPixels
 import io.github.crisacm.salem.utils.InterfaceUtils.getDimension
 import io.github.crisacm.salem.utils.StyledResources

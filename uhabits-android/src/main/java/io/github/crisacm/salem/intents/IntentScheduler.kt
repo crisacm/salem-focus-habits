@@ -27,13 +27,13 @@ import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.os.Build
 import android.util.Log
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.DateFormats
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SchedulerResult
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SystemScheduler
 import io.github.crisacm.salem.inject.AppContext
+import io.github.crisacm.salem.platform.time.DateFormats
+import me.tatarka.inject.annotations.Inject
 import java.util.Date
 import kotlin.math.min
 

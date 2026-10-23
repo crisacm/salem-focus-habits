@@ -19,13 +19,13 @@
 
 package io.github.crisacm.salem.platform.notifications
 
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.reminders.ReminderScheduler
+import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
-import io.github.crisacm.salem.core.preferences.Preferences
-import io.github.crisacm.salem.core.reminders.ReminderScheduler
-import io.github.crisacm.salem.core.utils.MidnightTimer
 
 /**
  * What Android does in `HabitsApplication.onCreate` and `ListHabitsActivity.onResume/onPause`, for

@@ -21,10 +21,10 @@ package io.github.crisacm.salem.widgets
 import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.platform.time.DayOfWeek
 import org.junit.Test
 import org.junit.runner.RunWith
 

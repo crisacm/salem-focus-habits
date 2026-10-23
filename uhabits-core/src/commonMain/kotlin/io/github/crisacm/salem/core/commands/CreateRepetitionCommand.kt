@@ -18,10 +18,10 @@
  */
 package io.github.crisacm.salem.core.commands
 
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
+import io.github.crisacm.salem.platform.time.LocalDate
 
 data class CreateRepetitionCommand(
     val habitList: HabitList,

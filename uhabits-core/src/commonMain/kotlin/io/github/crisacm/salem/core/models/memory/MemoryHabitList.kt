@@ -18,10 +18,10 @@
  */
 package io.github.crisacm.salem.core.models.memory
 
-import io.github.crisacm.salem.platform.Synchronized
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.HabitMatcher
+import io.github.crisacm.salem.platform.Synchronized
 
 /**
  * In-memory implementation of [HabitList].

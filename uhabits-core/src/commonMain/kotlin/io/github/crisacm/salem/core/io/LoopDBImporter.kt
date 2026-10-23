@@ -18,16 +18,6 @@
  */
 package io.github.crisacm.salem.core.io
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.Database
-import io.github.crisacm.salem.platform.io.DatabaseOpener
-import io.github.crisacm.salem.platform.io.FileOpener
-import io.github.crisacm.salem.platform.io.UserFile
-import io.github.crisacm.salem.platform.io.getVersion
-import io.github.crisacm.salem.platform.io.migrateTo
-import io.github.crisacm.salem.platform.io.query
-import io.github.crisacm.salem.platform.io.querySingle
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.DATABASE_VERSION
 import io.github.crisacm.salem.core.commands.CommandRunner
@@ -39,6 +29,16 @@ import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.sqlite.SQLiteHabitList
 import io.github.crisacm.salem.core.utils.isSQLite3File
+import io.github.crisacm.salem.platform.io.Database
+import io.github.crisacm.salem.platform.io.DatabaseOpener
+import io.github.crisacm.salem.platform.io.FileOpener
+import io.github.crisacm.salem.platform.io.UserFile
+import io.github.crisacm.salem.platform.io.getVersion
+import io.github.crisacm.salem.platform.io.migrateTo
+import io.github.crisacm.salem.platform.io.query
+import io.github.crisacm.salem.platform.io.querySingle
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Class that imports data from database files exported by Loop Habit Tracker.

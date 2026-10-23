@@ -19,13 +19,13 @@
 
 package io.github.crisacm.salem.platform.notifications
 
-import io.github.crisacm.salem.platform.time.DateUtils
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.reminders.ReminderScheduler
+import io.github.crisacm.salem.platform.time.DateUtils
+import io.github.crisacm.salem.platform.time.getToday
 
 /**
  * On Android the alarm still fires when the habit is already done and the notification is simply

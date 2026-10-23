@@ -23,8 +23,8 @@ import android.view.View
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import org.hamcrest.CoreMatchers.equalTo
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardView
+import org.hamcrest.CoreMatchers.equalTo
 
 class HasButtonsViewAssertion(private val buttons: List<Int>) : ViewAssertion {
     override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {

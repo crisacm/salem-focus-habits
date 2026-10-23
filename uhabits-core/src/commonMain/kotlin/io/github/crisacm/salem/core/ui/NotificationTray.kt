@@ -18,8 +18,6 @@
  */
 package io.github.crisacm.salem.core.ui
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
@@ -30,6 +28,8 @@ import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.tasks.Task
 import io.github.crisacm.salem.core.tasks.TaskRunner
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 @AppScope
 @Inject

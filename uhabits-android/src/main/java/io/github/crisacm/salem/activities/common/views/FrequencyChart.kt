@@ -23,13 +23,13 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import io.github.crisacm.salem.R
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.countWeekdayOccurrencesInMonth
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.platform.time.getWeekdaySequence
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.utils.ColorUtils.mixColors
 import io.github.crisacm.salem.utils.StyledResources
 import java.util.Locale

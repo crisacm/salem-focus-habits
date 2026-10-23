@@ -18,8 +18,6 @@
  */
 package io.github.crisacm.salem.core.models.sqlite
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.Synchronized
 import io.github.crisacm.salem.core.database.HabitData
 import io.github.crisacm.salem.core.database.HabitRepository
 import io.github.crisacm.salem.core.models.Frequency
@@ -33,6 +31,8 @@ import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.models.Reminder
 import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.core.models.memory.MemoryHabitList
+import io.github.crisacm.salem.platform.Synchronized
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Implementation of a [HabitList] that is backed by SQLite.

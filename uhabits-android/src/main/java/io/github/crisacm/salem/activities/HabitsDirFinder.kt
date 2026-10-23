@@ -18,12 +18,12 @@
  */
 package io.github.crisacm.salem.activities
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.JavaUserFile
-import io.github.crisacm.salem.platform.io.UserFile
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
+import io.github.crisacm.salem.platform.io.JavaUserFile
+import io.github.crisacm.salem.platform.io.UserFile
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class HabitsDirFinder(

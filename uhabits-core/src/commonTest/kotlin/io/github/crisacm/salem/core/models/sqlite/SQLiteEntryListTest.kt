@@ -19,12 +19,12 @@
 
 package io.github.crisacm.salem.core.models.sqlite
 
-import kotlinx.coroutines.test.runTest
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.BaseUnitTest.Companion.buildMemoryDatabase
 import io.github.crisacm.salem.core.database.EntryData
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
+import io.github.crisacm.salem.platform.time.LocalDate
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

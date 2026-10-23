@@ -20,9 +20,9 @@ package io.github.crisacm.salem.widgets.views
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.R
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.utils.PaletteUtils.getAndroidTestColor
 import org.junit.Before
 import org.junit.Ignore

@@ -32,8 +32,6 @@ import androidx.core.app.NotificationCompat.Action
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationCompat.WearableExtender
 import androidx.core.app.NotificationManagerCompat
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.models.Habit
@@ -41,6 +39,8 @@ import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.inject.AppContext
 import io.github.crisacm.salem.intents.PendingIntentFactory
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

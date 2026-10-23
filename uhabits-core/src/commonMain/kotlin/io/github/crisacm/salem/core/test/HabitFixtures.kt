@@ -18,8 +18,6 @@
  */
 package io.github.crisacm.salem.core.test
 
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Frequency
 import io.github.crisacm.salem.core.models.Habit
@@ -29,6 +27,8 @@ import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.models.sqlite.SQLiteEntryList
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 
 class HabitFixtures(
     private val modelFactory: ModelFactory,

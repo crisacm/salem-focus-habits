@@ -18,16 +18,16 @@
  */
 package io.github.crisacm.salem.core.io
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.UserFile
-import io.github.crisacm.salem.platform.io.parseCsvLine
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Frequency
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.ModelFactory
+import io.github.crisacm.salem.platform.io.UserFile
+import io.github.crisacm.salem.platform.io.parseCsvLine
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Class that imports data from HabitBull CSV files.

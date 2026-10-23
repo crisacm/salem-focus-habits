@@ -19,10 +19,10 @@
 
 package io.github.crisacm.salem.tasks
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.UserFile
 import io.github.crisacm.salem.core.io.GenericImporter
 import io.github.crisacm.salem.core.models.ModelFactory
+import io.github.crisacm.salem.platform.io.UserFile
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ImportDataTaskFactory(

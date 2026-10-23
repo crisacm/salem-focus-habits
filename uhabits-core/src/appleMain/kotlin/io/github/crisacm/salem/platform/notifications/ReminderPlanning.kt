@@ -19,9 +19,9 @@
 
 package io.github.crisacm.salem.platform.notifications
 
+import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.core.models.WeekdayList
 
 private const val DAYS_FROM_1970_TO_2000 = 10_957L
 

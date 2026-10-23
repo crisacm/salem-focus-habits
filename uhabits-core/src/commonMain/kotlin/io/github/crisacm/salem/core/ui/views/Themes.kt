@@ -19,8 +19,8 @@
 
 package io.github.crisacm.salem.core.ui.views
 
-import io.github.crisacm.salem.platform.gui.Color
 import io.github.crisacm.salem.core.models.PaletteColor
+import io.github.crisacm.salem.platform.gui.Color
 
 abstract class Theme {
     open val appBackgroundColor = Color(0xf4f4f4)

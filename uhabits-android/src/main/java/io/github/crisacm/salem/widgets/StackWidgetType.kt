@@ -20,10 +20,10 @@ package io.github.crisacm.salem.widgets
 
 import android.app.PendingIntent
 import android.content.Intent
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.intents.PendingIntentFactory
+import io.github.crisacm.salem.platform.time.LocalDate
 import java.lang.IllegalStateException
 
 enum class StackWidgetType(val value: Int) {

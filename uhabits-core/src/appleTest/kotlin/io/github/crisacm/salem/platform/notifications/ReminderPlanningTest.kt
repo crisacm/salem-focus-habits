@@ -19,12 +19,12 @@
 
 package io.github.crisacm.salem.platform.notifications
 
+import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.fixedOffsetZone
 import io.github.crisacm.salem.platform.time.utcTime
 import io.github.crisacm.salem.platform.time.zoneOffsetsOf
-import io.github.crisacm.salem.core.models.WeekdayList
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

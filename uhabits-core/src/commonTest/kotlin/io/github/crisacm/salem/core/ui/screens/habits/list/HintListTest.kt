@@ -22,10 +22,10 @@ import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.mock
 import dev.mokkery.verify
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

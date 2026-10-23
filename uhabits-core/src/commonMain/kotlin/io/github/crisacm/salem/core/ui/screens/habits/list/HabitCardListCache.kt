@@ -18,9 +18,6 @@
  */
 package io.github.crisacm.salem.core.ui.screens.habits.list
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.Synchronized
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
@@ -32,6 +29,9 @@ import io.github.crisacm.salem.core.models.HabitList.Order
 import io.github.crisacm.salem.core.models.HabitMatcher
 import io.github.crisacm.salem.core.tasks.Task
 import io.github.crisacm.salem.core.tasks.TaskRunner
+import io.github.crisacm.salem.platform.Synchronized
+import io.github.crisacm.salem.platform.time.getToday
+import me.tatarka.inject.annotations.Inject
 
 /**
  * A HabitCardListCache fetches and keeps a cache of all the data necessary to

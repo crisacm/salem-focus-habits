@@ -18,9 +18,9 @@
  */
 package io.github.crisacm.salem.core.models
 
+import io.github.crisacm.salem.core.models.Score.Companion.compute
 import io.github.crisacm.salem.platform.Synchronized
 import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.core.models.Score.Companion.compute
 import kotlin.math.max
 import kotlin.math.min
 

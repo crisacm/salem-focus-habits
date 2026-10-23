@@ -21,14 +21,14 @@ package io.github.crisacm.salem
 
 import android.app.Application
 import android.content.Context
-import io.github.crisacm.salem.platform.time.computeToday
-import io.github.crisacm.salem.platform.time.setFirstWeekday
-import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.core.database.UnsupportedDatabaseVersionException
 import io.github.crisacm.salem.core.reminders.ReminderScheduler
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.inject.create
+import io.github.crisacm.salem.platform.time.computeToday
+import io.github.crisacm.salem.platform.time.setFirstWeekday
+import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.utils.DatabaseUtils
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import java.io.File

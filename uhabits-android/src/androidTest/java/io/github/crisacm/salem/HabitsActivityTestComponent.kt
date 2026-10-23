@@ -21,8 +21,6 @@ package io.github.crisacm.salem
 
 import android.content.Context
 import dev.mokkery.mock
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
 import io.github.crisacm.salem.activities.HabitsDirFinder
 import io.github.crisacm.salem.activities.habits.list.ListHabitsModule
 import io.github.crisacm.salem.activities.habits.list.ListHabitsScreen
@@ -38,6 +36,8 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMe
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 
 @ActivityScope
 @Component

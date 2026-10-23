@@ -22,11 +22,11 @@ import dev.mokkery.mock
 import dev.mokkery.resetCalls
 import dev.mokkery.verify
 import dev.mokkery.verifyNoMoreCalls
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.commands.DeleteHabitsCommand
 import io.github.crisacm.salem.core.models.Entry
+import io.github.crisacm.salem.platform.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

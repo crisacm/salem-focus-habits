@@ -19,9 +19,9 @@
 
 package io.github.crisacm.salem.platform.gui
 
-import kotlinx.coroutines.runBlocking
 import io.github.crisacm.salem.platform.io.JavaFileOpener
 import io.github.crisacm.salem.platform.io.JavaResourceFile
+import kotlinx.coroutines.runBlocking
 import java.awt.BasicStroke
 import java.awt.Graphics2D
 import java.awt.RenderingHints.KEY_ANTIALIASING

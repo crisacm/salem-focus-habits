@@ -19,12 +19,6 @@
 package io.github.crisacm.salem.inject
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
-import io.github.crisacm.salem.platform.io.AndroidFileOpener
-import io.github.crisacm.salem.platform.io.DatabaseOpener
-import io.github.crisacm.salem.platform.io.FileOpener
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.io.GenericImporter
@@ -49,10 +43,16 @@ import io.github.crisacm.salem.intents.IntentScheduler
 import io.github.crisacm.salem.intents.PendingIntentFactory
 import io.github.crisacm.salem.io.AndroidLogging
 import io.github.crisacm.salem.notifications.AndroidNotificationTray
+import io.github.crisacm.salem.platform.io.AndroidFileOpener
+import io.github.crisacm.salem.platform.io.DatabaseOpener
+import io.github.crisacm.salem.platform.io.FileOpener
 import io.github.crisacm.salem.preferences.SharedPreferencesStorage
 import io.github.crisacm.salem.receivers.ReminderController
 import io.github.crisacm.salem.utils.DatabaseUtils
 import io.github.crisacm.salem.widgets.WidgetUpdater
+import kotlinx.coroutines.Dispatchers
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 import java.io.File
 
 @AppScope

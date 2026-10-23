@@ -18,9 +18,9 @@
  */
 package io.github.crisacm.salem.core.preferences
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.format
 import io.github.crisacm.salem.core.AppScope
+import io.github.crisacm.salem.platform.io.format
+import me.tatarka.inject.annotations.Inject
 
 @AppScope
 @Inject

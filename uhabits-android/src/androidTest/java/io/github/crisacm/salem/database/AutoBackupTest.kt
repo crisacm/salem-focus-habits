@@ -19,9 +19,9 @@
 
 package io.github.crisacm.salem.database
 
-import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.BaseAndroidTest
+import io.github.crisacm.salem.platform.time.DateUtils
 import org.junit.Test
 import java.io.File
 import java.io.FileOutputStream

@@ -24,12 +24,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardState
 import io.github.crisacm.salem.core.ui.views.BarChart
 import io.github.crisacm.salem.databinding.ShowHabitBarBinding
+import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import java.util.Locale
 
 class BarCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {

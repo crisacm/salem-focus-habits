@@ -34,7 +34,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.android.datetimepicker.time.RadialPickerLayout
 import com.android.datetimepicker.time.TimePickerDialog
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
@@ -52,6 +51,7 @@ import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.models.Reminder
 import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.databinding.ActivityEditHabitBinding
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.utils.applyBottomInset
 import io.github.crisacm.salem.utils.applyRootViewInsets
 import io.github.crisacm.salem.utils.applyToolbarInsets

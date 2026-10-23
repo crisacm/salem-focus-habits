@@ -19,9 +19,6 @@
 
 package io.github.crisacm.salem.core.ui.screens.habits.show.views
 
-import io.github.crisacm.salem.platform.time.DayOfWeek
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.Entry
@@ -42,6 +39,9 @@ import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.OFF
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square.ON
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 import kotlin.math.roundToInt
 
 data class HistoryCardState(

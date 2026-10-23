@@ -20,8 +20,8 @@
 package io.github.crisacm.salem.database
 
 import android.database.sqlite.SQLiteDatabase
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.platform.io.DatabaseOpener
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class AndroidDatabaseOpener() : DatabaseOpener {

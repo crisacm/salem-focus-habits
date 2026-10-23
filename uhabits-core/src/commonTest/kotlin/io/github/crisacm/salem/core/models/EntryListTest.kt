@@ -19,6 +19,12 @@
 
 package io.github.crisacm.salem.core.models
 
+import io.github.crisacm.salem.core.BaseUnitTest
+import io.github.crisacm.salem.core.models.Entry.Companion.NO
+import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
+import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
+import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
+import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.TruncateField
@@ -26,12 +32,6 @@ import io.github.crisacm.salem.platform.time.resetFirstWeekday
 import io.github.crisacm.salem.platform.time.resetToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
-import io.github.crisacm.salem.core.BaseUnitTest
-import io.github.crisacm.salem.core.models.Entry.Companion.NO
-import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
-import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
-import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
-import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

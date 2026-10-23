@@ -18,13 +18,13 @@
  */
 package io.github.crisacm.salem.core.preferences
 
+import io.github.crisacm.salem.core.models.HabitList
+import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.getFirstWeekdayNumberAccordingToLocale
 import io.github.crisacm.salem.platform.utils.StringUtils.Companion.joinLongs
 import io.github.crisacm.salem.platform.utils.StringUtils.Companion.splitLongs
-import io.github.crisacm.salem.core.models.HabitList
-import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import kotlin.math.max
 import kotlin.math.min
 

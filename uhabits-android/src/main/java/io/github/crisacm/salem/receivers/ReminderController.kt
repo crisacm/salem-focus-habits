@@ -21,15 +21,15 @@ package io.github.crisacm.salem.receivers
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.DateUtils
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.reminders.ReminderScheduler
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.notifications.SnoozeDelayPickerActivity
+import io.github.crisacm.salem.platform.time.DateUtils
+import io.github.crisacm.salem.platform.time.LocalDate
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

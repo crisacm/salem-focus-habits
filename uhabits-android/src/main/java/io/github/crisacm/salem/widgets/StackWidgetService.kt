@@ -27,8 +27,6 @@ import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import android.widget.RemoteViewsService.RemoteViewsFactory
-import io.github.crisacm.salem.platform.time.getToday
-import io.github.crisacm.salem.platform.utils.StringUtils.Companion.splitLongs
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.Habit
@@ -36,6 +34,8 @@ import io.github.crisacm.salem.core.models.HabitNotFoundException
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.intents.PendingIntentFactory
+import io.github.crisacm.salem.platform.time.getToday
+import io.github.crisacm.salem.platform.utils.StringUtils.Companion.splitLongs
 import io.github.crisacm.salem.utils.InterfaceUtils.dpToPixels
 
 class StackWidgetService : RemoteViewsService() {

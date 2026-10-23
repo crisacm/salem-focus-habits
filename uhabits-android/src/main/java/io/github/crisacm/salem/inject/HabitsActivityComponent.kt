@@ -20,8 +20,6 @@
 package io.github.crisacm.salem.inject
 
 import android.content.Context
-import me.tatarka.inject.annotations.Component
-import me.tatarka.inject.annotations.Provides
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.activities.HabitsDirFinder
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
@@ -36,6 +34,8 @@ import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 
 @ActivityScope
 @Component

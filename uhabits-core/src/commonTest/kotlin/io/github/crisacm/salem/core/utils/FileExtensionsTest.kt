@@ -1,7 +1,7 @@
 package io.github.crisacm.salem.core.utils
 
-import kotlinx.coroutines.test.runTest
 import io.github.crisacm.salem.core.BaseUnitTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

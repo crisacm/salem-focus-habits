@@ -22,12 +22,12 @@ package io.github.crisacm.salem.intents
 import android.content.ContentUris.parseId
 import android.content.Intent
 import android.net.Uri
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.AppScope
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 @AppScope

@@ -22,12 +22,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardState
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.databinding.ShowHabitHistoryBinding
+import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import java.util.Locale
 
 class HistoryCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {

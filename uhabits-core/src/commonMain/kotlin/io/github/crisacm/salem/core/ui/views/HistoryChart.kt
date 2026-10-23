@@ -19,6 +19,7 @@
 
 package io.github.crisacm.salem.core.ui.views
 
+import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.platform.gui.Canvas
 import io.github.crisacm.salem.platform.gui.Color
 import io.github.crisacm.salem.platform.gui.DataView
@@ -26,7 +27,6 @@ import io.github.crisacm.salem.platform.gui.TextAlign
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.core.models.PaletteColor
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min

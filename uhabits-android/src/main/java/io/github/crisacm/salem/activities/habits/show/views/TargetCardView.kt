@@ -23,10 +23,10 @@ import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
 import io.github.crisacm.salem.databinding.ShowHabitTargetBinding
+import io.github.crisacm.salem.platform.gui.toInt
 
 class TargetCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val binding = ShowHabitTargetBinding.inflate(LayoutInflater.from(context), this)

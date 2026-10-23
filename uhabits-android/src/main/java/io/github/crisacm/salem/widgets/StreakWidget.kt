@@ -24,10 +24,10 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.activities.common.views.StreakChart
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
 
 class StreakWidget(

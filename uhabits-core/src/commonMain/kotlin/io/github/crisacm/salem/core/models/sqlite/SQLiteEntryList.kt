@@ -19,12 +19,12 @@
 
 package io.github.crisacm.salem.core.models.sqlite
 
-import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.core.database.EntryData
 import io.github.crisacm.salem.core.database.EntryRepository
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.EntryList
 import io.github.crisacm.salem.core.models.Frequency
+import io.github.crisacm.salem.platform.time.LocalDate
 
 class SQLiteEntryList(val repository: EntryRepository) : EntryList() {
     var habitId: Long? = null

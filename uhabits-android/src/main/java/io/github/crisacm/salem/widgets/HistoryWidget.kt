@@ -22,13 +22,13 @@ package io.github.crisacm.salem.widgets
 import android.app.PendingIntent
 import android.content.Context
 import android.view.View
-import io.github.crisacm.salem.platform.gui.AndroidDataView
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPresenter
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
+import io.github.crisacm.salem.platform.gui.AndroidDataView
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
 import java.util.Locale
 

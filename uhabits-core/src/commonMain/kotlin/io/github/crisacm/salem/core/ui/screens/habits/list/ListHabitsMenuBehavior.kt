@@ -18,11 +18,11 @@
  */
 package io.github.crisacm.salem.core.ui.screens.habits.list
 
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.HabitMatcher
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ListHabitsMenuBehavior(

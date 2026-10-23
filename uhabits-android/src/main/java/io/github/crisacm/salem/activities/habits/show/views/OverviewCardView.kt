@@ -22,10 +22,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
 import io.github.crisacm.salem.databinding.ShowHabitOverviewBinding
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.utils.StyledResources
 import kotlin.math.abs
 

@@ -25,10 +25,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
@@ -50,6 +46,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresente
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.intents.IntentFactory
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.utils.applyRootViewInsets
 import io.github.crisacm.salem.utils.currentTheme
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
@@ -57,6 +54,9 @@ import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.showMessage
 import io.github.crisacm.salem.utils.showSendFileScreen
 import io.github.crisacm.salem.widgets.WidgetUpdater
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 

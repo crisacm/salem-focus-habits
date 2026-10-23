@@ -19,16 +19,16 @@
 
 package io.github.crisacm.salem.core.models
 
+import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
+import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
+import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
+import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import io.github.crisacm.salem.platform.Synchronized
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.TruncateField
 import io.github.crisacm.salem.platform.time.getFirstWeekday
 import io.github.crisacm.salem.platform.time.getToday
-import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
-import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
-import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
-import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.min

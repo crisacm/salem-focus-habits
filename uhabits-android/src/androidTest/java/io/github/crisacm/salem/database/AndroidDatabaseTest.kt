@@ -19,6 +19,7 @@
 package io.github.crisacm.salem.database
 
 import android.database.sqlite.SQLiteDatabase
+import io.github.crisacm.salem.BaseAndroidTest
 import io.github.crisacm.salem.platform.io.StepResult
 import io.github.crisacm.salem.platform.io.begin
 import io.github.crisacm.salem.platform.io.commit
@@ -26,7 +27,6 @@ import io.github.crisacm.salem.platform.io.query
 import io.github.crisacm.salem.platform.io.queryInt
 import io.github.crisacm.salem.platform.io.querySingle
 import io.github.crisacm.salem.platform.io.run
-import io.github.crisacm.salem.BaseAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

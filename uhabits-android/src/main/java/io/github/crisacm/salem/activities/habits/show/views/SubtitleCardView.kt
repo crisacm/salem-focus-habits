@@ -24,13 +24,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.edit.formatFrequency
 import io.github.crisacm.salem.activities.habits.list.views.toShortString
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.SubtitleCardState
 import io.github.crisacm.salem.databinding.ShowHabitSubtitleBinding
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.utils.InterfaceUtils
 import io.github.crisacm.salem.utils.formatTime
 

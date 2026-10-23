@@ -24,10 +24,10 @@ import android.content.DialogInterface.OnMultiChoiceClickListener
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
-import io.github.crisacm.salem.platform.time.DayOfWeek
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.WeekdayList
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import java.util.Locale
 
 /**

@@ -22,10 +22,10 @@ import android.view.LayoutInflater
 import android.view.View.GONE
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import org.hamcrest.Matchers.equalTo
 import io.github.crisacm.salem.BaseViewTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.NotesCardState
+import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test

@@ -25,10 +25,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
 
 /**
  * The Android BroadcastReceiver for Loop Habit Tracker.

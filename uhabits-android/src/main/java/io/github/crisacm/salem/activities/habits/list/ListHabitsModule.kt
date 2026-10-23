@@ -20,10 +20,10 @@
 package io.github.crisacm.salem.activities.habits.list
 
 import android.content.Context
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.AndroidBugReporter
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.inject.AppContext
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ListHabitsModule(

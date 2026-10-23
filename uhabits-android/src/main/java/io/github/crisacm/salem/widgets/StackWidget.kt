@@ -26,8 +26,8 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
-import io.github.crisacm.salem.platform.utils.StringUtils
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.platform.utils.StringUtils
 
 class StackWidget(
     context: Context,

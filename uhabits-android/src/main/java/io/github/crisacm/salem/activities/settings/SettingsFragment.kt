@@ -36,8 +36,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.github.crisacm.salem.platform.time.DayOfWeek
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.RESULT_BUG_REPORT
@@ -49,6 +47,8 @@ import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
 import io.github.crisacm.salem.notifications.RingtoneManager
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.utils.StyledResources
 import io.github.crisacm.salem.utils.applyBottomInset
 import io.github.crisacm.salem.utils.startActivitySafely

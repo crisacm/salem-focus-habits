@@ -20,7 +20,6 @@ package io.github.crisacm.salem.activities.habits.list.views
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import me.tatarka.inject.annotations.Inject
 import io.github.crisacm.salem.activities.habits.list.MAX_CHECKMARK_COUNT
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitList
@@ -32,6 +31,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavio
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
 import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityScope
+import me.tatarka.inject.annotations.Inject
 import java.util.LinkedList
 
 /**

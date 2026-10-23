@@ -24,14 +24,14 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import kotlinx.coroutines.runBlocking
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.activities.common.views.TargetChart
 import io.github.crisacm.salem.activities.habits.show.views.TargetCardView.Companion.intervalToLabel
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardPresenter
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
+import kotlinx.coroutines.runBlocking
 
 class TargetWidget(
     context: Context,

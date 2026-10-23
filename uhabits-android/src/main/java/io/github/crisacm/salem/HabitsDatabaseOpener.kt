@@ -22,11 +22,11 @@ package io.github.crisacm.salem
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import kotlinx.coroutines.runBlocking
-import io.github.crisacm.salem.platform.io.migrateTo
-import io.github.crisacm.salem.platform.io.setVersion
 import io.github.crisacm.salem.core.database.UnsupportedDatabaseVersionException
 import io.github.crisacm.salem.database.AndroidDatabase
+import io.github.crisacm.salem.platform.io.migrateTo
+import io.github.crisacm.salem.platform.io.setVersion
+import kotlinx.coroutines.runBlocking
 
 class HabitsDatabaseOpener(
     private val context: Context,

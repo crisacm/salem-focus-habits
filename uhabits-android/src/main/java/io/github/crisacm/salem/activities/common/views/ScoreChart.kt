@@ -27,11 +27,11 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.AttributeSet
+import io.github.crisacm.salem.R
+import io.github.crisacm.salem.core.models.Score
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.getToday
-import io.github.crisacm.salem.R
-import io.github.crisacm.salem.core.models.Score
 import io.github.crisacm.salem.utils.InterfaceUtils.dpToPixels
 import io.github.crisacm.salem.utils.InterfaceUtils.getDimension
 import io.github.crisacm.salem.utils.StyledResources

@@ -19,10 +19,10 @@
 
 package io.github.crisacm.salem.core.io
 
-import kotlinx.coroutines.test.runTest
+import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.platform.io.ZipReader
 import io.github.crisacm.salem.platform.io.formatInvariant
-import io.github.crisacm.salem.core.BaseUnitTest
+import kotlinx.coroutines.test.runTest
 import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

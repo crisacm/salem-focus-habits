@@ -32,10 +32,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
-import org.hamcrest.CoreMatchers
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.habits.list.ListHabitsActivity
+import org.hamcrest.CoreMatchers
 import org.junit.Assert.assertTrue
 
 object CommonSteps : BaseUserInterfaceTest() {

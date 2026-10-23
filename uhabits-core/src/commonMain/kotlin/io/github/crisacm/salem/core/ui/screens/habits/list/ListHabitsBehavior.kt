@@ -18,10 +18,6 @@
  */
 package io.github.crisacm.salem.core.ui.screens.habits.list
 
-import me.tatarka.inject.annotations.Inject
-import io.github.crisacm.salem.platform.io.UserFile
-import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
@@ -36,6 +32,10 @@ import io.github.crisacm.salem.core.tasks.Task
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
 import io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback
+import io.github.crisacm.salem.platform.io.UserFile
+import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getToday
+import me.tatarka.inject.annotations.Inject
 import kotlin.math.roundToInt
 
 @Inject

@@ -22,13 +22,13 @@ package io.github.crisacm.salem.automation
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import me.tatarka.inject.annotations.Component
-import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.ui.widgets.WidgetBehavior
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.receivers.ReceiverScope
+import me.tatarka.inject.annotations.Component
 
 const val ACTION_CHECK = 0
 const val ACTION_UNCHECK = 1
