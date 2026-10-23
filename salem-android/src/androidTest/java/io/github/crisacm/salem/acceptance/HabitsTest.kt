@@ -34,6 +34,7 @@ import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplayGraphs
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysTextInSequence
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDoesNotDisplayText
+import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifySelectionCount
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyShowsScreen
 import io.github.crisacm.salem.acceptance.steps.EditHabitSteps.clickSave
 import io.github.crisacm.salem.acceptance.steps.EditHabitSteps.pickColor
@@ -214,6 +215,6 @@ class HabitsTest : BaseUserInterfaceTest() {
         verifyDisplaysText("Track time")
         longClickText("Wake up early")
         longClickText("Track time")
-        verifyDisplaysText("2")
+        verifySelectionCount(2)
     }
 }

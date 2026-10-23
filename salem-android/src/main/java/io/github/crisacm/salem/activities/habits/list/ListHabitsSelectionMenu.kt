@@ -19,110 +19,78 @@
 
 package io.github.crisacm.salem.activities.habits.list
 
-import android.content.Context
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
-import io.github.crisacm.salem.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.activities.habits.list.views.HabitCardListController
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
-import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.platform.time.getToday
 import me.tatarka.inject.annotations.Inject
 
+/**
+ * State and actions of the bar that replaces the top bar while habits are selected. The controller of
+ * the list tells it when the selection starts, changes and finishes.
+ */
 @Inject
 @ActivityScope
 class ListHabitsSelectionMenu(
-    @ActivityContext context: Context,
     private val listAdapter: HabitCardListAdapter,
     var commandRunner: CommandRunner,
     private val prefs: Preferences,
     private val behavior: ListHabitsSelectionMenuBehavior,
     private val listController: Lazy<HabitCardListController>,
     private val notificationTray: NotificationTray
-) : ActionMode.Callback {
-
-    val activity = (context as AppCompatActivity)
-
-    var activeActionMode: ActionMode? = null
+) {
+    var active by mutableStateOf(false)
+        private set
+    var selectedCount by mutableIntStateOf(0)
+        private set
+    var actions by mutableStateOf(SelectionActions.NONE)
+        private set
 
     fun onSelectionStart() {
-        activity.startSupportActionMode(this)
+        active = true
+        refresh()
     }
 
-    fun onSelectionChange() {
-        activeActionMode?.invalidate()
-    }
+    fun onSelectionChange() = refresh()
 
     fun onSelectionFinish() {
-        activeActionMode?.finish()
+        active = false
+        selectedCount = 0
+        actions = SelectionActions.NONE
     }
 
-    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        activeActionMode = mode
-        activity.menuInflater.inflate(R.menu.list_habits_selection, menu)
-        return true
+    /** Ends the selection from the bar (its close button or the back button). */
+    fun cancel() = listController.value.onSelectionFinished()
+
+    fun onEdit() = behavior.onEditHabits()
+
+    fun onColor() = behavior.onChangeColor()
+
+    fun onArchive() = behavior.onArchiveHabits()
+
+    fun onUnarchive() = behavior.onUnarchiveHabits()
+
+    fun onDelete() = behavior.onDeleteHabits()
+
+    fun onNotify() {
+        for (habit in listAdapter.selected) notificationTray.show(habit, getToday(), 0)
     }
 
-    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-        val itemEdit = menu.findItem(R.id.action_edit_habit)
-        val itemColor = menu.findItem(R.id.action_color)
-        val itemArchive = menu.findItem(R.id.action_archive_habit)
-        val itemUnarchive = menu.findItem(R.id.action_unarchive_habit)
-        val itemNotify = menu.findItem(R.id.action_notify)
-
-        itemColor.isVisible = true
-        itemEdit.isVisible = behavior.canEdit()
-        itemArchive.isVisible = behavior.canArchive()
-        itemUnarchive.isVisible = behavior.canUnarchive()
-        itemNotify.isVisible = prefs.isDeveloper
-        activeActionMode?.title = listAdapter.selected.size.toString()
-        return true
-    }
-    override fun onDestroyActionMode(mode: ActionMode?) {
-        listController.value.onSelectionFinished()
-    }
-
-    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_edit_habit -> {
-                behavior.onEditHabits()
-                return true
-            }
-
-            R.id.action_archive_habit -> {
-                behavior.onArchiveHabits()
-                return true
-            }
-
-            R.id.action_unarchive_habit -> {
-                behavior.onUnarchiveHabits()
-                return true
-            }
-
-            R.id.action_delete -> {
-                behavior.onDeleteHabits()
-                return true
-            }
-
-            R.id.action_color -> {
-                behavior.onChangeColor()
-                return true
-            }
-
-            R.id.action_notify -> {
-                for (h in listAdapter.selected)
-                    notificationTray.show(h, getToday(), 0)
-                return true
-            }
-
-            else -> return false
-        }
+    private fun refresh() {
+        selectedCount = listAdapter.selected.size
+        actions = SelectionActions(
+            canEdit = behavior.canEdit(),
+            canArchive = behavior.canArchive(),
+            canUnarchive = behavior.canUnarchive(),
+            showNotify = prefs.isDeveloper
+        )
     }
 }

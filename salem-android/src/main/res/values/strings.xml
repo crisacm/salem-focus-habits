@@ -72,6 +72,8 @@
     <string name="intro_description_4">Detailed graphs show you how your habits improved over time.</string>
     <string name="intro_next">Next</string>
     <string name="unknown">Unknown</string>
+    <string name="more_options">More options</string>
+    <string name="close">Close</string>
     <string name="interval_15_minutes">15 minutes</string>
     <string name="interval_30_minutes">30 minutes</string>
     <string name="interval_1_hour">1 hour</string>

@@ -19,12 +19,15 @@
 
 package io.github.crisacm.salem.activities.habits.list
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.R
@@ -42,15 +45,15 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.HintListFactory
 import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
+import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.utils.StyledResources
 import io.github.crisacm.salem.utils.addAtBottom
 import io.github.crisacm.salem.utils.addAtTop
 import io.github.crisacm.salem.utils.addBelow
-import io.github.crisacm.salem.utils.buildToolbar
 import io.github.crisacm.salem.utils.currentTheme
 import io.github.crisacm.salem.utils.dim
 import io.github.crisacm.salem.utils.dp
-import io.github.crisacm.salem.utils.setupToolbar
 import io.github.crisacm.salem.utils.sres
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.xml.KonfettiView
@@ -64,6 +67,8 @@ const val MAX_CHECKMARK_COUNT = 60
 class ListHabitsRootView(
     @ActivityContext context: Context,
     hintListFactory: HintListFactory,
+    menu: ListHabitsMenu,
+    selectionMenu: ListHabitsSelectionMenu,
     preferences: Preferences,
     midnightTimer: MidnightTimer,
     runner: TaskRunner,
@@ -78,7 +83,14 @@ class ListHabitsRootView(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent { SalemTheme { EmptyListContent(emptyState.value) } }
     }
-    val tbar = buildToolbar()
+    val tbar = ComposeView(context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        val barColor = Color(barColor())
+        paintStatusBar(barColor.toArgb())
+        setContent {
+            SalemTheme { ListHabitsBar(menu, selectionMenu, barColor, Color.White) }
+        }
+    }
     val konfettiView = KonfettiView(context).apply {
         translationZ = 10f
     }
@@ -103,15 +115,24 @@ class ListHabitsRootView(
             }
             addAtBottom(hintView)
         }
-        rootView.setupToolbar(
-            toolbar = tbar,
-            title = resources.getString(R.string.main_activity_title),
-            color = PaletteColor(17),
-            displayHomeAsUpEnabled = false,
-            theme = currentTheme()
-        )
         addView(rootView, MATCH_PARENT, MATCH_PARENT)
         listAdapter.setListView(listView)
+    }
+
+    /** The colour of the top bar: the habit palette colour in the light theme, the primary colour otherwise. */
+    private fun barColor(): Int {
+        val resources = StyledResources(context)
+        return if (resources.getBoolean(R.attr.useHabitColorAsPrimary)) {
+            currentTheme().color(PaletteColor(17)).toInt()
+        } else {
+            resources.getColor(R.attr.colorPrimary)
+        }
+    }
+
+    // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the bar.
+    @Suppress("DEPRECATION")
+    private fun paintStatusBar(color: Int) {
+        (context as? Activity)?.window?.statusBarColor = color
     }
 
     override fun onModelChange() {
