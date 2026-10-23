@@ -27,6 +27,9 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.isoron.platform.time.DateUtils
+import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
+import org.isoron.platform.time.setToday
 import org.isoron.platform.time.utcTime
 import org.isoron.platform.time.zoneOffsetsOf
 import org.isoron.uhabits.core.BaseUnitTest
@@ -42,6 +45,9 @@ class MidnightTimerTest : BaseUnitTest() {
 
     private fun newTimer(scheduler: TestCoroutineScheduler) =
         MidnightTimer(StandardLogging(), mock<Preferences>(), StandardTestDispatcher(scheduler)).also { timers.add(it) }
+
+    private fun timerWithToday(today: () -> LocalDate) =
+        MidnightTimer(StandardLogging(), mock<Preferences>(), todayProvider = today)
 
     @AfterTest
     fun tearDown() {
@@ -170,6 +176,40 @@ class MidnightTimerTest : BaseUnitTest() {
         runCurrent()
         assertEquals(0, calls)
         timer.onPause()
+    }
+
+    @Test
+    fun testNotifyIfDayChangedDoesNothingOnTheSameDay() {
+        setToday(LocalDate(2015, 1, 25))
+        val timer = timerWithToday { LocalDate(2015, 1, 25) }
+        var calls = 0
+        timer.addListener { calls++ }
+        assertEquals(false, timer.notifyIfDayChanged())
+        assertEquals(0, calls)
+    }
+
+    @Test
+    fun testNotifyIfDayChangedUpdatesTodayAndNotifiesOnce() {
+        setToday(LocalDate(2015, 1, 25))
+        val timer = timerWithToday { LocalDate(2015, 1, 27) }
+        var calls = 0
+        timer.addListener { calls++ }
+        assertEquals(true, timer.notifyIfDayChanged())
+        assertEquals(LocalDate(2015, 1, 27), getToday())
+        assertEquals(1, calls)
+        assertEquals(false, timer.notifyIfDayChanged())
+        assertEquals(1, calls)
+    }
+
+    @Test
+    fun testNotifyIfDayChangedSurvivesAFailingListener() {
+        setToday(LocalDate(2015, 1, 25))
+        val timer = timerWithToday { LocalDate(2015, 1, 26) }
+        var calls = 0
+        timer.addListener { throw IllegalStateException("broken listener") }
+        timer.addListener { calls++ }
+        assertEquals(true, timer.notifyIfDayChanged())
+        assertEquals(1, calls)
     }
 
     @Test
