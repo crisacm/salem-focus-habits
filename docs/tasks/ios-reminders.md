@@ -23,10 +23,10 @@ Step 4f of `.specs/migration-kmp.md`. `ReminderScheduler`, `MidnightTimer` and `
 - 4f-2: whether `UNUserNotificationCenter` works inside the simulator test host (spike first; otherwise the center sits behind an interface with a fake) and how to handle the weekday mask (schedule the next enabled day).
 
 ## Checklist
-- [ ] TASK-1: task doc and Engram mirror — criterio: this file committed
-- [ ] TASK-2 (4f-1): common `DateUtils` over `ZoneOffsets`, with common tests — criterio: JVM and iOS tests green, existing JVM `DateUtilsTest` unchanged
-- [ ] TASK-3 (4f-1): `ReminderScheduler` in `commonMain` with its test in `commonTest` — criterio: green on JVM and iOS
-- [ ] TASK-4 (4f-1): `MidnightTimer` in `commonMain` with virtual-time test — criterio: green on JVM and iOS, Android compiles and unit tests pass
+- [x] TASK-1: task doc and Engram mirror — criterio: this file committed
+- [x] TASK-2 (4f-1): common `DateUtils` over `ZoneOffsets`, with common tests — criterio: JVM and iOS tests green, existing JVM `DateUtilsTest` unchanged
+- [x] TASK-3 (4f-1): `ReminderScheduler` in `commonMain` with its test in `commonTest` — criterio: green on JVM and iOS
+- [x] TASK-4 (4f-1): `MidnightTimer` in `commonMain` with virtual-time test — criterio: green on JVM and iOS, Android compiles and unit tests pass
 - [ ] TASK-5 (4f-2): iOS `SystemScheduler`, 64 limit, permission wrapper
 - [ ] TASK-6 (4f-3): iOS `SystemTray` and Yes/No action handler
 - [ ] TASK-7 (4f-4): foreground refresh
@@ -35,4 +35,7 @@ Step 4f of `.specs/migration-kmp.md`. `ReminderScheduler`, `MidnightTimer` and `
 `multi-pr`, base `feat/ios-zip` until the parents merge, then retarget to `develop`.
 
 ## Evidencia
-(pending)
+- 4f-1, each test written before the code and seen failing (compile error): `DateUtilsCommonTest` (8, incl. Sydney daylight saving), `ReminderSchedulerTest` moved to `commonTest` (6, runs on JVM and iOS), `MidnightTimerTest` rewritten with virtual time in `commonTest` (5: first notification, daily repeat, pause, double resume, removed listener). Existing JVM `DateUtilsTest` (13) unchanged and green.
+- Android: `assembleDebug` (kotlin-inject regenerated; `MidnightTimer` uses the default dispatcher), `testDebugUnitTest`, `compileDebugAndroidTestKotlin`, `ktlintCheck` pass. iOS suite 358 tests, 0 failures; `jvmTest` 307, 0 failures; `compileKotlinIosArm64` passes.
+- Behaviour notes: `MidnightTimer.onPause()` no longer returns the pending runnables; `getStartOfDay` uses `floorDiv` (same result for dates after 1970); listeners are called from a snapshot of the list.
+- Not verified: Android timing on a device (the coroutine loop replaces `scheduleAtFixedRate`), CI.
