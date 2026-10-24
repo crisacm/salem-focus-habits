@@ -65,4 +65,9 @@ class ScoreChartTest : BaseUnitTest() {
     fun testDrawDarkTheme() = runTest {
         assertRenders(300, 200, "$base/themeDark.png", chartFor(theme = DarkTheme()))
     }
+
+    @Test
+    fun testDrawWidgetTheme() = runTest {
+        assertRenders(300, 200, "$base/themeWidget.png", chartFor(theme = WidgetTheme()))
+    }
 }

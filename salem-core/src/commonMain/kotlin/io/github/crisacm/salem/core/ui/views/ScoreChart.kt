@@ -127,9 +127,14 @@ class ScoreChart(
     }
 
     // A marker is a disc of the colour of the card with a smaller disc of the colour of the chart on top of it.
+    // When the card is transparent (the widgets) the first disc is a hole, so the line does not show through.
     private fun drawMarker(canvas: Canvas, x: Double, y: Double, baseSize: Double) {
-        canvas.setColor(theme.cardBackgroundColor)
-        canvas.fillCircle(x, y, baseSize * 0.275)
+        if (theme.cardBackgroundColor.alpha == 0.0) {
+            canvas.clearCircle(x, y, baseSize * 0.275)
+        } else {
+            canvas.setColor(theme.cardBackgroundColor)
+            canvas.fillCircle(x, y, baseSize * 0.275)
+        }
         canvas.setColor(color)
         canvas.fillCircle(x, y, baseSize * 0.175)
     }

@@ -65,4 +65,9 @@ class FrequencyChartTest : BaseUnitTest() {
     fun testDrawMondayFirst() = runTest {
         assertRenders(300, 100, "$base/monday.png", chart(firstWeekday = DayOfWeek.MONDAY))
     }
+
+    @Test
+    fun testDrawWidgetTheme() = runTest {
+        assertRenders(300, 100, "$base/themeWidget.png", chart(theme = WidgetTheme()))
+    }
 }

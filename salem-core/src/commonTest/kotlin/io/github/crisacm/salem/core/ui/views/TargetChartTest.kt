@@ -59,4 +59,10 @@ class TargetChartTest {
         val chart = chart(values = listOf(1.0, 3.0, 12.0), targets = listOf(1.0, 5.0, 20.0))
         assertRenders(150, chart.height.toInt(), "$base/narrow.png", chart)
     }
+
+    @Test
+    fun testDrawWidgetTheme() = runTest {
+        val chart = chart(theme = WidgetTheme(), values = listOf(1.0, 3.0, 12.0), targets = listOf(1.0, 5.0, 20.0))
+        assertRenders(300, chart.height.toInt(), "$base/themeWidget.png", chart)
+    }
 }
