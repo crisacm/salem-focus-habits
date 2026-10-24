@@ -188,4 +188,8 @@ class AndroidCanvas : Canvas {
     override fun measureText(text: String): Double {
         return textPaint.measureText(text) / innerDensity
     }
+
+    override fun fontSpacing(): Double {
+        return textPaint.fontSpacing / innerDensity
+    }
 }

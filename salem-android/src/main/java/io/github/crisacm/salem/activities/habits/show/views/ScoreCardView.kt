@@ -16,45 +16,46 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.AdapterView
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
-import io.github.crisacm.salem.databinding.ShowHabitScoreBinding
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The score card of the detail screen: the card itself (padding, background) is still this View. */
 class ScoreCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private var binding = ShowHabitScoreBinding.inflate(LayoutInflater.from(context), this)
+    private val state = mutableStateOf<ScoreCardState?>(null)
+    private var presenter: ScoreCardPresenter? = null
+
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    SalemTheme {
+                        state.value?.let { ScoreCardContent(it, onSpinner = { position -> presenter?.onSpinnerPosition(position) }) }
+                    }
+                }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
+        )
+    }
 
     fun setState(state: ScoreCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        binding.title.setTextColor(androidColor)
-        binding.spinner.setSelection(state.spinnerPosition)
-        binding.scoreView.setScores(state.scores)
-        binding.scoreView.reset()
-        binding.scoreView.setBucketSize(state.bucketSize)
-        binding.scoreView.setColor(androidColor)
+        this.state.value = state
     }
 
     fun setListener(presenter: ScoreCardPresenter) {
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                presenter.onSpinnerPosition(position)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
+        this.presenter = presenter
     }
 }

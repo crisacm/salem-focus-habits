@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,13 +48,6 @@ import io.github.crisacm.salem.ui.compose.CardSpinner
 import io.github.crisacm.salem.ui.compose.ChartScrollState
 import io.github.crisacm.salem.ui.compose.CoreChart
 import java.util.Locale
-
-/** The title of a card: the regular text size, in the colour of the habit, with room below it. */
-@Composable
-private fun CardTitle(text: String, color: Color, modifier: Modifier = Modifier) {
-    val size = with(LocalDensity.current) { dimensionResource(R.dimen.regularTextSize).toSp() }
-    Text(text, color = color, fontSize = size, modifier = modifier.padding(bottom = 12.dp))
-}
 
 @Composable
 fun HistoryCardContent(state: HistoryCardState, onEdit: () -> Unit) {

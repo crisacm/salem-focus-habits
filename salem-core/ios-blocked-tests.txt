@@ -6,6 +6,8 @@
 io.github.crisacm.salem.platform.gui.CanvasTest
 io.github.crisacm.salem.core.ui.views.BarChartTest
 io.github.crisacm.salem.core.ui.views.HistoryChartTest
+io.github.crisacm.salem.core.ui.views.ScoreChartTest
+io.github.crisacm.salem.core.ui.views.FrequencyChartTest
 
 # Blocked by sqliter: the error of a failed step() is just "sqlite3_step failed" (the error code is private),
 # and these tests expect the SQLite message to contain "constraint". Needs a different driver or sqlite3_errmsg.
