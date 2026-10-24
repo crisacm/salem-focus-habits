@@ -34,12 +34,14 @@ attribution.
 
 ### Fixed
 
+- The habit list no longer crashes when a reminder, widget or notification asks to edit a habit that was deleted meanwhile, or when the colour of an empty selection is requested
 - Opening a Compose dialog (colour, habit type, weekdays, snooze and the others built on `ComposeDialogFragment`) no longer crashes the app with a `StackOverflowError`: `Content()` called itself forever inside `ComposeView.apply`
 - CSV export no longer depends on the device locale: scores and target values always use `.` as decimal separator and ASCII digits (they were written as `0,5000` under Spanish and with Arabic-Indic digits under Arabic locales)
 - Importing a Loop database no longer fails on devices whose locale uses non-Latin digits (the migration file names were built with the locale's digits)
 
 ### Changed
 
+- The habit list screen is now a single Compose screen (`ListHabitsActivity` uses `setContent`; the top bar, day header, rows, empty state, progress bar and hint are one composition) and `ListHabitsRootView` is gone; the Settings and import-file results use `ActivityResultContracts` (the result codes 101 to 105 are unchanged)
 - Rename the Gradle modules `uhabits-core` and `uhabits-android` to `salem-core` and `salem-android`
 - Rename the Kotlin packages from `org.isoron.*` to `io.github.crisacm.salem.*` (the Android `namespace` is now the same as the application id); the intent actions, the `content://org.isoron.uhabits` URI and the database file name are unchanged
 - Remove the JavaScript (browser) target from `uhabits-core`; the focus is Android and iOS

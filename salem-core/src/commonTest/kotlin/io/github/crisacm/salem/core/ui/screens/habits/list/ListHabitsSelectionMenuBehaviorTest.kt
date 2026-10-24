@@ -24,6 +24,7 @@ import dev.mokkery.every
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify
+import dev.mokkery.verify.VerifyMode
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.PaletteColor
@@ -95,6 +96,13 @@ class ListHabitsSelectionMenuBehaviorTest : BaseUnitTest() {
         }
         behavior.onChangeColor()
         assertEquals(PaletteColor(30), habit1.color)
+    }
+
+    @Test
+    fun onChangeColor_withNothingSelected_doesNothing() {
+        every { adapter.getSelected() } returns emptyList()
+        behavior.onChangeColor()
+        verify(VerifyMode.not) { screen.showColorPicker(any(), any()) }
     }
 
     @Test
