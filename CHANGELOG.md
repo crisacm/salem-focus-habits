@@ -41,6 +41,7 @@ attribution.
 
 ### Changed
 
+- The history (calendar) and bar cards of the habit detail screen are drawn with Jetpack Compose: the charts of `salem-core` are shown by a new `CoreChart` composable (same drawing code as before), which scrolls them with a drag and a fling, and the interval drop-down is a Compose menu
 - The habit list screen is now a single Compose screen (`ListHabitsActivity` uses `setContent`; the top bar, day header, rows, empty state, progress bar and hint are one composition) and `ListHabitsRootView` is gone; the Settings and import-file results use `ActivityResultContracts` (the result codes 101 to 105 are unchanged)
 - Rename the Gradle modules `uhabits-core` and `uhabits-android` to `salem-core` and `salem-android`
 - Rename the Kotlin packages from `org.isoron.*` to `io.github.crisacm.salem.*` (the Android `namespace` is now the same as the application id); the intent actions, the `content://org.isoron.uhabits` URI and the database file name are unchanged
