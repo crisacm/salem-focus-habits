@@ -16,37 +16,36 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
-import android.content.res.Resources
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
-import io.github.crisacm.salem.R
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
-import io.github.crisacm.salem.databinding.ShowHabitTargetBinding
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The target card of the detail screen: the card itself (padding, background) is still this View. */
 class TargetCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val binding = ShowHabitTargetBinding.inflate(LayoutInflater.from(context), this)
-    fun setState(state: TargetCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        binding.targetChart.setValues(state.values)
-        binding.targetChart.setTargets(state.targets)
-        binding.targetChart.setLabels(state.intervals.map { intervalToLabel(resources, it) })
-        binding.title.setTextColor(androidColor)
-        binding.targetChart.setColor(androidColor)
-        postInvalidate()
+    private val state = mutableStateOf<TargetCardState?>(null)
+
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent { SalemTheme { state.value?.let { TargetCardContent(it) } } }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
+        )
     }
 
-    companion object {
-        fun intervalToLabel(resources: Resources, interval: Int) = when (interval) {
-            1 -> resources.getString(R.string.today)
-            7 -> resources.getString(R.string.week)
-            30 -> resources.getString(R.string.month)
-            91 -> resources.getString(R.string.quarter)
-            else -> resources.getString(R.string.year)
-        }
+    fun setState(state: TargetCardState) {
+        this.state.value = state
     }
 }
