@@ -42,6 +42,7 @@ attribution.
 
 ### Changed
 
+- Remove code and resources that nothing used after the Compose migration: 78 entries of the lint baseline for files that no longer exist, 5 drawables, a layout, 13 styles, 2 strings, the `HabitChart` interface, `AndroidTestView`, 13 helpers of `ViewExtensions.kt` and the scroll controller of `ScrollableChart`
 - The time pickers (the time of the reminder of a habit and the custom time of a snooze) are a Material 3 Compose dialog that keeps the colour of the habit, and the vendored Android Open Source Project date and time pickers (21 Java files, their layouts and `pickers.xml`) are removed; the date picker had no users
 - The history editor (the calendar dialog of the habit detail screen) is drawn with Jetpack Compose and the same chart code as the calendar card; it now keeps the theme of the app when it refreshes (it used the light theme after the first change)
 - The habit detail screen is a single Compose screen (`ShowHabitActivity` uses `setContent`): its top bar, with the way back, Edit and the menu (export, archive or unarchive, delete and, for developers, Randomize), is Compose too, and `ShowHabitView`, `ShowHabitMenu` and their layout and menu files are gone
