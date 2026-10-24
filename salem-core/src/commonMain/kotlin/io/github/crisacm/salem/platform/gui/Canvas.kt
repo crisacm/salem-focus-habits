@@ -58,6 +58,9 @@ interface Canvas {
     fun toImage(): Image
     fun measureText(text: String): Double
 
+    /** The recommended distance between two lines of text with the current font and size, in dp. */
+    fun fontSpacing(): Double
+
     /**
      * Fills entire canvas with the current color.
      */

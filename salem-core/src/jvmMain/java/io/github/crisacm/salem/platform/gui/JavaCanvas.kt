@@ -49,6 +49,10 @@ class JavaCanvas(
         return toDp(metrics.stringWidth(text))
     }
 
+    override fun fontSpacing(): Double {
+        return toDp(g2d.getFontMetrics(g2d.font).height)
+    }
+
     private val frc = FontRenderContext(null, true, true)
     private var fontSize = 12.0
     private var font = Font.REGULAR
