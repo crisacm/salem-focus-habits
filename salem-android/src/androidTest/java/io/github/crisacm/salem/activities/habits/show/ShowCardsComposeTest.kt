@@ -25,11 +25,16 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.crisacm.salem.activities.habits.show.views.BarCardContent
+import io.github.crisacm.salem.activities.habits.show.views.FrequencyCardContent
 import io.github.crisacm.salem.activities.habits.show.views.HistoryCardContent
+import io.github.crisacm.salem.activities.habits.show.views.ScoreCardContent
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.PaletteColor
+import io.github.crisacm.salem.core.models.Score
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardState
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.FrequencyCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardState
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.platform.time.DayOfWeek
@@ -78,5 +83,21 @@ class ShowCardsComposeTest {
         )
         composeRule.setContent { BarCardContent(state, onBoolSpinner = {}, onNumericalSpinner = {}) }
         composeRule.onNodeWithTag("barChart").assertIsDisplayed()
+    }
+
+    @Test
+    fun theScoreCardDrawsItsChart() {
+        val scores = List(30) { Score(today.minus(it), 0.5 + it / 100.0) }
+        val state = ScoreCardState(scores, 7, 0, PaletteColor(8), LightTheme())
+        composeRule.setContent { ScoreCardContent(state, onSpinner = {}) }
+        composeRule.onNodeWithTag("scoreChart").assertIsDisplayed()
+    }
+
+    @Test
+    fun theFrequencyCardDrawsItsChart() {
+        val frequency = hashMapOf(LocalDate(today.year, today.month, 1) to arrayOf(1, 2, 3, 4, 5, 6, 7))
+        val state = FrequencyCardState(PaletteColor(8), DayOfWeek.MONDAY, frequency, LightTheme(), false)
+        composeRule.setContent { FrequencyCardContent(state) }
+        composeRule.onNodeWithTag("frequencyChart").assertIsDisplayed()
     }
 }
