@@ -188,8 +188,10 @@ object CommonSteps : BaseUserInterfaceTest() {
     }
 
     fun verifyDisplayGraphs() {
-        verifyDisplaysView("HistoryCardView")
-        verifyDisplaysView("ScoreCardView")
+        // The cards are Compose; their charts are found by test tag.
+        for (tag in listOf("historyChart", "scoreChart")) {
+            assertTrue("Chart not shown: $tag", device.wait(Until.hasObject(By.res(tag)), 5000))
+        }
     }
 
     fun verifyDisplaysText(text: String?) {
@@ -225,12 +227,6 @@ object CommonSteps : BaseUserInterfaceTest() {
         }
     }
 
-    private fun verifyDisplaysView(className: String) {
-        Espresso.onView(ViewMatchers.withClassName(CoreMatchers.endsWith(className)))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
-        device.waitForIdle()
-    }
-
     fun verifyDoesNotDisplayText(text: String?) {
         Espresso.onView(ViewMatchers.withText(text)).check(ViewAssertions.doesNotExist())
         // Espresso does not see text drawn by Compose, so UiAutomator checks the whole screen too.
@@ -256,8 +252,8 @@ object CommonSteps : BaseUserInterfaceTest() {
                 assertTrue("Habit list not shown", device.wait(Until.hasObject(By.res("habitListScreen")), 5000))
 
             Screen.SHOW_HABIT ->
-                Espresso.onView(ViewMatchers.withId(R.id.subtitleCard))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                // The cards of the detail screen are Compose.
+                assertTrue("Habit screen not shown", device.wait(Until.hasObject(By.res("subtitleCard")), 5000))
 
             Screen.EDIT_HABIT ->
                 // The form is drawn by Compose; its fields are exposed by their test tag as resource ids.

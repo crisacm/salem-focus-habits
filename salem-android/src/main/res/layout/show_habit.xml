@@ -30,63 +30,10 @@
         app:popupTheme="?toolbarPopupTheme"
         android:layout_alignParentTop="true" />
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
-        android:background="?windowBackgroundColor"
-        android:clipToPadding="false">
-
-        <LinearLayout
-            style="@style/CardList"
-            android:id="@+id/linearLayout"
-            android:clipToPadding="false">
-
-            <io.github.crisacm.salem.activities.habits.show.views.SubtitleCardView
-                android:id="@+id/subtitleCard"
-                style="@style/ShowHabit.Subtitle" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.NotesCardView
-                android:id="@+id/notesCard"
-                style="@style/Card"
-                android:gravity="center" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.OverviewCardView
-                android:id="@+id/overviewCard"
-                style="@style/Card"
-                android:paddingTop="12dp" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.TargetCardView
-                android:id="@+id/targetCard"
-                style="@style/Card"
-                android:paddingTop="12dp" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.ScoreCardView
-                android:id="@+id/scoreCard"
-                style="@style/Card"
-                android:gravity="center" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.BarCardView
-                android:id="@+id/barCard"
-                style="@style/Card"
-                android:gravity="center" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.HistoryCardView
-                android:id="@+id/historyCard"
-                style="@style/Card"
-                android:gravity="center"
-                android:paddingBottom="0dp" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.StreakCardView
-                android:id="@+id/streakCard"
-                style="@style/Card" />
-
-            <io.github.crisacm.salem.activities.habits.show.views.FrequencyCardView
-                android:id="@+id/frequencyCard"
-                style="@style/Card" />
-
-        </LinearLayout>
-    </ScrollView>
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/cards"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar" />
 
 </RelativeLayout>

@@ -22,18 +22,27 @@ package io.github.crisacm.salem.activities.habits.show
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.databinding.ShowHabitBinding
-import io.github.crisacm.salem.utils.applyBottomInset
+import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.utils.applyToolbarInsets
 import io.github.crisacm.salem.utils.setupToolbar
 
+/** The detail screen of a habit: the toolbar is still a View, the cards are Compose. */
 class ShowHabitView(context: Context) : FrameLayout(context) {
     private val binding = ShowHabitBinding.inflate(LayoutInflater.from(context))
+    private val state = mutableStateOf<ShowHabitState?>(null)
+    private val callbacks = mutableStateOf(ShowHabitCallbacks())
 
     init {
         binding.toolbar.applyToolbarInsets()
+        binding.cards.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        binding.cards.setContent {
+            SalemTheme { state.value?.let { ShowHabitContent(it, callbacks.value) } }
+        }
         addView(binding.root)
     }
 
@@ -44,26 +53,15 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
             color = data.color,
             theme = data.theme
         )
-        binding.subtitleCard.setState(data.subtitle)
-        binding.overviewCard.setState(data.overview)
-        binding.notesCard.setState(data.notes)
-        binding.targetCard.setState(data.target)
-        binding.streakCard.setState(data.streaks)
-        binding.scoreCard.setState(data.scores)
-        binding.frequencyCard.setState(data.frequency)
-        binding.historyCard.setState(data.history)
-        binding.barCard.setState(data.bar)
-        if (data.isNumerical) {
-            binding.overviewCard.visibility = GONE
-        } else {
-            binding.targetCard.visibility = GONE
-        }
-        binding.linearLayout.applyBottomInset()
+        state.value = data
     }
 
     fun setListener(presenter: ShowHabitPresenter) {
-        binding.scoreCard.setListener(presenter.scoreCardPresenter)
-        binding.historyCard.setListener(presenter.historyCardPresenter)
-        binding.barCard.setListener(presenter.barCardPresenter)
+        callbacks.value = ShowHabitCallbacks(
+            onScoreSpinner = presenter.scoreCardPresenter::onSpinnerPosition,
+            onHistoryEdit = presenter.historyCardPresenter::onClickEditButton,
+            onBoolSpinner = presenter.barCardPresenter::onBoolSpinnerPosition,
+            onNumericalSpinner = presenter.barCardPresenter::onNumericalSpinnerPosition
+        )
     }
 }

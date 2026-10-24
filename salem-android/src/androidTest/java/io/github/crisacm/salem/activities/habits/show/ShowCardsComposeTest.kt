@@ -19,6 +19,7 @@
 
 package io.github.crisacm.salem.activities.habits.show
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -27,20 +28,27 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.crisacm.salem.activities.habits.show.views.BarCardContent
 import io.github.crisacm.salem.activities.habits.show.views.FrequencyCardContent
 import io.github.crisacm.salem.activities.habits.show.views.HistoryCardContent
+import io.github.crisacm.salem.activities.habits.show.views.NotesCardContent
 import io.github.crisacm.salem.activities.habits.show.views.OverviewCardContent
 import io.github.crisacm.salem.activities.habits.show.views.ScoreCardContent
 import io.github.crisacm.salem.activities.habits.show.views.StreakCardContent
+import io.github.crisacm.salem.activities.habits.show.views.SubtitleCardContent
 import io.github.crisacm.salem.activities.habits.show.views.TargetCardContent
 import io.github.crisacm.salem.core.models.Entry
+import io.github.crisacm.salem.core.models.Frequency
 import io.github.crisacm.salem.core.models.PaletteColor
+import io.github.crisacm.salem.core.models.Reminder
 import io.github.crisacm.salem.core.models.Score
 import io.github.crisacm.salem.core.models.Streak
+import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.FrequencyCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardState
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.NotesCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.SubtitleCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.LightTheme
@@ -127,5 +135,27 @@ class ShowCardsComposeTest {
         val state = OverviewCardState(PaletteColor(8), 0.23f, -0.12f, 0.74f, 44, LightTheme())
         composeRule.setContent { OverviewCardContent(state) }
         composeRule.onNodeWithTag("overviewCard").assertIsDisplayed()
+    }
+
+    @Test
+    fun theSubtitleShowsTheQuestionTheFrequencyAndTheReminder() {
+        val state = SubtitleCardState(
+            color = PaletteColor(8),
+            frequency = Frequency(3, 7),
+            isNumerical = false,
+            question = "Did you meditate this morning?",
+            reminder = Reminder(8, 30, WeekdayList.EVERY_DAY),
+            theme = LightTheme()
+        )
+        composeRule.setContent { SubtitleCardContent(state) }
+        composeRule.onNodeWithTag("subtitleQuestion").assertIsDisplayed()
+        composeRule.onNodeWithTag("subtitleFrequency").assertIsDisplayed()
+        composeRule.onNodeWithTag("subtitleReminder").assertIsDisplayed()
+    }
+
+    @Test
+    fun theNotesAreShownOnlyWithADescription() {
+        composeRule.setContent { NotesCardContent(NotesCardState("Remember to breathe"), Color.Black) }
+        composeRule.onNodeWithTag("notesCard").assertIsDisplayed()
     }
 }
