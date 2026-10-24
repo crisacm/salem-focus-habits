@@ -40,7 +40,6 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
     private lateinit var detector: GestureDetector
     private lateinit var scroller: Scroller
     private lateinit var scrollAnimator: ValueAnimator
-    private lateinit var scrollController: ScrollController
     private var maxDataOffset = 12 * 200
 
     constructor(context: Context?) : super(context) {
@@ -146,23 +145,7 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         return detector.onTouchEvent(event)
     }
 
-    fun setScrollDirection(direction: Int) {
-        require(!(direction != 1 && direction != -1))
-        this.direction = direction
-    }
-
     override fun onLongPress(e: MotionEvent) {}
-    fun setMaxDataOffset(maxDataOffset: Int) {
-        this.maxDataOffset = maxDataOffset
-        dataOffset = min(dataOffset, maxDataOffset)
-        scrollController.onDataOffsetChanged(dataOffset)
-        postInvalidate()
-    }
-
-    fun setScrollController(scrollController: ScrollController) {
-        this.scrollController = scrollController
-    }
-
     fun setScrollerBucketSize(scrollerBucketSize: Int) {
         this.scrollerBucketSize = scrollerBucketSize
     }
@@ -173,7 +156,6 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         val newScrollAnimator = ValueAnimator.ofFloat(0f, 1f)
         newScrollAnimator.addUpdateListener(this)
         scrollAnimator = newScrollAnimator
-        scrollController = object : ScrollController {}
     }
 
     fun reset() {
@@ -188,12 +170,7 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         newDataOffset = min(maxDataOffset, newDataOffset)
         if (newDataOffset != dataOffset) {
             dataOffset = newDataOffset
-            scrollController.onDataOffsetChanged(dataOffset)
             postInvalidate()
         }
-    }
-
-    interface ScrollController {
-        fun onDataOffsetChanged(newDataOffset: Int) {}
     }
 }

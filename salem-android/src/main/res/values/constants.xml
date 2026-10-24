@@ -32,7 +32,6 @@
     <string name="bugReportTo"></string>
     <string name="bugReportSubject">Bug Report - Salem</string>
     <!-- Empty on purpose: no default sync server until Salem has its own -->
-    <string name="syncBaseURL" formatted="false"></string>
 
     <string-array name="snooze_picker_names">
         <item>@string/interval_15_minutes</item>
