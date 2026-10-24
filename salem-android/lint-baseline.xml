@@ -34,16 +34,6 @@
             column="17"/>
     </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="                val lines = DateUtils.formatHeaderDate(day).toUpperCase().split(&quot;\n&quot;)"
-        errorLine2="                                                            ~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HeaderView.kt"
-            line="144"
-            column="61"/>
-    </issue>
 
 
 
@@ -65,27 +55,7 @@
             column="9"/>
     </issue>
 
-    <issue
-        id="UseRequireInsteadOfGet"
-        message="Use requireContext() instead of context!!"
-        errorLine1="        val sr = StyledResources(context!!)"
-        errorLine2="                                 ~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/settings/SettingsFragment.kt"
-            line="92"
-            column="34"/>
-    </issue>
 
-    <issue
-        id="FragmentTagUsage"
-        message="Replace the &lt;fragment> tag with FragmentContainerView."
-        errorLine1="    &lt;fragment"
-        errorLine2="     ~~~~~~~~">
-        <location
-            file="src/main/res/layout/settings_activity.xml"
-            line="34"
-            column="6"/>
-    </issue>
 
     <issue
         id="InflateParams"
@@ -135,32 +105,12 @@
 
 
 
-    <issue
-        id="ExtraText"
-        message="Unexpected text found in layout file: &quot;>&quot;"
-        errorLine1=">"
-        errorLine2="~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="147"
-            column="1"/>
-    </issue>
 
 
 
 
 
 
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                {getContext().getResources().getDrawable(R.drawable.color_picker_swatch)};"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/colorpicker/ColorPickerSwatch.java"
-            line="64"
-            column="18"/>
-    </issue>
 
     <issue
         id="StringFormatInvalid"
@@ -1316,27 +1266,7 @@
             column="33"/>
     </issue>
 
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged()"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListAdapter.kt"
-            line="74"
-            column="9"/>
-    </issue>
 
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged()"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListAdapter.kt"
-            line="256"
-            column="9"/>
-    </issue>
 
     <issue
         id="Recycle"
@@ -1349,12 +1279,6 @@
             column="53"/>
     </issue>
 
-    <issue
-        id="ObsoleteSdkInt"
-        message="This folder configuration (`v21`) is unnecessary; `minSdkVersion` is 28. Merge all the resources in this folder into `drawable`.">
-        <location
-            file="src/main/res/drawable-v21"/>
-    </issue>
 
     <issue
         id="ObsoleteSdkInt"
@@ -1385,38 +1309,8 @@
             column="1"/>
     </issue>
 
-    <issue
-        id="DisableBaselineAlignment"
-        message="Set `android:baselineAligned=&quot;false&quot;` on this element for better performance"
-        errorLine1="    &lt;LinearLayout"
-        errorLine2="     ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_overview.xml"
-            line="29"
-            column="6"/>
-    </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `?windowBackgroundColor` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="            android:background=&quot;?windowBackgroundColor&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="25"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `?attr/contrast0` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;?attr/contrast0&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="26"
-            column="5"/>
-    </issue>
 
     <issue
         id="Overdraw"
@@ -1429,54 +1323,14 @@
             column="15"/>
     </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `#ffff00` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;#ffff00&quot;>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/canvas_test.xml"
-            line="24"
-            column="5"/>
-    </issue>
 
 
 
 
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `#a0000000` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;#a0000000&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/select_habit_type.xml"
-            line="27"
-            column="5"/>
-    </issue>
 
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.bg_select_button` appears to be unused"
-        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/bg_select_button.xml"
-            line="2"
-            column="1"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.layout.canvas_test` appears to be unused"
-        errorLine1="&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
-        <location
-            file="src/main/res/layout/canvas_test.xml"
-            line="21"
-            column="1"/>
-    </issue>
 
 
     <issue
@@ -3813,16 +3667,6 @@
             column="12"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.layout.number_picker_dialog` appears to be unused"
-        errorLine1="&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
-        <location
-            file="src/main/res/layout/number_picker_dialog.xml"
-            line="21"
-            column="1"/>
-    </issue>
 
 
 
@@ -4697,185 +4541,21 @@
             file="src/main/res/drawable/stripe.png"/>
     </issue>
 
-    <issue
-        id="TextFields"
-        message="This text field does not specify an `inputType`"
-        errorLine1="                    &lt;EditText"
-        errorLine2="                     ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="162"
-            column="22"/>
-    </issue>
 
-    <issue
-        id="AlwaysShowAction"
-        message="Prefer &quot;`ifRoom`&quot; instead of &quot;`always`&quot;"
-        errorLine1="        app:showAsAction=&quot;always&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/menu/list_habits.xml"
-            line="30"
-            column="9"/>
-        <location
-            file="src/main/res/menu/list_habits.xml"
-            line="37"
-            column="9"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                        &lt;EditText"
-        errorLine2="                         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="91"
-            column="26"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                    &lt;EditText"
-        errorLine2="                     ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="130"
-            column="22"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                    &lt;EditText"
-        errorLine2="                     ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="162"
-            column="22"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                        &lt;EditText"
-        errorLine2="                         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="185"
-            column="26"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                    &lt;EditText"
-        errorLine2="                     ~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_edit_habit.xml"
-            line="258"
-            column="22"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="58"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="83"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="109"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="134"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="147"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="                &lt;EditText"
-        errorLine2="                 ~~~~~~~~">
-        <location
-            file="src/main/res/layout/number_picker_dialog.xml"
-            line="103"
-            column="18"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `CheckmarkButtonView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class CheckmarkButtonView("
-        errorLine2="      ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/CheckmarkButtonView.kt"
-            line="55"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `CheckmarkPanelView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class CheckmarkPanelView("
-        errorLine2="      ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/CheckmarkPanelView.kt"
-            line="39"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `ColorPickerSwatch` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="public class ColorPickerSwatch extends FrameLayout implements View.OnClickListener {"
-        errorLine2="             ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/colorpicker/ColorPickerSwatch.java"
-            line="31"
-            column="14"/>
-    </issue>
 
     <issue
         id="ViewConstructor"
@@ -4888,82 +4568,12 @@
             column="7"/>
     </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `HabitCardListView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class HabitCardListView("
-        errorLine2="      ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
-            line="52"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `HabitCardView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class HabitCardView("
-        errorLine2="      ~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardView.kt"
-            line="61"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `HeaderView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class HeaderView("
-        errorLine2="      ~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HeaderView.kt"
-            line="42"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `HintView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class HintView("
-        errorLine2="      ~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HintView.kt"
-            line="34"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `ListHabitsRootView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class ListHabitsRootView @Inject constructor("
-        errorLine2="      ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/ListHabitsRootView.kt"
-            line="60"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `NumberButtonView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class NumberButtonView("
-        errorLine2="      ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/NumberButtonView.kt"
-            line="69"
-            column="7"/>
-    </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `NumberPanelView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="class NumberPanelView("
-        errorLine2="      ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/NumberPanelView.kt"
-            line="39"
-            column="7"/>
-    </issue>
 
     <issue
         id="ViewConstructor"
@@ -4989,71 +4599,11 @@
             column="18"/>
     </issue>
 
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view ``HabitCardView`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="        cardView.setOnTouchListener { _, ev ->"
-        errorLine2="        ^">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
-            line="105"
-            column="9"/>
-    </issue>
 
-    <issue
-        id="ClickableViewAccessibility"
-        message="`onTouch` lambda should call `View#performClick` when a click is detected"
-        errorLine1="        cardView.setOnTouchListener { _, ev ->"
-        errorLine2="                                    ^">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardListView.kt"
-            line="105"
-            column="37"/>
-    </issue>
 
-    <issue
-        id="ClickableViewAccessibility"
-        message="`onTouch` lambda should call `View#performClick` when a click is detected"
-        errorLine1="            setOnTouchListener { v, event ->"
-        errorLine2="                               ^">
-        <location
-            file="src/main/java/io/github/crisacm/salem/activities/habits/list/views/HabitCardView.kt"
-            line="195"
-            column="32"/>
-    </issue>
 
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="                &lt;ImageView"
-        errorLine2="                 ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="46"
-            column="18"/>
-    </issue>
 
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="    &lt;ImageView"
-        errorLine2="     ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/color_picker_swatch.xml"
-            line="17"
-            column="6"/>
-    </issue>
 
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="    &lt;ImageView"
-        errorLine2="     ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/color_picker_swatch.xml"
-            line="21"
-            column="6"/>
-    </issue>
 
     <issue
         id="ContentDescription"
@@ -5066,225 +4616,25 @@
             column="6"/>
     </issue>
 
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="58"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="83"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="109"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="134"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="147"
-            column="10"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Álinson S. Xavier (@iSoron)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Álinson S. Xavier (@iSoron)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="123"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Quentin Hibon (@hiqua)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Quentin Hibon (@hiqua)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="124"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Oleg Ivashchenko (@olegivo)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Oleg Ivashchenko (@olegivo)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="125"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Kristian Tashkov (@KristianTashkov)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Kristian Tashkov (@KristianTashkov)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="126"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Jakub Kalinowski (@kalina559)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Jakub Kalinowski (@kalina559)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="127"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Rechee Jozil (@recheej)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Rechee Jozil (@recheej)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="128"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Sebastian Gallese (@sgallese)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Sebastian Gallese (@sgallese)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="129"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Luboš Luňák (@llunak)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Luboš Luňák (@llunak)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="130"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Bindu (@vbh)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Bindu (@vbh)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="131"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Victor Yu (@vyu1)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Victor Yu (@vyu1)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="132"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Christoph Hennemann (@chennemann)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Christoph Hennemann (@chennemann)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="133"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Денис (@sciamano)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Денис (@sciamano)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="134"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Joseph Tran (@JotraN)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Joseph Tran (@JotraN)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="135"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Nikhil (@regularcoder)&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;Nikhil (@regularcoder)&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="136"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;JanetQC&quot;, should use `@string` resource"
-        errorLine1="                &lt;TextView style=&quot;@style/About.Item&quot; android:text=&quot;JanetQC&quot;/>"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/about.xml"
-            line="137"
-            column="53"/>
-    </issue>
 
     <issue
         id="HardcodedText"
@@ -7420,93 +6770,13 @@
             column="41"/>
     </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
-        errorLine1="                android:text=&quot;3&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="68"
-            column="17"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
-        errorLine1="                android:text=&quot;3&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="93"
-            column="17"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;10&quot;, should use `@string` resource"
-        errorLine1="                android:text=&quot;10&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="119"
-            column="17"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;3&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="144"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;14&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;14&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/frequency_picker_dialog.xml"
-            line="157"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;Randomize&quot;, should use `@string` resource"
-        errorLine1="        android:title=&quot;Randomize&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/menu/show_habit.xml"
-            line="42"
-            column="9"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;8.5k&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;8.5k&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_subtitle.xml"
-            line="57"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="HardcodedText"
-        message="Hardcoded string &quot;8:00 AM&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;8:00 AM&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_subtitle.xml"
-            line="96"
-            column="13"/>
-    </issue>
 
     <issue
         id="HardcodedText"
@@ -7552,60 +6822,10 @@
             column="11"/>
     </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 34"
-        errorLine1="            android:layout_alignParentRight=&quot;true&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_bar.xml"
-            line="31"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 34"
-        errorLine1="            android:layout_alignParentRight=&quot;true&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_bar.xml"
-            line="41"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 34"
-        errorLine1="            android:layout_alignParentLeft=&quot;true&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_bar.xml"
-            line="50"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 34"
-        errorLine1="            android:layout_alignParentRight=&quot;true&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_score.xml"
-            line="31"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 34"
-        errorLine1="            android:layout_alignParentLeft=&quot;true&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/show_habit_score.xml"
-            line="40"
-            column="13"/>
-    </issue>
 
 
 
