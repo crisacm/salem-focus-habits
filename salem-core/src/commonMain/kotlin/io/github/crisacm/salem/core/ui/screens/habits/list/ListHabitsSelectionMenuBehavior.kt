@@ -57,7 +57,7 @@ class ListHabitsSelectionMenuBehavior(
     }
 
     fun onChangeColor() {
-        val (color) = adapter.getSelected()[0]
+        val (color) = adapter.getSelected().firstOrNull() ?: return
         screen.showColorPicker(color) { selectedColor: PaletteColor ->
             commandRunner.run(ChangeHabitColorCommand(habitList, adapter.getSelected(), selectedColor))
             adapter.clearSelection()
