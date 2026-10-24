@@ -45,104 +45,14 @@
             column="61"/>
     </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="                    String.format(&quot;%02d&quot;, hours_24[i]) : String.format(&quot;%d&quot;, hours[i]);"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/RadialPickerLayout.java"
-            line="198"
-            column="21"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="                    String.format(&quot;%02d&quot;, hours_24[i]) : String.format(&quot;%d&quot;, hours[i]);"
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/RadialPickerLayout.java"
-            line="198"
-            column="58"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            innerHoursTexts[i] = String.format(&quot;%d&quot;, hours[i]);"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/RadialPickerLayout.java"
-            line="199"
-            column="34"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            minutesTexts[i] = String.format(&quot;%02d&quot;, minutes[i]);"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/RadialPickerLayout.java"
-            line="200"
-            column="31"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="        canvas.drawText(String.format(&quot;%d&quot;, day), x, y, mMonthNumPaint);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/SimpleMonthView.java"
-            line="41"
-            column="25"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            String announcement = String.format(&quot;%d&quot;, newValue);"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/TimePickerDialog.java"
-            line="441"
-            column="35"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="                        deletedKeyStr = String.format(&quot;%d&quot;, getValFromKeyCode(deleted));"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/TimePickerDialog.java"
-            line="574"
-            column="41"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="        Utils.tryAccessibilityAnnounce(mTimePicker, String.format(&quot;%d&quot;, val));"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/TimePickerDialog.java"
-            line="641"
-            column="53"/>
-    </issue>
 
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            years.add(String.format(&quot;%d&quot;, year));"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/YearPickerView.java"
-            line="75"
-            column="23"/>
-    </issue>
 
     <issue
         id="UnusedAttribute"
@@ -188,27 +98,7 @@
             column="68"/>
     </issue>
 
-    <issue
-        id="InflateParams"
-        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
-        errorLine1="        View view = inflater.inflate(R.layout.date_picker_dialog, null);"
-        errorLine2="                                                                  ~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/DatePickerDialog.java"
-            line="201"
-            column="67"/>
-    </issue>
 
-    <issue
-        id="InflateParams"
-        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
-        errorLine1="        View view = inflater.inflate(R.layout.time_picker_dialog, null);"
-        errorLine2="                                                                  ~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/time/TimePickerDialog.java"
-            line="219"
-            column="67"/>
-    </issue>
 
     <issue
         id="InflateParams"
@@ -243,27 +133,7 @@
             column="13"/>
     </issue>
 
-    <issue
-        id="AppCompatCustomView"
-        message="This custom view should extend `androidx.appcompat.widget.AppCompatTextView` instead"
-        errorLine1="public class AccessibleTextView extends TextView {"
-        errorLine2="                                        ~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/AccessibleTextView.java"
-            line="30"
-            column="41"/>
-    </issue>
 
-    <issue
-        id="AppCompatCustomView"
-        message="This custom view should extend `androidx.appcompat.widget.AppCompatTextView` instead"
-        errorLine1="public class TextViewWithCircularIndicator extends TextView {"
-        errorLine2="                                                   ~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/TextViewWithCircularIndicator.java"
-            line="33"
-            column="52"/>
-    </issue>
 
     <issue
         id="ExtraText"
@@ -276,85 +146,10 @@
             column="1"/>
     </issue>
 
-    <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes (`@dimen/date_picker_header_text_size` is defined as `14dp` in `values/pickers.xml`"
-        errorLine1="    android:textSize=&quot;@dimen/date_picker_header_text_size&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_header_view.xml"
-            line="25"
-            column="5"/>
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="81"
-            column="48"
-            message="This dp dimension is used as a text size"/>
-    </issue>
 
-    <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes (`@dimen/selected_date_month_size` is defined as `30dp` in `values/pickers.xml`"
-        errorLine1="            android:textSize=&quot;@dimen/selected_date_month_size&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_selected_date.xml"
-            line="44"
-            column="13"/>
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="80"
-            column="44"
-            message="This dp dimension is used as a text size"/>
-    </issue>
 
-    <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes (`@dimen/selected_date_day_size` is defined as `75dp` in `values/pickers.xml`"
-        errorLine1="            android:textSize=&quot;@dimen/selected_date_day_size&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_selected_date.xml"
-            line="57"
-            column="13"/>
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="79"
-            column="42"
-            message="This dp dimension is used as a text size"/>
-    </issue>
 
-    <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes (`@dimen/selected_date_year_size` is defined as `30dp` in `values/pickers.xml`"
-        errorLine1="        android:textSize=&quot;@dimen/selected_date_year_size&quot; />"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_selected_date.xml"
-            line="68"
-            column="9"/>
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="78"
-            column="43"
-            message="This dp dimension is used as a text size"/>
-    </issue>
 
-    <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes (`@dimen/year_label_text_size` is defined as `22dp` in `values/pickers.xml`"
-        errorLine1="    android:textSize=&quot;@dimen/year_label_text_size&quot; />"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/year_label_text_view.xml"
-            line="24"
-            column="5"/>
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="85"
-            column="40"
-            message="This dp dimension is used as a text size"/>
-    </issue>
 
     <issue
         id="UseCompatLoadingForDrawables"
@@ -1345,16 +1140,6 @@
             column="9"/>
     </issue>
 
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;selected&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;color_swatch_description_selected&quot; translatable=&quot;false&quot;>Color &lt;xliff:g example=&quot;14&quot; id=&quot;color_index&quot;>%1$d&lt;/xliff:g> selected&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="88"
-            column="5"/>
-    </issue>
 
     <issue
         id="PluralsCandidate"
@@ -1655,49 +1440,9 @@
             column="5"/>
     </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/date_picker_view_animator` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;@color/date_picker_view_animator&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_dialog.xml"
-            line="20"
-            column="5"/>
-    </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/calendar_header` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;@color/calendar_header&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_header_view.xml"
-            line="21"
-            column="5"/>
-    </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/white` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="    android:background=&quot;@color/white&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_selected_date.xml"
-            line="23"
-            column="5"/>
-    </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/date_picker_view_animator` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="     android:background=&quot;@color/date_picker_view_animator&quot; />"
-        errorLine2="     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/date_picker_view_animator.xml"
-            line="22"
-            column="6"/>
-    </issue>
 
     <issue
         id="Overdraw"
@@ -1710,16 +1455,6 @@
             column="5"/>
     </issue>
 
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/white` with a theme that also paints a background (inferred theme is `@style/AppBaseTheme`)"
-        errorLine1="      android:background=&quot;@color/white&quot; >"
-        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="22"
-            column="7"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -1743,16 +1478,6 @@
             column="1"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.layout.date_picker_header_view` appears to be unused"
-        errorLine1="&lt;TextView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
-        <location
-            file="src/main/res/layout/date_picker_header_view.xml"
-            line="17"
-            column="1"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -1765,27 +1490,7 @@
             column="1"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.done_background_color` appears to be unused"
-        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/done_background_color.xml"
-            line="16"
-            column="1"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.done_background_color_dark` appears to be unused"
-        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/done_background_color_dark.xml"
-            line="16"
-            column="1"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -4119,203 +3824,23 @@
             column="1"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.footer_height` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;footer_height&quot;>48dip&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="65"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.minimum_margin_sides` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;minimum_margin_sides&quot;>48dip&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="66"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.minimum_margin_top_bottom` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;minimum_margin_top_bottom&quot;>24dip&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="67"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.date_picker_header_height` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;date_picker_header_height&quot;>30dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="70"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.done_button_height` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;done_button_height&quot;>42dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="73"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.dimen.date_picker_header_text_size` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;date_picker_header_text_size&quot;>14dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="81"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.done_text_color_normal` appears to be unused"
-        errorLine1="    &lt;color name=&quot;done_text_color_normal&quot;>#000000&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="109"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.done_text_color_disabled` appears to be unused"
-        errorLine1="    &lt;color name=&quot;done_text_color_disabled&quot;>#cccccc&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="110"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.blue_focused` appears to be unused"
-        errorLine1="    &lt;color name=&quot;blue_focused&quot;>#c1e8f7&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="115"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.neutral_pressed` appears to be unused"
-        errorLine1="    &lt;color name=&quot;neutral_pressed&quot;>#33999999&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="116"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.calendar_header` appears to be unused"
-        errorLine1="    &lt;color name=&quot;calendar_header&quot;>#999999&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="119"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.calendar_selected_date_text` appears to be unused"
-        errorLine1="    &lt;color name=&quot;calendar_selected_date_text&quot;>#ffd1d2d4&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="121"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.done_text_color_dark` appears to be unused"
-        errorLine1="    &lt;color name=&quot;done_text_color_dark&quot;>#888888&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="123"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.red` appears to be unused"
-        errorLine1="    &lt;color name=&quot;red&quot;>#ff3333&lt;/color>"
-        errorLine2="           ~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="128"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.red_focused` appears to be unused"
-        errorLine1="    &lt;color name=&quot;red_focused&quot;>#853333&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="129"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.light_gray` appears to be unused"
-        errorLine1="    &lt;color name=&quot;light_gray&quot;>#404040&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="130"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.dark_gray` appears to be unused"
-        errorLine1="    &lt;color name=&quot;dark_gray&quot;>#363636&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="131"
-            column="12"/>
-    </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.color.line_dark` appears to be unused"
-        errorLine1="    &lt;color name=&quot;line_dark&quot;>#808080&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/pickers.xml"
-            line="132"
-            column="12"/>
-    </issue>
 
     <issue
         id="UnusedResources"
@@ -5451,27 +4976,7 @@
             column="7"/>
     </issue>
 
-    <issue
-        id="ViewConstructor"
-        message="Custom view `YearPickerView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="public class YearPickerView extends ListView implements OnItemClickListener, OnDateChangedListener {"
-        errorLine2="             ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/YearPickerView.java"
-            line="41"
-            column="14"/>
-    </issue>
 
-    <issue
-        id="GetContentDescriptionOverride"
-        message="Overriding `getContentDescription()` on a View is not recommended"
-        errorLine1="    public CharSequence getContentDescription() {"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/android/datetimepicker/date/TextViewWithCircularIndicator.java"
-            line="80"
-            column="25"/>
-    </issue>
 
     <issue
         id="ClickableViewAccessibility"
@@ -8102,115 +7607,15 @@
             column="13"/>
     </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_toLeftOf` with `android:layout_toStartOf=&quot;@+id/separator&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_toLeftOf=&quot;@+id/separator&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="37"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignRight` with `android:layout_alignEnd=&quot;@+id/hour_space&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignRight=&quot;@+id/hour_space&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="45"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignLeft` with `android:layout_alignStart=&quot;@+id/hour_space&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignLeft=&quot;@+id/hour_space&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="46"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignRight` with `android:layout_alignEnd=&quot;@+id/center_view&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignRight=&quot;@+id/center_view&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="68"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/separator&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_toRightOf=&quot;@+id/separator&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="78"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignRight` with `android:layout_alignEnd=&quot;@+id/minutes_space&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignRight=&quot;@+id/minutes_space&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="86"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignLeft` with `android:layout_alignStart=&quot;@+id/minutes_space&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignLeft=&quot;@+id/minutes_space&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="87"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignLeft` with `android:layout_alignStart=&quot;@+id/ampm_label&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignLeft=&quot;@+id/ampm_label&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="106"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_alignRight` with `android:layout_alignEnd=&quot;@+id/ampm_label&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_alignRight=&quot;@+id/ampm_label&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="107"
-            column="13"/>
-    </issue>
 
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/minutes_space&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_toRightOf=&quot;@+id/minutes_space&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/time_header_label.xml"
-            line="115"
-            column="13"/>
-    </issue>
 
     <issue
         id="IgnoreWithoutReason"

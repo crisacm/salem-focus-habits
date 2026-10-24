@@ -29,6 +29,8 @@
     <string name="delete">Delete</string>
     <string name="archive">Archive</string>
     <string name="unarchive">Unarchive</string>
+    <string name="color_swatch_description" translatable="false">Color %1$d</string>
+    <string name="color_swatch_description_selected" translatable="false">Color %1$d selected</string>
     <string name="randomize">Randomize</string>
     <string name="add_habit">Add habit</string>
     <string name="color_picker_default_title">Change color</string>
