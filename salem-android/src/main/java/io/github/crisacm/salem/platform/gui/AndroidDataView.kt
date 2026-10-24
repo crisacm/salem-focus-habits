@@ -109,12 +109,6 @@ class AndroidDataView(
         }
     }
 
-    fun resetDataOffset() {
-        scroller.finalX = 0
-        scroller.computeScrollOffset()
-        updateDataOffset()
-    }
-
     private fun updateDataOffset() {
         view?.let { v ->
             var newDataOffset: Int =

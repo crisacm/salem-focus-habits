@@ -150,6 +150,8 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         }
 
         override fun showHistoryEditorDialog(listener: OnDateClickedListener) {
+            // A second editor would stack above the first one.
+            (supportFragmentManager.findFragmentByTag("historyEditor") as? HistoryEditorDialog)?.dismissAllowingStateLoss()
             val dialog = HistoryEditorDialog()
             dialog.arguments = Bundle().apply {
                 putLong("habit", habit.id!!)
