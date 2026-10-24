@@ -106,9 +106,8 @@ class ScoreChart(
         }
     }
 
-    // The old chart gave the baseline of the text; the canvas takes about the middle of the lower case letters.
     private fun text(canvas: Canvas, text: String, x: Double, baselineY: Double) {
-        canvas.drawText(text, x, baselineY - BASELINE_TO_MIDDLE * fontSize)
+        canvas.drawTextAtBaseline(text, x, baselineY, fontSize)
     }
 
     private fun drawGrid(canvas: Canvas, width: Double, top: Double, gridHeight: Double, strokeWidth: Double) {
@@ -167,6 +166,5 @@ class ScoreChart(
     private companion object {
         const val MIN_DRAWABLE_HEIGHT = 9.0
         const val DEFAULT_HEIGHT = 200.0
-        const val BASELINE_TO_MIDDLE = 0.3
     }
 }
