@@ -18,11 +18,9 @@
  */
 package io.github.crisacm.salem.activities.habits.show
 
-import android.content.ContentUris
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
-import android.view.Menu
-import android.view.MenuItem
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.HabitsApplication
@@ -46,8 +44,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.utils.applyRootViewInsets
-import io.github.crisacm.salem.utils.currentTheme
+import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
 import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.showMessage
@@ -60,8 +57,7 @@ import kotlinx.coroutines.launch
 class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
     private lateinit var commandRunner: CommandRunner
-    private lateinit var menu: ShowHabitMenu
-    private lateinit var view: ShowHabitView
+    private lateinit var host: ShowHabitHost
     private lateinit var habit: Habit
     private lateinit var preferences: Preferences
     private lateinit var themeSwitcher: AndroidThemeSwitcher
@@ -76,7 +72,13 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
         val appComponent = (applicationContext as HabitsApplication).component
         val habitList = appComponent.habitList
-        habit = habitList.getById(ContentUris.parseId(intent.data!!))!!
+        // The habit may be gone (deleted after a widget or a notification was made) or the address may be wrong.
+        val foundHabit = habitIdFrom(intent.data?.lastPathSegment)?.let(habitList::getById)
+        if (foundHabit == null) {
+            finish()
+            return
+        }
+        habit = foundHabit
         preferences = appComponent.preferences
         commandRunner = appComponent.commandRunner
         widgetUpdater = appComponent.widgetUpdater
@@ -92,8 +94,6 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             screen = screen
         )
 
-        view = ShowHabitView(this)
-
         val menuPresenter = ShowHabitMenuPresenter(
             commandRunner = commandRunner,
             habit = habit,
@@ -103,23 +103,14 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             taskRunner = appComponent.taskRunner
         )
 
-        menu = ShowHabitMenu(
-            activity = this,
-            presenter = menuPresenter,
-            preferences = preferences
+        host = ShowHabitHost(this, menuPresenter, preferences)
+        host.callbacks = ShowHabitCallbacks(
+            onScoreSpinner = presenter.scoreCardPresenter::onSpinnerPosition,
+            onHistoryEdit = presenter.historyCardPresenter::onClickEditButton,
+            onBoolSpinner = presenter.barCardPresenter::onBoolSpinnerPosition,
+            onNumericalSpinner = presenter.barCardPresenter::onNumericalSpinnerPosition
         )
-
-        view.setListener(presenter)
-        view.applyRootViewInsets()
-        setContentView(view)
-    }
-
-    override fun onCreateOptionsMenu(m: Menu): Boolean {
-        return menu.onCreateOptionsMenu(m)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return menu.onOptionsItemSelected(item)
+        setContent { SalemTheme { ShowHabitScreen(host, onBack = { onSupportNavigateUp() }) } }
     }
 
     override fun onResume() {
@@ -148,13 +139,13 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
         override fun refresh() {
             scope.launch {
-                view.setState(
-                    ShowHabitPresenter.buildState(
-                        habit = habit,
-                        preferences = preferences,
-                        theme = themeSwitcher.currentTheme
-                    )
+                val state = ShowHabitPresenter.buildState(
+                    habit = habit,
+                    preferences = preferences,
+                    theme = themeSwitcher.currentTheme
                 )
+                host.onState(state)
+                host.paintStatusBar(this@ShowHabitActivity, host.barColor(state))
             }
         }
 
@@ -191,7 +182,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             color: PaletteColor,
             callback: CheckMarkDialogCallback
         ) {
-            val theme = view.currentTheme()
+            val theme = themeSwitcher.currentTheme
             val dialog = CheckmarkDialog()
             dialog.arguments = Bundle().apply {
                 putInt("color", theme.color(color).toInt())

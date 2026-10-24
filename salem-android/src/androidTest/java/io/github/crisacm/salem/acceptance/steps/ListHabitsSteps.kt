@@ -41,13 +41,7 @@ object ListHabitsSteps {
             MenuItem.HELP -> clickInOverflow("overflowMenu", R.string.help)
             MenuItem.SETTINGS -> clickInOverflow("overflowMenu", R.string.settings)
             MenuItem.ADD -> CommonSteps.clickTag("actionCreateHabit")
-            MenuItem.EDIT -> {
-                if (hasComposeButton("action_edit_habit")) {
-                    CommonSteps.clickTag("action_edit_habit")
-                } else {
-                    clickViewWithId(R.id.action_edit_habit)
-                }
-            }
+            MenuItem.EDIT -> CommonSteps.clickTag("action_edit_habit")
             MenuItem.DELETE -> clickInOverflow("selectionOverflow", R.string.delete)
             MenuItem.ARCHIVE -> clickInOverflow("selectionOverflow", R.string.archive)
             MenuItem.UNARCHIVE -> clickInOverflow("selectionOverflow", R.string.unarchive)
@@ -92,10 +86,6 @@ object ListHabitsSteps {
             )
         ).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withText(id)).perform(ViewActions.click())
-    }
-
-    private fun clickViewWithId(id: Int) {
-        Espresso.onView(ViewMatchers.withId(id)).perform(ViewActions.click())
     }
 
     /**

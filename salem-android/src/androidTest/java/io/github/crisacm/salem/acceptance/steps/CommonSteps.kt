@@ -253,7 +253,7 @@ object CommonSteps : BaseUserInterfaceTest() {
 
             Screen.SHOW_HABIT ->
                 // The cards of the detail screen are Compose.
-                assertTrue("Habit screen not shown", device.wait(Until.hasObject(By.res("subtitleCard")), 5000))
+                assertTrue("Habit screen not shown", device.wait(Until.hasObject(By.res("showHabitScreen")), 5000))
 
             Screen.EDIT_HABIT ->
                 // The form is drawn by Compose; its fields are exposed by their test tag as resource ids.
@@ -287,7 +287,7 @@ object CommonSteps : BaseUserInterfaceTest() {
 
     fun changeFrequencyToDaily(habitName: String) {
         clickText(habitName)
-        Espresso.onView(ViewMatchers.withId(R.id.action_edit_habit)).perform(ViewActions.click())
+        clickTag("action_edit_habit")
         EditHabitSteps.pickDailyFrequency()
         EditHabitSteps.clickSave()
         pressBack()
@@ -295,7 +295,7 @@ object CommonSteps : BaseUserInterfaceTest() {
 
     fun changeFrequencyToMonthly(habitName: String) {
         clickText(habitName)
-        Espresso.onView(ViewMatchers.withId(R.id.action_edit_habit)).perform(ViewActions.click())
+        clickTag("action_edit_habit")
         EditHabitSteps.pickMonthFrequency()
         EditHabitSteps.clickSave()
         pressBack()

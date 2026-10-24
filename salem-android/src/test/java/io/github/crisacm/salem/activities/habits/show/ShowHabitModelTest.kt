@@ -65,4 +65,18 @@ class ShowHabitModelTest {
         assertEquals("4.3k steps", targetText(4300.0, "steps"))
         assertEquals("30 minutes", targetText(30.0, "minutes"))
     }
+
+    @Test
+    fun theIdIsTheLastSegmentOfTheAddress() {
+        assertEquals(42L, habitIdFrom("42"))
+        assertEquals(null, habitIdFrom(null))
+        assertEquals(null, habitIdFrom("habit"))
+        assertEquals(null, habitIdFrom(""))
+    }
+
+    @Test
+    fun theBarTakesTheColourOfTheHabitOnlyWhenAsked() {
+        assertEquals(0xFF0000, barColorFor(true, 0xFF0000, 0x0000FF))
+        assertEquals(0x0000FF, barColorFor(false, 0xFF0000, 0x0000FF))
+    }
 }

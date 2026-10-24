@@ -64,10 +64,14 @@ class ShowHabitCallbacks(
 
 /** The cards of the detail screen of a habit in a column that scrolls, as the old layout had them. */
 @Composable
-fun ShowHabitContent(state: ShowHabitState, callbacks: ShowHabitCallbacks = ShowHabitCallbacks()) {
+fun ShowHabitContent(
+    state: ShowHabitState,
+    callbacks: ShowHabitCallbacks = ShowHabitCallbacks(),
+    modifier: Modifier = Modifier
+) {
     val theme = state.theme
     Column(
-        Modifier
+        modifier
             .fillMaxSize()
             .background(Color(theme.appBackgroundColor.toInt()))
             .verticalScroll(rememberScrollState())
