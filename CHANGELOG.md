@@ -41,6 +41,7 @@ attribution.
 
 ### Changed
 
+- The streak, target and overview cards of the habit detail screen are drawn with Jetpack Compose; the streak and target charts now live in `salem-core` (`StreakChart`, `TargetChart`, drawn on the multiplatform `Canvas`, with image tests) and the overview ring is the Compose `ScoreRing` of the list. The widgets keep using the old chart Views
 - The score and frequency cards of the habit detail screen are drawn with Jetpack Compose, and their charts now live in `salem-core` (`ScoreChart`, `FrequencyChart`, drawn on the multiplatform `Canvas`, with image tests); the `Canvas` interface gained `fontSpacing()`. The widgets keep using the old chart Views
 - The history (calendar) and bar cards of the habit detail screen are drawn with Jetpack Compose: the charts of `salem-core` are shown by a new `CoreChart` composable (same drawing code as before), which scrolls them with a drag and a fling, and the interval drop-down is a Compose menu
 - The habit list screen is now a single Compose screen (`ListHabitsActivity` uses `setContent`; the top bar, day header, rows, empty state, progress bar and hint are one composition) and `ListHabitsRootView` is gone; the Settings and import-file results use `ActivityResultContracts` (the result codes 101 to 105 are unchanged)
