@@ -18,9 +18,6 @@
  */
 package io.github.crisacm.salem.acceptance.steps
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import io.github.crisacm.salem.BaseUserInterfaceTest
@@ -80,7 +77,7 @@ object EditHabitSteps {
 
     fun setReminder() {
         clickTag("reminderTimePicker")
-        Espresso.onView(ViewMatchers.withId(R.id.done_button)).perform(ViewActions.click())
+        clickTag("timePickerOk")
     }
 
     fun clickReminderDays() {

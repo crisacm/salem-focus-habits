@@ -33,11 +33,10 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import com.android.datetimepicker.time.RadialPickerLayout
-import com.android.datetimepicker.time.TimePickerDialog
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
+import io.github.crisacm.salem.activities.common.dialogs.TimePickerDialog
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
@@ -110,7 +109,7 @@ class SnoozeDelayPickerActivity : FragmentActivity() {
     private fun showTimePicker() {
         val calendar = Calendar.getInstance()
         val dialog = TimePickerDialog.newInstance(
-            { _: RadialPickerLayout?, hour: Int, minute: Int ->
+            { hour: Int, minute: Int ->
                 reminderController?.onSnoozeTimePicked(habit, hour, minute)
                 finish()
             },

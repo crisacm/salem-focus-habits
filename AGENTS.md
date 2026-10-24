@@ -59,7 +59,7 @@ Everything below this line is project-specific knowledge for agents maintaining 
 | Path | Purpose |
 |---|---|
 | `salem-core/` | Kotlin Multiplatform library (targets `jvm`, `android`, `iosArm64` and `iosSimulatorArm64`; see `.specs/migration-kmp.md` step 2): domain model, persistence abstraction, commands, presenters ("behaviors"), chart data. 180 Kotlin files, 0 Java. |
-| `salem-android/` | Android application module (depends on `project(":salem-core")`). 189 Kotlin files + 21 vendored Java files (the AOSP date and time pickers under `src/main/java/com/android/datetimepicker`). |
+| `salem-android/` | Android application module (depends on `project(":salem-core")`). Kotlin only since the vendored AOSP date and time pickers were replaced by the Compose `TimePickerDialog`. |
 | `salem-core/assets/{main,test}` | Core resources, including SQL migrations `assets/main/migrations/NN.sql`. |
 | `salem-android/src/main/play/` | Google Play metadata (listings only `en-US` and `es-rES`, release notes, contacts). |
 | `docs/` | Developer docs (see above). |

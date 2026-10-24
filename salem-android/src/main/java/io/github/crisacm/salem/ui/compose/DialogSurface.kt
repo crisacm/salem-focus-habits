@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /** The dimmed background that dismisses the dialog when it is tapped outside [content]. */
@@ -99,4 +100,10 @@ fun DialogSurface(
 @Composable
 fun DialogButton(text: String, onClick: () -> Unit) {
     TextButton(onClick = onClick) { Text(text) }
+}
+
+/** A dialog button with a test tag, for the dialogs that tests press. */
+@Composable
+fun DialogButton(text: String, tag: String, onClick: () -> Unit) {
+    TextButton(onClick = onClick, modifier = Modifier.testTag(tag)) { Text(text) }
 }

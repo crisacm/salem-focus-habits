@@ -31,8 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.DialogFragment
-import com.android.datetimepicker.time.RadialPickerLayout
-import com.android.datetimepicker.time.TimePickerDialog
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
@@ -40,6 +38,7 @@ import io.github.crisacm.salem.activities.common.dialogs.ChoiceDialog
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
 import io.github.crisacm.salem.activities.common.dialogs.FrequencyLabel
 import io.github.crisacm.salem.activities.common.dialogs.FrequencyPickerDialog
+import io.github.crisacm.salem.activities.common.dialogs.TimePickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.WeekdayPickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.frequencyLabel
 import io.github.crisacm.salem.core.commands.CreateHabitCommand
@@ -171,19 +170,20 @@ class EditHabitActivity : AppCompatActivity() {
         val minute = if (current.reminderMin >= 0) current.reminderMin else 0
         val androidColor = themeSwitcher.currentTheme.color(current.color).toInt()
         val dialog = TimePickerDialog.newInstance(
-            object : TimePickerDialog.OnTimeSetListener {
-                override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int) {
-                    update { it.copy(reminderHour = hourOfDay, reminderMin = minute) }
+            object : TimePickerDialog.OnTimePickedListener {
+                override fun onTimePicked(hour: Int, minute: Int) {
+                    update { it.copy(reminderHour = hour, reminderMin = minute) }
                 }
 
-                override fun onTimeCleared(view: RadialPickerLayout?) {
+                override fun onTimeCleared() {
                     update { it.clearReminder() }
                 }
             },
             hour,
             minute,
             DateFormat.is24HourFormat(this),
-            androidColor
+            androidColor,
+            showClear = true
         )
         dialog.dismissCurrentAndShow(supportFragmentManager, "timePicker")
     }
