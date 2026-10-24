@@ -16,41 +16,46 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardState
-import io.github.crisacm.salem.core.ui.views.HistoryChart
-import io.github.crisacm.salem.databinding.ShowHabitHistoryBinding
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import java.util.Locale
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The history card of the detail screen: the card itself (padding, background) is still this View. */
 class HistoryCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    private val state = mutableStateOf<HistoryCardState?>(null)
+    private var presenter: HistoryCardPresenter? = null
 
-    private var binding = ShowHabitHistoryBinding.inflate(LayoutInflater.from(context), this)
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    SalemTheme {
+                        state.value?.let { HistoryCardContent(it, onEdit = { presenter?.onClickEditButton() }) }
+                    }
+                }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
+        )
+    }
 
     fun setState(state: HistoryCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        binding.title.setTextColor(androidColor)
-        binding.chart.view = HistoryChart(
-            today = state.today,
-            paletteColor = state.color,
-            theme = state.theme,
-            dateFormatter = JavaLocalDateFormatter(Locale.getDefault()),
-            series = state.series,
-            defaultSquare = state.defaultSquare,
-            notesIndicators = state.notesIndicators,
-            firstWeekday = state.firstWeekday
-        )
-        binding.chart.postInvalidate()
+        this.state.value = state
     }
 
     fun setListener(presenter: HistoryCardPresenter) {
-        binding.edit.setOnClickListener { presenter.onClickEditButton() }
+        this.presenter = presenter
     }
 }
