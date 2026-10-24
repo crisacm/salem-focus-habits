@@ -179,11 +179,6 @@
         <item name="android:textColor">@color/grey_100</item>
     </style>
 
-    <style name="SmallSpinner">
-        <item name="android:textColor">?attr/contrast60</item>
-        <item name="android:textSize">@dimen/smallTextSize</item>
-    </style>
-
     <style name="CardCommon">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -230,30 +225,11 @@
         <item name="android:textAlignment">viewStart</item>
     </style>
 
-    <style name="About.Item.Clickable">
-        <item name="android:paddingBottom">12dp</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:background">@drawable/ripple_transparent</item>
-    </style>
-
     <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?colorPrimary</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-    </style>
-
-    <style name="Preference.Category.Material">
-        <item name="android:layout">@layout/preference_category_custom</item>
-    </style>
-
-    <style name="DialogWithTitle" parent="@style/Theme.AppCompat.Light.Dialog">
-        <item name="windowNoTitle">false</item>
-    </style>
-
-    <style name="DarkDialogWithTitle"
-           parent="@style/Theme.AppCompat.Dialog">
-        <item name="windowNoTitle">false</item>
     </style>
 
     <style name="ScrollableRecyclerViewStyle" parent="android:Widget">
@@ -286,28 +262,6 @@
         <item name="android:textSize">@dimen/smallerTextSize</item>
     </style>
 
-    <style name="FormInput">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/transparent</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="android:textSize">@dimen/regularTextSize</item>
-    </style>
-
-    <style name="FormDropdown">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:drawableEnd">@drawable/ic_arrow_drop_down_dark</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingBottom">14dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:textSize">@dimen/regularTextSize</item>
-    </style>
-
     <style name="FormInnerBox">
         <item name="android:background">@drawable/bg_input_group</item>
         <item name="android:clipChildren">false</item>
@@ -327,42 +281,6 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingLeft">4dp</item>
         <item name="android:paddingRight">4dp</item>
-    </style>
-
-    <style name="FormDivider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">?attr/contrast20</item>
-    </style>
-
-    <style name="DialogFormInnerBox">
-        <item name="android:background">@drawable/dialog_bg_input_box</item>
-        <item name="android:clipChildren">false</item>
-        <item name="android:clipToPadding">false</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="DialogFormLabel">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">8dp</item>
-        <item name="android:layout_marginTop">-15dp</item>
-        <item name="android:layout_marginBottom">-4dp</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:background">?attr/dialogFormLabelColor</item>
-        <item name="android:paddingEnd">8dp</item>
-        <item name="android:textSize">@dimen/smallTextSize</item>
-    </style>
-
-    <style name="Theme.Transparent" parent="android:Theme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
 </resources>

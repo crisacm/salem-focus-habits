@@ -20,30 +20,6 @@
 
 <resources>
 
-    <style name="dialogFormText">
-        <item name="android:textSize">@dimen/regularTextSize</item>
-        <item name="android:textColor">?attr/contrast100</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="dialogFormLabel" parent="dialogFormText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">90dp</item>
-        <item name="android:gravity">left</item>
-        <item name="android:paddingLeft">6dp</item>
-        <item name="android:textColor">?attr/contrast60</item>
-    </style>
-
-    <style name="dialogFormRow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:minWidth">300dp</item>
-        <item name="android:gravity">start|center_vertical</item>
-    </style>
-
     <style name="dialogFormPanel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
