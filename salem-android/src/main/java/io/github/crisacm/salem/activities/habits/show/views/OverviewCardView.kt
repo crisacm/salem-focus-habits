@@ -16,47 +16,36 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
-import io.github.crisacm.salem.R
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
-import io.github.crisacm.salem.databinding.ShowHabitOverviewBinding
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.utils.StyledResources
-import kotlin.math.abs
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The overview card of the detail screen: the card itself (padding, background) is still this View. */
 class OverviewCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    private val state = mutableStateOf<OverviewCardState?>(null)
 
-    private val binding = ShowHabitOverviewBinding.inflate(LayoutInflater.from(context), this)
-
-    private fun formatPercentageDiff(percentageDiff: Float): String {
-        return String.format(
-            "%s%.0f%%",
-            if (percentageDiff >= 0) "+" else "\u2212",
-            abs(percentageDiff) * 100
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent { SalemTheme { state.value?.let { OverviewCardContent(it) } } }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
         )
     }
 
     fun setState(state: OverviewCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        val res = StyledResources(context)
-        val inactiveColor = res.getColor(R.attr.contrast60)
-        binding.monthDiffLabel.setTextColor(if (state.scoreMonthDiff >= 0) androidColor else inactiveColor)
-        binding.monthDiffLabel.text = formatPercentageDiff(state.scoreMonthDiff)
-        binding.scoreLabel.setTextColor(androidColor)
-        binding.scoreLabel.text = String.format("%.0f%%", state.scoreToday * 100)
-        binding.scoreRing.setColor(androidColor)
-        binding.scoreRing.setPercentage(state.scoreToday)
-
-        binding.title.setTextColor(androidColor)
-        binding.totalCountLabel.setTextColor(androidColor)
-        binding.totalCountLabel.text = state.totalCount.toString()
-        binding.yearDiffLabel.setTextColor(if (state.scoreYearDiff >= 0) androidColor else inactiveColor)
-        binding.yearDiffLabel.text = formatPercentageDiff(state.scoreYearDiff)
-        postInvalidate()
+        this.state.value = state
     }
 }

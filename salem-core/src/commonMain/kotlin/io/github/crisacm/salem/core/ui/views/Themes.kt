@@ -29,6 +29,9 @@ abstract class Theme {
     open val headerBorderColor = Color(0xcccccc)
     open val headerTextColor = Color(0x9E9E9E)
     open val highContrastTextColor = Color(0x202020)
+
+    // The text over a filled bar of the colour of the habit: the `contrast0` of the Android themes.
+    open val highContrastReverseTextColor = Color(0xffffff)
     open val itemBackgroundColor = Color(0xffffff)
     open val lowContrastTextColor = Color(0xe0e0e0)
     open val mediumContrastTextColor = Color(0x9E9E9E)
@@ -80,6 +83,7 @@ open class DarkTheme : Theme() {
     override val headerBorderColor = Color(0xcccccc)
     override val headerTextColor = Color(0x9E9E9E)
     override val highContrastTextColor = Color(0xF5F5F5)
+    override val highContrastReverseTextColor = Color(0x212121)
     override val itemBackgroundColor = Color(0xffffff)
     override val lowContrastTextColor = Color(0x424242)
     override val mediumContrastTextColor = Color(0x9E9E9E)
@@ -117,6 +121,7 @@ open class DarkTheme : Theme() {
 class PureBlackTheme : DarkTheme() {
     override val appBackgroundColor = Color(0x000000)
     override val cardBackgroundColor = Color(0x000000)
+    override val highContrastReverseTextColor = Color(0x000000)
     override val lowContrastTextColor = Color(0x212121)
 }
 

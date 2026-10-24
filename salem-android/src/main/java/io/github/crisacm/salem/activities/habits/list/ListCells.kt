@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.R
@@ -189,15 +190,23 @@ fun NumberCell(
     }
 }
 
-/** The ring that shows the score of a habit, filled in steps of a sixteenth of a turn. */
+/** The ring that shows the score of a habit, filled in steps of [precision] of a turn (a sixteenth by default). */
 @Composable
-fun ScoreRing(percentage: Float, color: Color, inactiveColor: Color, modifier: Modifier = Modifier) {
-    val sweep = ringSweepAngle(percentage)
+fun ScoreRing(
+    percentage: Float,
+    color: Color,
+    inactiveColor: Color,
+    modifier: Modifier = Modifier,
+    diameter: Dp = 15.dp,
+    thickness: Dp = 3.dp,
+    precision: Float = RING_PRECISION
+) {
+    val sweep = ringSweepAngle(percentage, precision)
     Box(
         modifier = modifier
-            .size(15.dp)
+            .size(diameter)
             .drawBehind {
-                val thickness = 3.dp.toPx()
+                val thickness = thickness.toPx()
                 val inset = thickness / 2
                 val arcSize = androidx.compose.ui.geometry.Size(size.width - thickness, size.height - thickness)
                 val topLeft = Offset(inset, inset)

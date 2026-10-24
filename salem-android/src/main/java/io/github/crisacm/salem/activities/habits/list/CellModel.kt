@@ -72,7 +72,7 @@ fun numberTone(value: Double, completed: Boolean) = when {
     else -> CellTone.MEDIUM
 }
 
-private const val RING_PRECISION = 1f / 16
+const val RING_PRECISION = 1f / 16
 
 /** The angle of the filled part of the score ring, in steps of a sixteenth of a turn. */
 fun ringSweepAngle(percentage: Float, precision: Float = RING_PRECISION): Float =

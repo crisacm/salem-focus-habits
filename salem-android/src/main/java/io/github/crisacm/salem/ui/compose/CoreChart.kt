@@ -19,37 +19,29 @@
 
 package io.github.crisacm.salem.ui.compose
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import io.github.crisacm.salem.platform.gui.AndroidCanvas
 import io.github.crisacm.salem.platform.gui.DataView
 
 /**
- * Draws a chart of salem-core (a [DataView]) through the multiplatform `Canvas`, scrolls its data with a
- * horizontal drag and a fling, and passes taps and long presses to it in dp. It draws with the same
- * [AndroidCanvas] the chart Views used, so text, fonts and sizes look the same.
+ * Draws a chart of salem-core (a [DataView], see [CoreView]), scrolls its data with a horizontal drag and a
+ * fling, and passes taps and long presses to it in dp.
  */
 @Composable
 fun CoreChart(chart: DataView, scroll: ChartScrollState, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     val density = LocalDensity.current.density
-    val canvas = remember { AndroidCanvas() }
     val dragState = rememberDraggableState { delta ->
         scroll.setColumnWidth((chart.dataColumnWidth * density).toFloat())
         scroll.dragBy(delta)
     }
-    Canvas(
+    CoreView(
+        view = chart,
         modifier = modifier
             .draggable(
                 state = dragState,
@@ -62,17 +54,8 @@ fun CoreChart(chart: DataView, scroll: ChartScrollState, modifier: Modifier = Mo
                     onTap = { chart.onClick(it.x / density.toDouble(), it.y / density.toDouble()) },
                     onLongPress = { chart.onLongClick(it.x / density.toDouble(), it.y / density.toDouble()) }
                 )
-            }
-    ) {
+            },
         // Reading the offset here redraws the chart when it changes.
-        chart.dataOffset = scroll.dataOffset
-        drawIntoCanvas { target ->
-            canvas.context = context
-            canvas.innerCanvas = target.nativeCanvas
-            canvas.innerWidth = size.width.toInt()
-            canvas.innerHeight = size.height.toInt()
-            canvas.innerDensity = density.toDouble()
-            chart.draw(canvas)
-        }
-    }
+        beforeDraw = { chart.dataOffset = scroll.dataOffset }
+    )
 }

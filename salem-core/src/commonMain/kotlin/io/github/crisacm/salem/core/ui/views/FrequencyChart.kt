@@ -158,9 +158,8 @@ class FrequencyChart(
         return listOf(grid, grid.blendWith(color, 0.34), grid.blendWith(color, 0.67), color)
     }
 
-    // The old chart gave the baseline of the text; the canvas takes about the middle of the lower case letters.
     private fun text(canvas: Canvas, text: String, x: Double, baselineY: Double) {
-        canvas.drawText(text, x, baselineY - BASELINE_TO_MIDDLE * fontSize)
+        canvas.drawTextAtBaseline(text, x, baselineY, fontSize)
     }
 
     private fun firstOfMonth(date: LocalDate, months: Int): LocalDate {
@@ -180,6 +179,5 @@ class FrequencyChart(
     private companion object {
         const val MIN_DRAWABLE_HEIGHT = 9.0
         const val DEFAULT_HEIGHT = 200.0
-        const val BASELINE_TO_MIDDLE = 0.3
     }
 }

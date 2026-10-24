@@ -16,23 +16,36 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
-import io.github.crisacm.salem.databinding.ShowHabitStreakBinding
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The streak card of the detail screen: the card itself (padding, background) is still this View. */
 class StreakCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val binding = ShowHabitStreakBinding.inflate(LayoutInflater.from(context), this)
+    private val state = mutableStateOf<StreakCardState?>(null)
+
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent { SalemTheme { state.value?.let { StreakCardContent(it) } } }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
+        )
+    }
+
     fun setState(state: StreakCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        binding.title.setTextColor(androidColor)
-        binding.streakChart.setColor(androidColor)
-        binding.streakChart.setStreaks(state.bestStreaks)
-        postInvalidate()
+        this.state.value = state
     }
 }
