@@ -39,3 +39,13 @@ fun visibleCards(isNumerical: Boolean, hasNotes: Boolean): List<ShowCard> = Show
 
 /** The target of a numerical habit as the subtitle shows it: the short number and its unit. */
 fun targetText(value: Double, unit: String): String = "${value.toShortString()} $unit"
+
+/**
+ * The id of the habit in the address that opens the detail screen (`content://.../habit/<id>`), or null if the
+ * address has none, so a wrong or missing address does not crash the screen.
+ */
+fun habitIdFrom(lastPathSegment: String?): Long? = lastPathSegment?.toLongOrNull()
+
+/** The colour of the top bar: the colour of the habit when the theme asks for it, the primary colour otherwise. */
+fun barColorFor(useHabitColor: Boolean, habitColor: Int, primaryColor: Int): Int =
+    if (useHabitColor) habitColor else primaryColor
