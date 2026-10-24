@@ -24,9 +24,9 @@ import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.activities.HabitsDirFinder
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
 import io.github.crisacm.salem.activities.habits.list.HabitListState
+import io.github.crisacm.salem.activities.habits.list.ListHabitsHost
 import io.github.crisacm.salem.activities.habits.list.ListHabitsMenu
 import io.github.crisacm.salem.activities.habits.list.ListHabitsModule
-import io.github.crisacm.salem.activities.habits.list.ListHabitsRootView
 import io.github.crisacm.salem.activities.habits.list.ListHabitsScreen
 import io.github.crisacm.salem.activities.habits.list.ListHabitsSelectionMenu
 import io.github.crisacm.salem.activities.habits.list.SelectionListener
@@ -49,7 +49,7 @@ abstract class HabitsActivityComponent(
     abstract val habitListState: HabitListState
     abstract val listHabitsBehavior: ListHabitsBehavior
     abstract val listHabitsMenu: ListHabitsMenu
-    abstract val listHabitsRootView: ListHabitsRootView
+    abstract val listHabitsHost: ListHabitsHost
     abstract val listHabitsScreen: ListHabitsScreen
     abstract val listHabitsSelectionMenu: ListHabitsSelectionMenu
     abstract val themeSwitcher: ThemeSwitcher

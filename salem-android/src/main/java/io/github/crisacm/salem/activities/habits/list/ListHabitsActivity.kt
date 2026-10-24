@@ -25,9 +25,15 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import io.github.crisacm.salem.BaseExceptionHandler
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -39,7 +45,7 @@ import io.github.crisacm.salem.inject.HabitsActivityComponent
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.inject.create
 import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.utils.applyRootViewInsets
+import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.restartWithFade
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +58,7 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
     lateinit var component: HabitsActivityComponent
     lateinit var taskRunner: TaskRunner
     lateinit var adapter: HabitListState
-    lateinit var rootView: ListHabitsRootView
+    lateinit var host: ListHabitsHost
     lateinit var screen: ListHabitsScreen
     lateinit var prefs: Preferences
     lateinit var midnightTimer: MidnightTimer
@@ -88,21 +94,34 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         prefs.addListener(this)
         pureBlack = prefs.isPureBlackEnabled
         midnightTimer = appComponent.midnightTimer
-        rootView = component.listHabitsRootView
-        savedInstanceState?.let { rootView.restoreDataOffset(it.getInt(KEY_DATA_OFFSET)) }
+        host = component.listHabitsHost
+        savedInstanceState?.let { host.restoreDataOffset(it.getInt(KEY_DATA_OFFSET)) }
         screen = component.listHabitsScreen
         adapter = component.habitListState
         taskRunner = appComponent.taskRunner
         menu = component.listHabitsMenu
         Thread.setDefaultUncaughtExceptionHandler(BaseExceptionHandler(this))
         component.listHabitsBehavior.onStartup()
-        rootView.applyRootViewInsets()
-        setContentView(rootView)
+        host.paintStatusBar(this)
+        setContent { SalemTheme { ListHabitsContent(host) } }
+        addContentView(confettiOverlay(), ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT))
+    }
+
+    // A plain View over the composition, padded like the screen, so the confetti falls over everything and
+    // never takes a touch.
+    private fun confettiOverlay() = FrameLayout(this).apply {
+        addView(host.konfettiView, MATCH_PARENT, MATCH_PARENT)
+        ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(maxOf(bars.left, cutout.left), 0, maxOf(bars.right, cutout.right), 0)
+            insets
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(KEY_DATA_OFFSET, rootView.dataOffset)
+        outState.putInt(KEY_DATA_OFFSET, host.dataOffset)
     }
 
     override fun onPause() {
@@ -116,7 +135,6 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
     override fun onResume() {
         adapter.refresh()
         screen.onAttached()
-        rootView.postInvalidate()
         midnightTimer.onResume()
 
         if (appComponent.reminderScheduler.hasHabitsWithReminders()) {
@@ -157,21 +175,17 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         appComponent.reminderScheduler.scheduleAll()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(request: Int, result: Int, data: Intent?) {
-        super.onActivityResult(request, result, data)
-        screen.onResult(request, result, data)
-    }
-
     private fun parseIntents() {
         if (intent == null) return
         if (intent.action == ACTION_EDIT) {
             val habitId = intent.extras?.getLong("habit")
             val timestampMillis = intent.extras?.getLong("timestamp")
             if (habitId != null && timestampMillis != null) {
-                val habit = appComponent.habitList.getById(habitId)!!
-                val date = LocalDate.fromUnixTime(timestampMillis)
-                component.listHabitsBehavior.onEdit(habit, date, 0f, 0f)
+                // The habit may have been deleted since the notification or widget was created.
+                appComponent.habitList.getById(habitId)?.let { habit ->
+                    val date = LocalDate.fromUnixTime(timestampMillis)
+                    component.listHabitsBehavior.onEdit(habit, date, 0f, 0f)
+                }
             }
         }
         intent = null

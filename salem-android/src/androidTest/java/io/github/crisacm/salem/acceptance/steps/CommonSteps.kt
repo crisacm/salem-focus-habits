@@ -252,8 +252,8 @@ object CommonSteps : BaseUserInterfaceTest() {
     fun verifyShowsScreen(screen: Screen?) {
         when (screen) {
             Screen.LIST_HABITS ->
-                Espresso.onView(ViewMatchers.withClassName(CoreMatchers.endsWith("ListHabitsRootView")))
-                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                // The whole list screen is one Compose tree, found by the tag of its root.
+                assertTrue("Habit list not shown", device.wait(Until.hasObject(By.res("habitListScreen")), 5000))
 
             Screen.SHOW_HABIT ->
                 Espresso.onView(ViewMatchers.withId(R.id.subtitleCard))

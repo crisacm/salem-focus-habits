@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.dialogs.CheckmarkDialog
@@ -86,8 +87,6 @@ const val RESULT_EXPORT_CSV = 102
 const val RESULT_EXPORT_DB = 103
 const val RESULT_BUG_REPORT = 104
 const val RESULT_REPAIR_DB = 105
-const val REQUEST_OPEN_DOCUMENT = 106
-const val REQUEST_SETTINGS = 107
 
 @Inject
 @ActivityScope
@@ -103,13 +102,20 @@ class ListHabitsScreen(
     private val colorPickerFactory: ColorPickerDialogFactory,
     private val behavior: Lazy<ListHabitsBehavior>,
     private val preferences: Preferences,
-    private val rootView: Lazy<ListHabitsRootView>
+    private val host: Lazy<ListHabitsHost>
 ) : CommandRunner.Listener,
     ListHabitsBehavior.Screen,
     ListHabitsMenuBehavior.Screen,
     ListHabitsSelectionMenuBehavior.Screen {
 
     val activity = (context as AppCompatActivity)
+
+    // Registered while the screen is built, which is before the activity starts; the order is what
+    // keeps the launchers working after the activity is recreated.
+    private val settingsLauncher =
+        activity.registerForActivityResult(StartActivityForResult()) { onSettingsResult(it.resultCode) }
+    private val openDocumentLauncher =
+        activity.registerForActivityResult(StartActivityForResult()) { onOpenDocumentResult(it.resultCode, it.data) }
 
     fun onAttached() {
         commandRunner.addListener(this)
@@ -122,13 +128,6 @@ class ListHabitsScreen(
     override fun onCommandFinished(command: Command) {
         val msg = getExecuteString(command)
         if (msg != null) activity.showMessage(msg)
-    }
-
-    fun onResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_OPEN_DOCUMENT -> onOpenDocumentResult(resultCode, data)
-            REQUEST_SETTINGS -> onSettingsResult(resultCode)
-        }
     }
 
     private fun onOpenDocumentResult(resultCode: Int, data: Intent?) {
@@ -177,7 +176,8 @@ class ListHabitsScreen(
     }
 
     override fun showEditHabitsScreen(selected: List<Habit>) {
-        val intent = intentFactory.startEditActivity(activity, selected[0])
+        val habit = selected.firstOrNull() ?: return
+        val intent = intentFactory.startEditActivity(activity, habit)
         activity.startActivity(intent)
     }
 
@@ -193,7 +193,7 @@ class ListHabitsScreen(
 
     fun showImportScreen() {
         val intent = intentFactory.openDocument()
-        activity.startActivityForResult(intent, REQUEST_OPEN_DOCUMENT)
+        openDocumentLauncher.launch(intent)
     }
 
     override fun showIntroScreen() {
@@ -238,7 +238,7 @@ class ListHabitsScreen(
             return
         }
         val baseColor = themeSwitcher.currentTheme!!.color(color).toInt()
-        rootView.value.konfettiView.start(
+        host.value.konfettiView.start(
             Party(
                 speed = 0f,
                 maxSpeed = 16f,
@@ -260,7 +260,7 @@ class ListHabitsScreen(
 
     override fun showSettingsScreen() {
         val intent = intentFactory.startSettingsActivity(activity)
-        activity.startActivityForResult(intent, REQUEST_SETTINGS)
+        settingsLauncher.launch(intent)
     }
 
     override fun showColorPicker(defaultColor: PaletteColor, callback: OnColorPickedCallback) {
@@ -290,7 +290,7 @@ class ListHabitsScreen(
         color: PaletteColor,
         callback: CheckMarkDialogCallback
     ) {
-        val theme = rootView.value.currentTheme()
+        val theme = themeSwitcher.currentTheme!!
         val fm = (context as AppCompatActivity).supportFragmentManager
         val dialog = CheckmarkDialog()
         dialog.arguments = Bundle().apply {
