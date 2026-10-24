@@ -141,7 +141,6 @@ class ListHabitsHost(
         midnightTimer.addListener(midnightListener)
         listState.observable.addListener(this)
         listState.onAttached()
-        updateEmptyView()
     }
 
     fun onDetached() {
@@ -149,6 +148,13 @@ class ListHabitsHost(
         listState.observable.removeListener(this)
         midnightTimer.removeListener(midnightListener)
         preferences.removeListener(preferencesListener)
+    }
+
+    /** Set by the activity: the confetti overlay follows the side insets that the composition applied. */
+    var onSideInsetsChanged: ((left: Int, right: Int) -> Unit)? = null
+
+    fun onSideInsets(left: Int, right: Int) {
+        onSideInsetsChanged?.invoke(left, right)
     }
 
     /** Called with the width in pixels of the screen, so the header and the rows know how many days to show. */

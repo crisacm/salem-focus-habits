@@ -32,8 +32,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import io.github.crisacm.salem.BaseExceptionHandler
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -107,16 +105,11 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         addContentView(confettiOverlay(), ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT))
     }
 
-    // A plain View over the composition, padded like the screen, so the confetti falls over everything and
-    // never takes a touch.
+    // A plain View over the composition, so the confetti falls over everything and never takes a touch. It is
+    // padded with the side insets that the composition applied, so both agree on where the content starts.
     private fun confettiOverlay() = FrameLayout(this).apply {
         addView(host.konfettiView, MATCH_PARENT, MATCH_PARENT)
-        ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            view.setPadding(maxOf(bars.left, cutout.left), 0, maxOf(bars.right, cutout.right), 0)
-            insets
-        }
+        host.onSideInsetsChanged = { left, right -> setPadding(left, 0, right, 0) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

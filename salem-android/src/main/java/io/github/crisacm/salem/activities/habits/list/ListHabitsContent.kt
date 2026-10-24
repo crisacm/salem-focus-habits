@@ -37,10 +37,13 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -61,6 +64,12 @@ fun ListHabitsContent(host: ListHabitsHost) {
     }
     val horizontalInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Horizontal)
+    // The confetti View lies over this composition: it takes the very same side insets, from one source.
+    val density = LocalDensity.current
+    val direction = LocalLayoutDirection.current
+    val left = horizontalInsets.getLeft(density, direction)
+    val right = horizontalInsets.getRight(density, direction)
+    SideEffect { host.onSideInsets(left, right) }
     Box(
         modifier = Modifier
             .fillMaxSize()
