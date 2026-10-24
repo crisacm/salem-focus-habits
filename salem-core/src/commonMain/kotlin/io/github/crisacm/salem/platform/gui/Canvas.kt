@@ -54,6 +54,13 @@ interface Canvas {
         swipeAngle: Double
     )
     fun fillCircle(centerX: Double, centerY: Double, radius: Double)
+
+    /**
+     * Makes the inside of a circle transparent, whatever was drawn there. It cuts a hole in what the
+     * canvas holds, so the caller must draw on a surface that starts transparent (or on its own layer):
+     * a widget that draws a chart over its own background does it to let that background show through.
+     */
+    fun clearCircle(centerX: Double, centerY: Double, radius: Double)
     fun setTextAlign(align: TextAlign)
     fun toImage(): Image
     fun measureText(text: String): Double

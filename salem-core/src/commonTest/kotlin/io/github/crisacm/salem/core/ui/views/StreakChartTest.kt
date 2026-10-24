@@ -63,4 +63,10 @@ class StreakChartTest : BaseUnitTest() {
         val chart = chart(count = 1)
         assertRenders(300, chart.height.toInt(), "$base/one.png", chart)
     }
+
+    @Test
+    fun testDrawWidgetTheme() = runTest {
+        val chart = chart(theme = WidgetTheme())
+        assertRenders(300, chart.height.toInt(), "$base/themeWidget.png", chart)
+    }
 }

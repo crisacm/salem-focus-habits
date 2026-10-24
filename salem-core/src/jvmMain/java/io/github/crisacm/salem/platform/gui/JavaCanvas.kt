@@ -193,6 +193,18 @@ class JavaCanvas(
         )
     }
 
+    override fun clearCircle(centerX: Double, centerY: Double, radius: Double) {
+        val previous = g2d.composite
+        g2d.composite = java.awt.AlphaComposite.Clear
+        g2d.fillOval(
+            toPixel(centerX - radius),
+            toPixel(centerY - radius),
+            toPixel(radius * 2),
+            toPixel(radius * 2)
+        )
+        g2d.composite = previous
+    }
+
     override fun fillArc(
         centerX: Double,
         centerY: Double,

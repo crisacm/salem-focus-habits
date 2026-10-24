@@ -22,6 +22,8 @@ package io.github.crisacm.salem.platform.gui
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.TextPaint
@@ -170,6 +172,18 @@ class AndroidCanvas : Canvas {
     ) {
         paint.style = Paint.Style.FILL
         innerCanvas.drawCircle(centerX.toDp(), centerY.toDp(), radius.toDp(), paint)
+    }
+
+    // CLEAR also erases what is under the circle in the bitmap that is being drawn on, so the caller has to
+    // give the canvas a transparent layer (see CoreWidgetView).
+    private val clearPaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+    }
+
+    override fun clearCircle(centerX: Double, centerY: Double, radius: Double) {
+        innerCanvas.drawCircle(centerX.toDp(), centerY.toDp(), radius.toDp(), clearPaint)
     }
 
     override fun setTextAlign(align: TextAlign) {
