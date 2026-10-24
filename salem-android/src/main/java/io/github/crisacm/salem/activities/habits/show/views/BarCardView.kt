@@ -16,74 +16,52 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.AdapterView
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardState
-import io.github.crisacm.salem.core.ui.views.BarChart
-import io.github.crisacm.salem.databinding.ShowHabitBarBinding
-import io.github.crisacm.salem.platform.gui.toInt
-import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
-import java.util.Locale
+import io.github.crisacm.salem.ui.compose.SalemTheme
 
+/** The bar card of the detail screen: the card itself (padding, background) is still this View. */
 class BarCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    private val state = mutableStateOf<BarCardState?>(null)
+    private var presenter: BarCardPresenter? = null
 
-    private var binding = ShowHabitBarBinding.inflate(LayoutInflater.from(context), this)
+    init {
+        addView(
+            ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    SalemTheme {
+                        state.value?.let {
+                            BarCardContent(
+                                state = it,
+                                onBoolSpinner = { position -> presenter?.onBoolSpinnerPosition(position) },
+                                onNumericalSpinner = { position -> presenter?.onNumericalSpinnerPosition(position) }
+                            )
+                        }
+                    }
+                }
+            },
+            MATCH_PARENT,
+            WRAP_CONTENT
+        )
+    }
 
     fun setState(state: BarCardState) {
-        val androidColor = state.theme.color(state.color).toInt()
-        binding.chart.view = BarChart(state.theme, JavaLocalDateFormatter(Locale.getDefault())).apply {
-            series = mutableListOf(state.entries.map { it.value / 1000.0 })
-            colors = mutableListOf(theme.color(state.color.paletteIndex))
-            axis = state.entries.map { it.date }
-        }
-        binding.chart.resetDataOffset()
-        binding.chart.postInvalidate()
-
-        binding.title.setTextColor(androidColor)
-        if (state.isNumerical) {
-            binding.boolSpinner.visibility = GONE
-        } else {
-            binding.numericalSpinner.visibility = GONE
-        }
-
-        binding.numericalSpinner.setSelection(state.numericalSpinnerPosition)
-        binding.boolSpinner.setSelection(state.boolSpinnerPosition)
+        this.state.value = state
     }
 
     fun setListener(presenter: BarCardPresenter) {
-        binding.boolSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                presenter.onBoolSpinnerPosition(position)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
-        binding.numericalSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    presenter.onNumericalSpinnerPosition(position)
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-            }
+        this.presenter = presenter
     }
 }
