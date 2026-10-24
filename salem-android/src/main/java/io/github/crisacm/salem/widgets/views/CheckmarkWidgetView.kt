@@ -26,7 +26,7 @@ import android.widget.TextView
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.RingView
-import io.github.crisacm.salem.activities.habits.list.views.toShortString
+import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.core.models.Entry.Companion.NO
 import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
 import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN

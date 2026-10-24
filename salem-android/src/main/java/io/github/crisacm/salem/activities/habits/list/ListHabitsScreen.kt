@@ -31,7 +31,6 @@ import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactor
 import io.github.crisacm.salem.activities.common.dialogs.ConfirmDeleteDialog
 import io.github.crisacm.salem.activities.common.dialogs.NumberDialog
 import io.github.crisacm.salem.activities.habits.edit.HabitTypeDialog
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
 import io.github.crisacm.salem.core.commands.ArchiveHabitsCommand
 import io.github.crisacm.salem.core.commands.ChangeHabitColorCommand
 import io.github.crisacm.salem.core.commands.Command
@@ -97,7 +96,7 @@ class ListHabitsScreen(
     private val commandRunner: CommandRunner,
     private val intentFactory: IntentFactory,
     private val themeSwitcher: ThemeSwitcher,
-    private val adapter: HabitCardListAdapter,
+    private val adapter: HabitListState,
     private val taskRunner: TaskRunner,
     private val exportDBFactory: ExportDBTaskFactory,
     private val importTaskFactory: ImportDataTaskFactory,

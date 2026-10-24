@@ -19,7 +19,6 @@
 
 package io.github.crisacm.salem.activities.habits.list
 
-import io.github.crisacm.salem.activities.habits.list.views.toShortString
 import io.github.crisacm.salem.core.models.Entry
 import kotlin.math.round
 

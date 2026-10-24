@@ -21,10 +21,17 @@ package io.github.crisacm.salem.activities.habits.list
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -32,20 +39,20 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.TaskProgressBar
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListView
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListViewFactory
 import io.github.crisacm.salem.core.models.ModelObservable
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintListFactory
+import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.compose.resolveTheme
+import io.github.crisacm.salem.ui.compose.systemIsDark
 import io.github.crisacm.salem.utils.StyledResources
 import io.github.crisacm.salem.utils.addAtBottom
 import io.github.crisacm.salem.utils.addAtTop
@@ -71,11 +78,11 @@ class ListHabitsRootView(
     private val preferences: Preferences,
     private val midnightTimer: MidnightTimer,
     runner: TaskRunner,
-    private val listAdapter: HabitCardListAdapter,
-    habitCardListViewFactory: HabitCardListViewFactory
+    private val listState: HabitListState,
+    controller: HabitListController,
+    behavior: ListHabitsBehavior
 ) : FrameLayout(context), ModelObservable.Listener {
 
-    val listView: HabitCardListView = habitCardListViewFactory.create()
     private val emptyState = mutableStateOf(EmptyListState.HIDDEN)
     val llEmpty = ComposeView(context).apply {
         visibility = View.GONE
@@ -99,15 +106,39 @@ class ListHabitsRootView(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent { SalemTheme { HintContent(hintList) } }
     }
-    private val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {
-        listView.dataOffset = it
-    }
+
+    // The rows read the offset from the header state, so nobody needs to be told when it changes.
+    private val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {}
     val header = ComposeView(context).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         val styled = StyledResources(context)
         val background = Color(styled.getColor(R.attr.headerBackgroundColor))
         val text = Color(styled.getColor(R.attr.contrast60))
         setContent { SalemTheme { HeaderContent(headerState, background, text) } }
+    }
+    private val rowCallbacks = ListRowCallbacks(
+        onClick = controller::onClick,
+        onLongClick = controller::onLongClick,
+        onToggle = behavior::onToggle,
+        onEdit = behavior::onEdit,
+        onDrop = controller::drop,
+        onDragStart = controller::onDragStarted,
+        onDragEnd = controller::onDragFinished
+    )
+    val rowsView = ComposeView(context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            SalemTheme {
+                HabitListContent(
+                    state = listState,
+                    header = headerState,
+                    theme = resolveTheme(preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())),
+                    preferences = preferences,
+                    callbacks = rowCallbacks,
+                    contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+                )
+            }
+        }
     }
     private val preferencesListener = object : Preferences.Listener {
         override fun onCheckmarkSequenceChanged() {
@@ -126,7 +157,7 @@ class ListHabitsRootView(
             addAtTop(konfettiView)
             addAtTop(tbar)
             addBelow(header, tbar)
-            addBelow(listView, header, height = MATCH_PARENT)
+            addBelow(rowsView, header, height = MATCH_PARENT)
             addBelow(llEmpty, header, height = MATCH_PARENT)
             addBelow(progressBar, header) {
                 it.topMargin = dp(-6.0f).toInt()
@@ -134,7 +165,6 @@ class ListHabitsRootView(
             addAtBottom(hintView)
         }
         addView(rootView, MATCH_PARENT, MATCH_PARENT)
-        listAdapter.setListView(listView)
     }
 
     /** The colour of the top bar: the habit palette colour in the light theme, the primary colour otherwise. */
@@ -157,19 +187,25 @@ class ListHabitsRootView(
         updateEmptyView()
     }
 
+    /** How many days the rows are scrolled; the activity saves it to survive a recreation. */
+    val dataOffset: Int
+        get() = headerState.dataOffset
+
+    fun restoreDataOffset(offset: Int) = headerState.restoreOffset(offset)
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         headerState.reversed = preferences.isCheckmarkSequenceReversed
         headerState.today = getToday()
-        // The list restores its own offset when the screen is recreated, so the header starts from it.
-        headerState.restoreOffset(listView.dataOffset)
         preferences.addListener(preferencesListener)
         midnightTimer.addListener(midnightListener)
-        listAdapter.observable.addListener(this)
+        listState.observable.addListener(this)
+        listState.onAttached()
     }
 
     override fun onDetachedFromWindow() {
-        listAdapter.observable.removeListener(this)
+        listState.onDetached()
+        listState.observable.removeListener(this)
         midnightTimer.removeListener(midnightListener)
         preferences.removeListener(preferencesListener)
         super.onDetachedFromWindow()
@@ -179,7 +215,6 @@ class ListHabitsRootView(
         val count = getCheckmarkCount()
         headerState.buttonCount = count
         headerState.setMaxDataOffset(max(MAX_CHECKMARK_COUNT - count, 0))
-        listView.checkmarkCount = count
         super.onSizeChanged(w, h, oldw, oldh)
     }
 
@@ -192,7 +227,7 @@ class ListHabitsRootView(
     }
 
     private fun updateEmptyView() {
-        val state = emptyListState(listAdapter.itemCount, listAdapter.hasNoHabit())
+        val state = emptyListState(listState.itemCount, listState.hasNoHabit())
         emptyState.value = state
         llEmpty.visibility = if (state == EmptyListState.HIDDEN) View.GONE else View.VISIBLE
     }

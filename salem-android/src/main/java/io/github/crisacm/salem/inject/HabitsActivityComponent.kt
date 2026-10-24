@@ -23,12 +23,13 @@ import android.content.Context
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.activities.HabitsDirFinder
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
+import io.github.crisacm.salem.activities.habits.list.HabitListState
 import io.github.crisacm.salem.activities.habits.list.ListHabitsMenu
 import io.github.crisacm.salem.activities.habits.list.ListHabitsModule
 import io.github.crisacm.salem.activities.habits.list.ListHabitsRootView
 import io.github.crisacm.salem.activities.habits.list.ListHabitsScreen
 import io.github.crisacm.salem.activities.habits.list.ListHabitsSelectionMenu
-import io.github.crisacm.salem.activities.habits.list.views.HabitCardListAdapter
+import io.github.crisacm.salem.activities.habits.list.SelectionListener
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
@@ -45,7 +46,7 @@ abstract class HabitsActivityComponent(
     val activityContext: Context
 ) {
     abstract val colorPickerDialogFactory: ColorPickerDialogFactory
-    abstract val habitCardListAdapter: HabitCardListAdapter
+    abstract val habitListState: HabitListState
     abstract val listHabitsBehavior: ListHabitsBehavior
     abstract val listHabitsMenu: ListHabitsMenu
     abstract val listHabitsRootView: ListHabitsRootView
@@ -60,7 +61,7 @@ abstract class HabitsActivityComponent(
         prefs: Preferences
     ): ThemeSwitcher = AndroidThemeSwitcher(context, prefs)
 
-    open val HabitCardListAdapter.bindAdapter: ListHabitsMenuBehavior.Adapter
+    open val HabitListState.bindAdapter: ListHabitsMenuBehavior.Adapter
         @Provides get() = this
 
     open val ListHabitsModule.bindBugReporter: ListHabitsBehavior.BugReporter
@@ -72,7 +73,10 @@ abstract class HabitsActivityComponent(
     open val ListHabitsScreen.bindScreen: ListHabitsBehavior.Screen
         @Provides get() = this
 
-    open val HabitCardListAdapter.bindSelMenuAdapter: ListHabitsSelectionMenuBehavior.Adapter
+    open val HabitListState.bindSelMenuAdapter: ListHabitsSelectionMenuBehavior.Adapter
+        @Provides get() = this
+
+    open val ListHabitsSelectionMenu.bindSelectionListener: SelectionListener
         @Provides get() = this
 
     open val ListHabitsScreen.bindSelMenuScreen: ListHabitsSelectionMenuBehavior.Screen
