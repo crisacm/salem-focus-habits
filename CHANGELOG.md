@@ -42,6 +42,7 @@ attribution.
 
 ### Changed
 
+- The history editor (the calendar dialog of the habit detail screen) is drawn with Jetpack Compose and the same chart code as the calendar card; it now keeps the theme of the app when it refreshes (it used the light theme after the first change)
 - The habit detail screen is a single Compose screen (`ShowHabitActivity` uses `setContent`): its top bar, with the way back, Edit and the menu (export, archive or unarchive, delete and, for developers, Randomize), is Compose too, and `ShowHabitView`, `ShowHabitMenu` and their layout and menu files are gone
 - The habit detail screen shows all its cards (subtitle, notes, overview, target, score, bar, history, streaks and frequency) in one Jetpack Compose column under the toolbar, which is still a View until the activity moves; the old card Views and layouts are gone
 - The streak, target and overview cards of the habit detail screen are drawn with Jetpack Compose; the streak and target charts now live in `salem-core` (`StreakChart`, `TargetChart`, drawn on the multiplatform `Canvas`, with image tests) and the overview ring is the Compose `ScoreRing` of the list. The widgets keep using the old chart Views
