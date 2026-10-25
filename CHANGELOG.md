@@ -16,6 +16,7 @@ attribution.
 
 ### Added
 
+- Move the create and edit habit screen to `salem-ui` (`EditHabitScreen`), shared with the future iOS screens: the colour, frequency, target type, time and days pickers are now opened over the form instead of as separate dialogs, the back button closes the open picker first, and the form is hidden from accessibility services while a picker is open. `EditHabitActivity` only hosts it.
 - Share the save logic and the texts of the habit editor with the future iOS screens: a tested `HabitEditorSaver` in `salem-core` (a second tap on Save is ignored, a deleted habit is reported), and in `salem-ui` the frequency, reminder days and reminder time texts, the latter following the clock format of the device on Android, the desktop and iOS.
 - Move the colour, weekday and time pickers of the habit editor to `salem-ui`, shared with the future iOS screens; the Android dialogs are thin hosts of the shared ones and keep the system labels of their buttons. New `OK` and `Cancel` strings (not translated yet) are used by the shared ones.
 - Move the dialog surface, the habit type, list, frequency and delete dialogs and the checkmark and number popups to `salem-ui`, shared with the future iOS screens; the Android dialogs are now thin hosts of the shared ones. The number popup no longer uses `java.text` (an exact half such as 0.125 rounds up, as everywhere else in the app).
