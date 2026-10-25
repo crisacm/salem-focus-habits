@@ -41,19 +41,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.habits.edit.formatFrequency
 import io.github.crisacm.salem.activities.habits.show.targetText
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.NotesCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.SubtitleCardState
 import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.ui.edit.frequencyText
+import io.github.crisacm.salem.ui.edit.rememberTimeFormat
 import io.github.crisacm.salem.utils.InterfaceUtils.getFontAwesome
-import io.github.crisacm.salem.utils.formatTime
 
 /** The subtitle of the detail screen: the question, the target, the frequency and the reminder of the habit. */
 @Composable
 fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val timeFormat = rememberTimeFormat()
     val density = LocalDensity.current
     val color = Color(state.theme.color(state.color).toInt())
     val muted = Color(state.theme.mediumContrastTextColor.toInt())
@@ -64,7 +65,7 @@ fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier)
     val targetMaxWidth = with(density) { (small * 7).toDp() }
     val reminder = state.reminder
     val reminderText = if (reminder != null) {
-        formatTime(context, reminder.hour, reminder.minute).orEmpty()
+        timeFormat.format(reminder.hour, reminder.minute)
     } else {
         stringResource(R.string.reminder_off)
     }
@@ -100,7 +101,7 @@ fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier)
             }
             Text(stringResource(R.string.fa_calendar), color = muted, fontSize = small, fontFamily = glyphs)
             Text(
-                formatFrequency(state.frequency.numerator, state.frequency.denominator, context.resources),
+                frequencyText(state.frequency.numerator, state.frequency.denominator),
                 color = muted,
                 fontSize = small,
                 modifier = Modifier.padding(start = 4.dp, end = 16.dp).testTag("subtitleFrequency")

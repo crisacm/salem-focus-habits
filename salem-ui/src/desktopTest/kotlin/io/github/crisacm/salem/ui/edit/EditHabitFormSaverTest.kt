@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.edit
+package io.github.crisacm.salem.ui.edit
 
 import androidx.compose.runtime.saveable.SaverScope
 import io.github.crisacm.salem.core.models.HabitType
