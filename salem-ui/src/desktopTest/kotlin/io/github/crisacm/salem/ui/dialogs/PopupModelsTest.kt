@@ -120,6 +120,27 @@ class PopupModelsTest {
     }
 
     @Test
+    fun inputRejectsDigitsThatAreNotAscii() {
+        assertFalse(isAllowedNumberInput("\u0663", '.'))
+        assertFalse(isAllowedNumberInput("\u0661\u0662\u066B\u0665", '\u066B'))
+    }
+
+    @Test
+    fun inputAllowsOnlyOneSeparator() {
+        assertFalse(isAllowedNumberInput("1,,5", ','))
+        assertFalse(isAllowedNumberInput("1.2.3", '.'))
+        assertTrue(isAllowedNumberInput("1.", '.'))
+        assertTrue(isAllowedNumberInput(".5", '.'))
+    }
+
+    @Test
+    fun notesAreComparedWithoutSurroundingSpacesOnBothSides() {
+        assertFalse(shouldSaveNotesOnDismiss(savedViaAction = false, originalNotes = " a ", currentNotes = "a"))
+        assertFalse(shouldSaveNotesOnDismiss(savedViaAction = false, originalNotes = " a ", currentNotes = " a "))
+        assertTrue(shouldSaveNotesOnDismiss(savedViaAction = false, originalNotes = " a ", currentNotes = "b"))
+    }
+
+    @Test
     fun aSessionStartsWithTheOriginalNotesAndNothingToSave() {
         val session = NotesSession("a")
         assertEquals("a", session.notes)

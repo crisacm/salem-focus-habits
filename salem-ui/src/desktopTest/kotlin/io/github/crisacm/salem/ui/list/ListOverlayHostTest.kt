@@ -19,20 +19,28 @@
 
 package io.github.crisacm.salem.ui.list
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.InternalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
@@ -51,6 +59,7 @@ import io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
 import io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
+import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.platform.time.DayOfWeek
@@ -83,6 +92,7 @@ class ListOverlayHostTest {
     private val habits = factory.buildHabitList()
     private val runner = CommandRunner(CoroutineTaskRunner(UnconfinedTestDispatcher(), UnconfinedTestDispatcher()))
     private val overlays = ListOverlays()
+    private var saver: () -> HabitEditorSaver = { HabitEditorSaver(factory, habits, runner) }
     private val dispatcher = NavigationEventDispatcher()
     private val input = DirectNavigationEventInput().also { dispatcher.addInput(it) }
 
@@ -104,7 +114,7 @@ class ListOverlayHostTest {
                     dateFormatter = FakeFormatter(),
                     preferences = Preferences(MemoryStorage()),
                     habitList = habits,
-                    saverFactory = { HabitEditorSaver(factory, habits, runner) },
+                    saverFactory = { saver() },
                     decimalSeparator = '.'
                 )
             }
@@ -282,5 +292,100 @@ class ListOverlayHostTest {
         }
         assertNotNull(overlays.current)
         assertTrue(overlays.current is ListOverlay.Delete)
+    }
+
+    @Test
+    fun aStaleDismissDoesNotCloseANewerOverlay() {
+        overlays.showHabitType()
+        val first = overlays.current!!
+        overlays.showDelete(1, OnConfirmedCallback { })
+        overlays.dismiss(first)
+        assertTrue(overlays.current is ListOverlay.Delete)
+    }
+
+    @Test
+    fun dismissingTheCurrentOverlayClosesIt() {
+        overlays.showHabitType()
+        overlays.dismiss(overlays.current!!)
+        assertNull(overlays.current)
+    }
+
+    @Test
+    fun theListIsHiddenFromAccessibilityWhileAnOverlayIsOpen() = runComposeUiTest {
+        setContent { Box(Modifier.hiddenWhileOverlay(overlays)) { Text("row", Modifier.testTag("row")) } }
+        onNodeWithTag("row").assertIsDisplayed()
+        runOnIdle { overlays.showHabitType() }
+        onNodeWithTag("row").assertDoesNotExist()
+        runOnIdle { overlays.dismiss(overlays.current!!) }
+        onNodeWithTag("row").assertIsDisplayed()
+    }
+
+    @Test
+    fun backClosesOnlyThePickerOfTheEditorFirst() = runComposeUiTest {
+        show()
+        runOnIdle { overlays.showEditor(null, HabitType.YES_NO) }
+        onNodeWithTag("colorButton").performClick()
+        onNodeWithText("Change color").assertIsDisplayed()
+        runOnIdle { sendBack() }
+        onNodeWithTag("nameInput").assertIsDisplayed()
+        runOnIdle { assertTrue(overlays.current is ListOverlay.Editor) }
+        runOnIdle { sendBack() }
+        runOnIdle { assertNull(overlays.current) }
+    }
+
+    @Test
+    fun backFromTheNumberPopupWithNewNotesSavesThemWithTheOriginalValue() = runComposeUiTest {
+        var result: Pair<Double, String>? = null
+        show()
+        runOnIdle { overlays.showNumber(7.5, "", NumberPickerCallback { v, n -> result = v to n }) }
+        onAllNodes(hasSetTextAction())[0].performTextInput("late")
+        runOnIdle { sendBack() }
+        runOnIdle {
+            assertEquals(7.5 to "late", result)
+            assertNull(overlays.current)
+        }
+    }
+
+    @Test
+    fun anEditorWhoseSaverAlreadySavedStaysOpen() = runComposeUiTest {
+        val used = HabitEditorSaver(factory, habits, runner)
+        used.save(EditHabitForm.new(HabitType.YES_NO).copy(name = "First"), null)
+        saver = { used }
+        show()
+        runOnIdle { overlays.showEditor(null, HabitType.YES_NO) }
+        onNodeWithTag("nameInput").performTextInput("Second")
+        onNodeWithTag("buttonSave").performClick()
+        runOnIdle {
+            assertTrue(overlays.current is ListOverlay.Editor)
+            assertEquals(1, habits.size())
+        }
+    }
+
+    @Test
+    fun aTapOutsideACheckmarkPopupSavesChangedNotesOnce() = runComposeUiTest {
+        val results = mutableListOf<Pair<Int, String>>()
+        show()
+        runOnIdle {
+            overlays.showCheckmark(Entry.YES_MANUAL, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> results += v to n })
+        }
+        onNode(hasSetTextAction()).performTextInput("late")
+        onRoot().performTouchInput { click(Offset(2f, 2f)) }
+        runOnIdle {
+            assertEquals(listOf(Entry.YES_MANUAL to "late"), results)
+            assertNull(overlays.current)
+        }
+    }
+
+    @Test
+    fun aTapOutsideTheNumberPopupSavesChangedNotesOnce() = runComposeUiTest {
+        val results = mutableListOf<Pair<Double, String>>()
+        show()
+        runOnIdle { overlays.showNumber(7.5, "", NumberPickerCallback { v, n -> results += v to n }) }
+        onAllNodes(hasSetTextAction())[0].performTextInput("late")
+        onRoot().performTouchInput { click(Offset(2f, 2f)) }
+        runOnIdle {
+            assertEquals(listOf(7.5 to "late"), results)
+            assertNull(overlays.current)
+        }
     }
 }

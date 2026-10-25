@@ -64,7 +64,7 @@ fun ListOverlayHost(
     labels: PickerLabels = defaultPickerLabels()
 ) {
     val overlay = overlays.current ?: return
-    val dismiss = overlays::dismiss
+    val dismiss = { overlays.dismiss(overlay) }
     // A new overlay starts with fresh state, even when it is of the same kind as the one it replaces.
     key(overlay) {
         when (overlay) {

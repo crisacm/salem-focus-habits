@@ -35,7 +35,7 @@ fun checkmarkOptions(skipEnabled: Boolean, unknownEnabled: Boolean): List<Int> =
 
 /** Closing a popup without choosing still saves the notes, with the original value, if they changed. */
 fun shouldSaveNotesOnDismiss(savedViaAction: Boolean, originalNotes: String, currentNotes: String) =
-    !savedViaAction && currentNotes.trim() != originalNotes
+    !savedViaAction && currentNotes.trim() != originalNotes.trim()
 
 /**
  * The notes of a checkmark or number popup. The popup and its host share it: the host asks for
@@ -75,4 +75,6 @@ fun parseNumberFieldValue(text: String, original: Double, separator: Char): Doub
     return text.replace(separator, '.').toDoubleOrNull() ?: original
 }
 
-fun isAllowedNumberInput(text: String, separator: Char) = text.all { it.isDigit() || it == separator }
+/** Only ASCII digits and at most one [separator]: anything else could not be parsed and would silently keep the old value. */
+fun isAllowedNumberInput(text: String, separator: Char) =
+    text.all { it in '0'..'9' || it == separator } && text.count { it == separator } <= 1
