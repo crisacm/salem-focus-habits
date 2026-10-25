@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import io.github.crisacm.salem.platform.notifications.AppLifecycleObserver
 import io.github.crisacm.salem.platform.time.AppleLocalDateFormatter
 import io.github.crisacm.salem.platform.time.computeToday
@@ -41,12 +42,15 @@ import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
+import io.github.crisacm.salem.ui.detail.HabitDetailRoute
 import io.github.crisacm.salem.ui.list.ListHabitsContent
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.Platform
 
 private sealed interface Loading {
     data object InProgress : Loading
@@ -78,6 +82,7 @@ fun IosListRoot() {
     }
 }
 
+@OptIn(ExperimentalNativeApi::class)
 @Composable
 private fun HabitListScreen(graph: IosHabitsGraph) {
     val density = LocalDensity.current.density
@@ -117,7 +122,13 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     }
     SalemTheme(theme) {
         Box(Modifier.fillMaxSize()) {
-            ListHabitsContent(model, theme, modifier = Modifier.hiddenWhileOverlay(graph.overlays))
+            val detailOpen = graph.navigation.habit != null
+            ListHabitsContent(
+                model,
+                theme,
+                // The list stays under the detail: hide it from VoiceOver while the detail is open
+                modifier = Modifier.hiddenWhileOverlay(graph.overlays).then(if (detailOpen) Modifier.clearAndSetSemantics { } else Modifier)
+            )
             ListOverlayHost(
                 overlays = graph.overlays,
                 theme = theme,
@@ -127,6 +138,22 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                 saverFactory = graph.saverFactory,
                 decimalSeparator = remember { iosDecimalSeparator() }
             )
+            graph.navigation.habit?.let { habit ->
+                HabitDetailRoute(
+                    habit = habit,
+                    theme = theme,
+                    dateFormatter = remember { AppleLocalDateFormatter() },
+                    habitList = graph.habitList,
+                    preferences = graph.preferences,
+                    commandRunner = graph.commandRunner,
+                    taskRunner = graph.taskRunner,
+                    system = graph.dirFinder,
+                    saverFactory = graph.saverFactory,
+                    decimalSeparator = remember { iosDecimalSeparator() },
+                    onClose = graph.navigation::close,
+                    developer = Platform.isDebugBinary
+                )
+            }
         }
     }
 }

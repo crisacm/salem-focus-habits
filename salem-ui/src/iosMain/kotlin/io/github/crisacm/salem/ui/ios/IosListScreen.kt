@@ -30,6 +30,7 @@ import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
+import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.list.ListOverlays
 
 /**
@@ -41,7 +42,8 @@ import io.github.crisacm.salem.ui.list.ListOverlays
 class IosListScreen(
     private val logger: Logger,
     private val themeSwitcher: ThemeSwitcher,
-    private val overlays: ListOverlays
+    private val overlays: ListOverlays,
+    private val navigation: DetailNavigation
 ) : ListHabitsBehavior.Screen,
     ListHabitsMenuBehavior.Screen,
     ListHabitsSelectionMenuBehavior.Screen {
@@ -54,7 +56,7 @@ class IosListScreen(
     private fun todo(what: String) = logger.info("Not available on iOS yet: $what")
 
     // ListHabitsBehavior.Screen
-    override fun showHabitScreen(h: Habit) = todo("habit screen of ${h.name}")
+    override fun showHabitScreen(h: Habit) = navigation.open(h)
 
     override fun showIntroScreen() = todo("intro")
 
