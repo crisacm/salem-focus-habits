@@ -24,12 +24,12 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.activities.habits.show.views.intervalToLabel
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardPresenter
 import io.github.crisacm.salem.core.ui.views.TargetChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
+import io.github.crisacm.salem.core.ui.views.toShortString
 import io.github.crisacm.salem.platform.gui.CoreWidgetView
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
 import kotlinx.coroutines.runBlocking

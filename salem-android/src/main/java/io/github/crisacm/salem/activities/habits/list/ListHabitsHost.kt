@@ -21,9 +21,11 @@ package io.github.crisacm.salem.activities.habits.list
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Typeface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.font.FontFamily
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.common.views.TaskProgressBar
 import io.github.crisacm.salem.core.models.ModelObservable
@@ -37,14 +39,25 @@ import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.getToday
+import io.github.crisacm.salem.ui.list.CondensedFonts
+import io.github.crisacm.salem.ui.list.EmptyListState
+import io.github.crisacm.salem.ui.list.HabitListController
+import io.github.crisacm.salem.ui.list.HabitListState
+import io.github.crisacm.salem.ui.list.HeaderState
+import io.github.crisacm.salem.ui.list.ListColors
+import io.github.crisacm.salem.ui.list.ListHabitsMenu
+import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
+import io.github.crisacm.salem.ui.list.ListRowCallbacks
+import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
+import io.github.crisacm.salem.ui.list.emptyListState
 import io.github.crisacm.salem.utils.StyledResources
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.xml.KonfettiView
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
-
-const val MAX_CHECKMARK_COUNT = 60
 
 /**
  * How many day columns fit in [width] pixels: the name of the habit takes a third of the width, or
@@ -99,6 +112,24 @@ class ListHabitsHost(
     val windowBackground = Color(styled.getColor(R.attr.windowBackgroundColor))
     val headerBackground = Color(styled.getColor(R.attr.headerBackgroundColor))
     val headerText = Color(styled.getColor(R.attr.contrast60))
+
+    /** The colours of the rows, from the theme of the activity. */
+    val listColors = ListColors(
+        card = Color(styled.getColor(R.attr.cardBgColor)),
+        highlighted = Color(styled.getColor(R.attr.highlightedBackgroundColor)),
+        low = Color(styled.getColor(R.attr.contrast40)),
+        medium = Color(styled.getColor(R.attr.contrast60)),
+        ringTrack = Color(styled.getColor(R.attr.contrast100)).copy(alpha = 0.15f)
+    )
+
+    /** The names of the weekdays in the header. */
+    val dateFormatter = JavaLocalDateFormatter(Locale.getDefault())
+
+    /** The condensed font of the number cells, which only Android has by name. */
+    val condensedFonts = CondensedFonts(
+        regular = FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL)),
+        bold = FontFamily(Typeface.create("sans-serif-condensed", Typeface.BOLD))
+    )
 
     /** The colour of the top bar: the habit palette colour in the light theme, the primary colour otherwise. */
     val barColor: Color by lazy {

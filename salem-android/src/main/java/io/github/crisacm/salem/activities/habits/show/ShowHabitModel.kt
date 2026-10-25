@@ -19,7 +19,7 @@
 
 package io.github.crisacm.salem.activities.habits.show
 
-import io.github.crisacm.salem.activities.habits.list.toShortString
+import io.github.crisacm.salem.core.ui.views.toShortString
 
 /** The cards of the detail screen, in the order they are shown. */
 enum class ShowCard { SUBTITLE, NOTES, OVERVIEW, TARGET, SCORE, BAR, HISTORY, STREAK, FREQUENCY }

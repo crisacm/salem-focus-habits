@@ -27,7 +27,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.core.models.Entry.Companion.NO
 import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
 import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
@@ -35,6 +34,7 @@ import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.views.RingChart
+import io.github.crisacm.salem.core.ui.views.toShortString
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
 import io.github.crisacm.salem.platform.gui.Color
 import io.github.crisacm.salem.platform.gui.CoreWidgetView

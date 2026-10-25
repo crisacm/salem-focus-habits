@@ -23,6 +23,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.ktlint.plugin)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -81,6 +82,12 @@ android {
     lint {
         abortOnError = false
     }
+}
+
+mokkery {
+    defaultMockMode.set(dev.mokkery.MockMode.autofill)
+    stubs.allowClassInheritance.set(true)
+    stubs.allowConcreteClassInstantiation.set(true)
 }
 
 compose.resources {

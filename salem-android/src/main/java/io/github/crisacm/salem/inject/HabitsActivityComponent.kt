@@ -23,18 +23,23 @@ import android.content.Context
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.activities.HabitsDirFinder
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
-import io.github.crisacm.salem.activities.habits.list.HabitListState
 import io.github.crisacm.salem.activities.habits.list.ListHabitsHost
-import io.github.crisacm.salem.activities.habits.list.ListHabitsMenu
 import io.github.crisacm.salem.activities.habits.list.ListHabitsModule
 import io.github.crisacm.salem.activities.habits.list.ListHabitsScreen
-import io.github.crisacm.salem.activities.habits.list.ListHabitsSelectionMenu
-import io.github.crisacm.salem.activities.habits.list.SelectionListener
+import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
+import io.github.crisacm.salem.core.ui.screens.habits.list.HabitCardListCache
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
+import io.github.crisacm.salem.core.utils.MidnightTimer
+import io.github.crisacm.salem.ui.list.HabitListController
+import io.github.crisacm.salem.ui.list.HabitListState
+import io.github.crisacm.salem.ui.list.ListHabitsMenu
+import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
+import io.github.crisacm.salem.ui.list.SelectionListener
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -60,6 +65,42 @@ abstract class HabitsActivityComponent(
         @ActivityContext context: Context,
         prefs: Preferences
     ): ThemeSwitcher = AndroidThemeSwitcher(context, prefs)
+
+    // The state holders of the list live in salem-ui, which has no dependency injection: they are built here
+    @ActivityScope
+    @Provides
+    fun habitListState(
+        cache: HabitCardListCache,
+        preferences: Preferences,
+        midnightTimer: MidnightTimer
+    ) = HabitListState(cache, preferences, midnightTimer)
+
+    @ActivityScope
+    @Provides
+    fun habitListController(
+        state: HabitListState,
+        behavior: ListHabitsBehavior,
+        selection: Lazy<SelectionListener>
+    ) = HabitListController(state, behavior, selection)
+
+    @ActivityScope
+    @Provides
+    fun listHabitsMenu(
+        preferences: Preferences,
+        themeSwitcher: ThemeSwitcher,
+        behavior: ListHabitsMenuBehavior
+    ) = ListHabitsMenu(preferences, themeSwitcher, behavior)
+
+    @ActivityScope
+    @Provides
+    fun listHabitsSelectionMenu(
+        listState: HabitListState,
+        commandRunner: CommandRunner,
+        preferences: Preferences,
+        behavior: ListHabitsSelectionMenuBehavior,
+        listController: Lazy<HabitListController>,
+        notificationTray: NotificationTray
+    ) = ListHabitsSelectionMenu(listState, commandRunner, preferences, behavior, listController, notificationTray)
 
     open val HabitListState.bindAdapter: ListHabitsMenuBehavior.Adapter
         @Provides get() = this

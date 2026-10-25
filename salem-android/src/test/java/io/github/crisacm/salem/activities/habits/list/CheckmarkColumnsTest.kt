@@ -19,6 +19,7 @@
 
 package io.github.crisacm.salem.activities.habits.list
 
+import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
