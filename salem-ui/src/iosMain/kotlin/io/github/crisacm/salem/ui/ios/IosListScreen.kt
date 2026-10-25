@@ -30,15 +30,18 @@ import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
+import io.github.crisacm.salem.ui.list.ListOverlays
 
 /**
- * The actions of the habit list that need another screen. The iOS app shows the list and marks days for now: the
- * others (detail, edit, settings, dialogs, sharing) arrive with their screens, so they only leave a line in the log.
- * [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was applied again.
+ * The actions of the habit list that need another screen. The dialogs, the popups and the editor are opened through
+ * [overlays]; the others (detail, settings, about, help, sharing, intro) arrive with their screens, so they only leave a
+ * line in the log. [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was
+ * applied again.
  */
 class IosListScreen(
     private val logger: Logger,
-    private val themeSwitcher: ThemeSwitcher
+    private val themeSwitcher: ThemeSwitcher,
+    private val overlays: ListOverlays
 ) : ListHabitsBehavior.Screen,
     ListHabitsMenuBehavior.Screen,
     ListHabitsSelectionMenuBehavior.Screen {
@@ -61,14 +64,14 @@ class IosListScreen(
     }
 
     override fun showNumberPopup(value: Double, notes: String, callback: io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback) =
-        todo("number popup")
+        overlays.showNumber(value, notes, callback)
 
     override fun showCheckmarkPopup(
         selectedValue: Int,
         notes: String,
         color: PaletteColor,
         callback: io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
-    ) = todo("checkmark popup")
+    ) = overlays.showCheckmark(selectedValue, notes, color, callback)
 
     override fun showSendBugReportToDeveloperScreen(log: String) = todo("send bug report")
 
@@ -88,16 +91,19 @@ class IosListScreen(
 
     override fun showSettingsScreen() = todo("settings")
 
-    override fun showSelectHabitTypeDialog() = todo("new habit")
+    override fun showSelectHabitTypeDialog() = overlays.showHabitType()
 
     // ListHabitsSelectionMenuBehavior.Screen
     override fun showColorPicker(
         defaultColor: PaletteColor,
         callback: io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
-    ) = todo("colour picker")
+    ) = overlays.showColor(defaultColor, callback)
 
     override fun showDeleteConfirmationScreen(callback: io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback, quantity: Int) =
-        todo("delete $quantity habits")
+        overlays.showDelete(quantity, callback)
 
-    override fun showEditHabitsScreen(selected: List<Habit>) = todo("edit ${selected.size} habits")
+    // As on Android, only the first selected habit is edited
+    override fun showEditHabitsScreen(selected: List<Habit>) {
+        selected.firstOrNull()?.let { overlays.showEditor(it.id, it.type) }
+    }
 }

@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import io.github.crisacm.salem.platform.notifications.AppLifecycleObserver
+import io.github.crisacm.salem.platform.time.AppleLocalDateFormatter
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
@@ -41,6 +42,7 @@ import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.list.ListHabitsContent
+import io.github.crisacm.salem.ui.list.ListOverlayHost
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -112,5 +114,18 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
             graph.midnightTimer.onPause()
         }
     }
-    SalemTheme(theme) { ListHabitsContent(model, theme) }
+    SalemTheme(theme) {
+        Box(Modifier.fillMaxSize()) {
+            ListHabitsContent(model, theme)
+            ListOverlayHost(
+                overlays = graph.overlays,
+                theme = theme,
+                dateFormatter = remember { AppleLocalDateFormatter() },
+                preferences = graph.preferences,
+                habitList = graph.habitList,
+                saverFactory = graph.saverFactory,
+                decimalSeparator = remember { iosDecimalSeparator() }
+            )
+        }
+    }
 }

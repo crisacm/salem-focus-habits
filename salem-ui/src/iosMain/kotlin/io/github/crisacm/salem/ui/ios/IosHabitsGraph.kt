@@ -31,6 +31,7 @@ import io.github.crisacm.salem.core.preferences.UserDefaultsStorage
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.NotificationTray
+import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.list.HabitCardListCache
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintList
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintListFactory
@@ -47,6 +48,7 @@ import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
 import io.github.crisacm.salem.ui.list.ListHabitsMenu
 import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
+import io.github.crisacm.salem.ui.list.ListOverlays
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.hint_drag
 import io.github.crisacm.salem.ui.resources.hint_landscape
@@ -81,6 +83,8 @@ class IosHabitsGraph private constructor(
     val midnightTimer: MidnightTimer,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
+    val overlays: ListOverlays,
+    val saverFactory: () -> HabitEditorSaver,
     val hintList: HintList,
     val listState: HabitListState,
     val menu: ListHabitsMenu,
@@ -112,7 +116,8 @@ class IosHabitsGraph private constructor(
             // The listeners of the timer write the state of the screen, so they run on the main thread
             val midnightTimer = MidnightTimer(logging, preferences, Dispatchers.Main)
             val themeSwitcher = IosThemeSwitcher(preferences)
-            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher)
+            val overlays = ListOverlays()
+            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays)
             val behavior = ListHabitsBehavior(
                 habitList,
                 IosDirFinder(fileOpener),
@@ -137,7 +142,8 @@ class IosHabitsGraph private constructor(
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, midnightTimer, themeSwitcher, screen, hintList,
+                preferences, habitList, logging, taskRunner, midnightTimer, themeSwitcher, screen, overlays,
+                { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior
             )
         }
