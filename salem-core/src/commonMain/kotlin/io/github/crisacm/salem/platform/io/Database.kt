@@ -106,12 +106,28 @@ inline fun <T> Database.querySingle(
     return result
 }
 
-suspend fun Database.migrateTo(targetVersion: Int, loadMigrationSQL: suspend (Int) -> String) {
+/**
+ * Applies the migrations after the current version up to [targetVersion]. With [atomic] each migration and its new
+ * version number are one transaction: if one fails nothing of it stays and the version is the one before. Leave it off
+ * when the caller already runs this inside a transaction, as Android does.
+ */
+suspend fun Database.migrateTo(
+    targetVersion: Int,
+    atomic: Boolean = false,
+    loadMigrationSQL: suspend (Int) -> String
+) {
     val currentVersion = getVersion()
     if (currentVersion >= targetVersion) return
     for (v in (currentVersion + 1)..targetVersion) {
         val commands = SQLParser.parse(loadMigrationSQL(v))
-        for (cmd in commands) run(cmd)
-        setVersion(v)
+        if (atomic) run("BEGIN")
+        try {
+            for (cmd in commands) run(cmd)
+            setVersion(v)
+            if (atomic) run("COMMIT")
+        } catch (e: Throwable) {
+            if (atomic) run("ROLLBACK")
+            throw e
+        }
     }
 }

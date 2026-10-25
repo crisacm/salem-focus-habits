@@ -31,7 +31,7 @@ import platform.Foundation.NSUUID
 /**
  * [Database] for iOS on top of sqliter. It follows the behaviour of `JavaDatabase`: typed binds,
  * `step()` that stays DONE once the result set is exhausted, and `BEGIN`/`COMMIT` statements that
- * only start and end a real transaction at the outermost level.
+ * only start and end a real transaction at the outermost level (`ROLLBACK` ends it at any level).
  */
 class SqliterDatabase internal constructor(private val connection: DatabaseConnection) : Database {
     private var transactionDepth = 0
@@ -41,6 +41,7 @@ class SqliterDatabase internal constructor(private val connection: DatabaseConne
         val trimmed = sql.trimStart().uppercase()
         if (trimmed.startsWith("BEGIN")) return TransactionStatement(::beginTransaction)
         if (trimmed.startsWith("COMMIT")) return TransactionStatement(::commitTransaction)
+        if (trimmed.startsWith("ROLLBACK")) return TransactionStatement(::rollbackTransaction)
         val statement = SqliterPreparedStatement(connection.createStatement(sql)) { statements.remove(it) }
         statements.add(statement)
         return statement
@@ -63,6 +64,13 @@ class SqliterDatabase internal constructor(private val connection: DatabaseConne
         if (transactionDepth == 0) return
         transactionDepth--
         if (transactionDepth == 0) connection.rawExecSql("COMMIT")
+    }
+
+    // A rollback ends the whole transaction, whatever the depth; without a transaction it is ignored
+    private fun rollbackTransaction() {
+        if (transactionDepth == 0) return
+        transactionDepth = 0
+        connection.rawExecSql("ROLLBACK")
     }
 }
 
@@ -119,7 +127,7 @@ internal class SqliterPreparedStatement(
     }
 }
 
-/** `BEGIN` and `COMMIT` are not prepared in sqlite: they only update the transaction depth. */
+/** `BEGIN`, `COMMIT` and `ROLLBACK` are not prepared in sqlite: they only update the transaction depth. */
 private class TransactionStatement(private val action: () -> Unit) : PreparedStatement {
     override fun step(): StepResult {
         action()
