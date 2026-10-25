@@ -17,13 +17,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.common.dialogs
+package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class HistoryEditorDialogTest {
+class HistoryEditorHeightTest {
     @Test
     fun aTallWindowGetsTheMaximumHeight() {
         assertEquals(350.dp, historyEditorHeight(screenHeight = 800.dp, maxHeight = 350.dp))
