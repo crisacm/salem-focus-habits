@@ -24,12 +24,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import io.github.crisacm.salem.activities.common.views.TargetChart
+import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.activities.habits.show.views.intervalToLabel
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardPresenter
+import io.github.crisacm.salem.core.ui.views.TargetChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
 import kotlinx.coroutines.runBlocking
 
@@ -49,20 +50,26 @@ class TargetWidget(
         val widgetView = view as GraphWidgetView
         widgetView.setBackgroundAlpha(preferedBackgroundAlpha)
         if (preferedBackgroundAlpha >= 255) widgetView.setShadowAlpha(0x4f)
-        val chart = (widgetView.dataView as TargetChart)
+        val theme = WidgetTheme()
         val data = TargetCardPresenter.buildState(
             habit = habit,
             firstWeekday = prefs.firstWeekdayInt,
-            theme = WidgetTheme()
+            theme = theme
         )
-        chart.setColor(WidgetTheme().color(habit.color).toInt())
-        chart.setTargets(data.targets)
-        chart.setLabels(data.intervals.map { intervalToLabel(context.resources, it) })
-        chart.setValues(data.values)
+        (widgetView.dataView as CoreWidgetView).view = TargetChart(
+            theme = theme,
+            labels = data.intervals.map { intervalToLabel(context.resources, it) },
+            values = data.values,
+            targets = data.targets,
+            color = theme.color(habit.color),
+            formatValue = { it.toShortString() },
+            // The widget shares its whole height among the rows.
+            stretchRows = true
+        )
     }
 
     override fun buildView(): View {
-        return GraphWidgetView(context, TargetChart(context)).apply {
+        return GraphWidgetView(context, CoreWidgetView(context)).apply {
             setTitle(habit.name)
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }

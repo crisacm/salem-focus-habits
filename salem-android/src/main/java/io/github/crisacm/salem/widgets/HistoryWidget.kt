@@ -26,7 +26,7 @@ import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.HistoryCardPresenter
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
-import io.github.crisacm.salem.platform.gui.AndroidDataView
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
@@ -55,18 +55,16 @@ class HistoryWidget(
             firstWeekday = prefs.firstWeekday,
             theme = WidgetTheme()
         )
-        (widgetView.dataView as AndroidDataView).apply {
-            val historyChart = (this.view as HistoryChart)
-            historyChart.series = model.series
-            historyChart.defaultSquare = model.defaultSquare
-            historyChart.notesIndicators = model.notesIndicators
-        }
+        val historyChart = (widgetView.dataView as CoreWidgetView).view as HistoryChart
+        historyChart.series = model.series
+        historyChart.defaultSquare = model.defaultSquare
+        historyChart.notesIndicators = model.notesIndicators
     }
 
     override fun buildView() =
         GraphWidgetView(
             context,
-            AndroidDataView(context).apply {
+            CoreWidgetView(context).apply {
                 view = HistoryChart(
                     today = getToday(),
                     paletteColor = habit.color,

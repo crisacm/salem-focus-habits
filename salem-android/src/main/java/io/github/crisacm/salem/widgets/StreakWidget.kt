@@ -24,11 +24,14 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import io.github.crisacm.salem.activities.common.views.StreakChart
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.core.ui.views.StreakChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
+import java.util.Locale
+import kotlin.math.floor
 
 class StreakWidget(
     context: Context,
@@ -46,14 +49,21 @@ class StreakWidget(
         val widgetView = view as GraphWidgetView
         widgetView.setBackgroundAlpha(preferedBackgroundAlpha)
         if (preferedBackgroundAlpha >= 255) widgetView.setShadowAlpha(0x4f)
-        (widgetView.dataView as StreakChart).apply {
-            setColor(WidgetTheme().color(habit.color).toInt())
-            setStreaks(habit.streaks.getBest(maxStreakCount))
-        }
+        val theme = WidgetTheme()
+        val chartView = widgetView.dataView as CoreWidgetView
+        // As many rows as fit in the height of the widget; the View was measured before the data is set.
+        val rowHeight = StreakChart.ROW_HEIGHT * context.resources.displayMetrics.density
+        val maxStreakCount = floor(chartView.measuredHeight / rowHeight).toInt()
+        chartView.view = StreakChart(
+            theme = theme,
+            formatDate = JavaLocalDateFormatter(Locale.getDefault())::longFormat,
+            streaks = habit.streaks.getBest(maxStreakCount),
+            color = theme.color(habit.color)
+        )
     }
 
     override fun buildView(): View {
-        return GraphWidgetView(context, StreakChart(context)).apply {
+        return GraphWidgetView(context, CoreWidgetView(context)).apply {
             setTitle(habit.name)
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }

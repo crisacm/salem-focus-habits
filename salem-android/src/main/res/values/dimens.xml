@@ -18,7 +18,6 @@
   -->
 
 <resources>
-    <dimen name="baseSize">20dp</dimen>
     <dimen name="checkmarkWidth">48dp</dimen>
     <dimen name="checkmarkHeight">48dp</dimen>
     <dimen name="history_editor_max_height">350dp</dimen>
