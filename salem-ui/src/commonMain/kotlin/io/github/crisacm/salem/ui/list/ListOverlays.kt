@@ -22,6 +22,8 @@ package io.github.crisacm.salem.ui.list
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
@@ -30,17 +32,20 @@ import io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
 import io.github.crisacm.salem.ui.dialogs.NotesSession
 
-/** What is shown over the habit list: the dialogs, the popups and the editor that the list asks for. */
+/**
+ * What is shown over the habit list: the dialogs, the popups and the editor that the list asks for. Each one is its
+ * own object (not a value), so showing the same kind twice starts with fresh state.
+ */
 sealed interface ListOverlay {
     /** The choice between a yes or no habit and a numerical one. */
     data object TypeChoice : ListOverlay
 
     /** The editor: a new habit of [type], or the habit with [habitId]. */
-    data class Editor(val habitId: Long?, val type: HabitType) : ListOverlay
+    class Editor(val habitId: Long?, val type: HabitType) : ListOverlay
 
-    data class Delete(val quantity: Int, val callback: OnConfirmedCallback) : ListOverlay
+    class Delete(val quantity: Int, val callback: OnConfirmedCallback) : ListOverlay
 
-    data class Color(val selected: PaletteColor, val callback: OnColorPickedCallback) : ListOverlay
+    class Color(val selected: PaletteColor, val callback: OnColorPickedCallback) : ListOverlay
 
     /** The popup of a yes or no cell; [session] keeps the notes while it is open. */
     class Checkmark(
@@ -77,11 +82,16 @@ class ListOverlays {
     fun showNumber(value: Double, notes: String, callback: NumberPickerCallback) =
         show(ListOverlay.Number(value, notes, callback))
 
-    fun dismiss() {
-        current = null
+    /** Closes [overlay] if it is still the open one: a late callback of an older overlay must not close a newer one. */
+    fun dismiss(overlay: ListOverlay) {
+        if (current === overlay) current = null
     }
 
     private fun show(overlay: ListOverlay) {
         current = overlay
     }
 }
+
+/** Hides what is under an open overlay from accessibility services, which share its window. */
+fun Modifier.hiddenWhileOverlay(overlays: ListOverlays): Modifier =
+    if (overlays.current != null) clearAndSetSemantics { } else this

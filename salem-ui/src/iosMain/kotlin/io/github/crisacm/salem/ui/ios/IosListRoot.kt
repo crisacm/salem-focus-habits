@@ -43,6 +43,7 @@ import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.list.ListHabitsContent
 import io.github.crisacm.salem.ui.list.ListOverlayHost
+import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -116,7 +117,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     }
     SalemTheme(theme) {
         Box(Modifier.fillMaxSize()) {
-            ListHabitsContent(model, theme)
+            ListHabitsContent(model, theme, modifier = Modifier.hiddenWhileOverlay(graph.overlays))
             ListOverlayHost(
                 overlays = graph.overlays,
                 theme = theme,
