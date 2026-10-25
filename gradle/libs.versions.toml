@@ -4,6 +4,7 @@ annotation = "1.9.1"
 appcompat = "1.7.0"
 activity-compose = "1.13.0"
 compose-bom = "2026.02.00"
+compose-multiplatform = "1.10.3"
 kotlin-inject = "0.9.0"
 desugar = "2.1.4"
 espresso = "3.6.1"
@@ -52,9 +53,14 @@ compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-mp-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+compose-mp-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-mp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-mp-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 
 [plugins]
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 agp = { id = "com.android.application", version.ref = "agp" }
 agp-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
