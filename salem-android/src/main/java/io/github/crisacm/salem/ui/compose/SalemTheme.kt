@@ -21,61 +21,11 @@ package io.github.crisacm.salem.ui.compose
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import io.github.crisacm.salem.HabitsApplication
-import io.github.crisacm.salem.core.preferences.Preferences
-import io.github.crisacm.salem.core.ui.ThemeSwitcher
-import io.github.crisacm.salem.core.ui.views.DarkTheme
-import io.github.crisacm.salem.core.ui.views.LightTheme
-import io.github.crisacm.salem.core.ui.views.PureBlackTheme
-import io.github.crisacm.salem.core.ui.views.Theme
-import io.github.crisacm.salem.platform.gui.Color as CoreColor
 
-private const val PRIMARY_PALETTE_INDEX = 11
-
-fun CoreColor.toCompose() = Color(red.toFloat(), green.toFloat(), blue.toFloat(), alpha.toFloat())
-
-fun Theme.toColorScheme(): ColorScheme {
-    val background = appBackgroundColor.toCompose()
-    val surface = cardBackgroundColor.toCompose()
-    val onSurface = highContrastTextColor.toCompose()
-    val primary = color(PRIMARY_PALETTE_INDEX).toCompose()
-    val base = if (this is DarkTheme) darkColorScheme() else lightColorScheme()
-    return base.copy(
-        primary = primary,
-        onPrimary = Color.White,
-        background = background,
-        onBackground = onSurface,
-        surface = surface,
-        onSurface = onSurface,
-        surfaceVariant = headerBackgroundColor.toCompose(),
-        onSurfaceVariant = mediumContrastTextColor.toCompose(),
-        outline = headerBorderColor.toCompose()
-    )
-}
-
-@Composable
-fun SalemTheme(theme: Theme, content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = theme.toColorScheme(), content = content)
-}
-
-/** The theme [ThemeSwitcher] would pick for these preferences, without touching any activity. */
-fun resolveTheme(preferences: Preferences, systemIsDark: Boolean): Theme {
-    val userTheme = preferences.theme
-    val night = userTheme == ThemeSwitcher.THEME_DARK ||
-        systemIsDark && userTheme == ThemeSwitcher.THEME_AUTOMATIC
-    return when {
-        !night -> LightTheme()
-        preferences.isPureBlackEnabled -> PureBlackTheme()
-        else -> DarkTheme()
-    }
-}
+// The colours, the scheme, SalemTheme(theme) and resolveTheme are shared: they live in salem-ui, same package
 
 /**
  * Whether the system is in night mode as [io.github.crisacm.salem.activities.AndroidThemeSwitcher] sees

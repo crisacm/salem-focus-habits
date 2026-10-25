@@ -56,7 +56,7 @@ class CoreCanvasViewTest {
     fun theHoleShowsWhatIsBehindTheViewAndDoesNotErase() = runComposeUiTest {
         setContent {
             Box(Modifier.size(40.dp).background(Color.Red)) {
-                CoreCanvasView(bluePlate, FontFamily.Default, Modifier.size(40.dp))
+                CoreCanvasView(bluePlate, SalemFonts(FontFamily.Default, FontFamily.Default, FontFamily.Default), Modifier.size(40.dp))
             }
         }
         val pixels = onRoot().captureToImage().toPixelMap()

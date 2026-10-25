@@ -28,15 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.core.ui.views.RingChart
 import io.github.crisacm.salem.platform.gui.FontAwesome
 import io.github.crisacm.salem.ui.canvas.CoreCanvasView
-import io.github.crisacm.salem.ui.resources.Res
-import io.github.crisacm.salem.ui.resources.fontawesome
-import org.jetbrains.compose.resources.Font
+import io.github.crisacm.salem.ui.canvas.rememberSalemFonts
 import io.github.crisacm.salem.platform.gui.Color as CoreColor
 
 /**
@@ -45,7 +42,7 @@ import io.github.crisacm.salem.platform.gui.Color as CoreColor
  */
 @Composable
 fun SalemUiSample() {
-    val fontAwesome = FontFamily(Font(Res.font.fontawesome))
+    val fonts = rememberSalemFonts()
     val theme = remember { LightTheme() }
     val ring = remember {
         RingChart(
@@ -59,6 +56,6 @@ fun SalemUiSample() {
         )
     }
     Box(Modifier.fillMaxSize().background(Color(0xFFF4F4F4)), contentAlignment = Alignment.Center) {
-        CoreCanvasView(ring, fontAwesome, Modifier.size(200.dp))
+        CoreCanvasView(ring, fonts, Modifier.size(200.dp))
     }
 }

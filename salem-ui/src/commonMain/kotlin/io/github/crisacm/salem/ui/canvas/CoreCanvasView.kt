@@ -27,25 +27,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import io.github.crisacm.salem.platform.gui.View
 
 /**
  * Draws a [View] of salem-core with a [DrawScopeCanvas]. The view is drawn on a layer of its own, so charts that
  * cut holes in themselves (`Canvas.clearCircle`) do not erase what is behind them. [beforeDraw] runs in the draw
- * phase, so the state it reads redraws the view when it changes.
+ * phase, so the state it reads redraws the view when it changes. The core views are plain objects, not Compose
+ * state: when one of their properties changes, pass a different [version] (a counter, or the data it shows) to
+ * draw it again.
  */
 @Composable
 fun CoreCanvasView(
     view: View,
-    fontAwesomeFamily: FontFamily,
+    fonts: SalemFonts,
     modifier: Modifier = Modifier.fillMaxSize(),
+    version: Any? = null,
     beforeDraw: DrawScope.() -> Unit = {}
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val canvas = remember(textMeasurer, fontAwesomeFamily) { DrawScopeCanvas(textMeasurer, fontAwesomeFamily) }
+    val canvas = remember(textMeasurer, fonts) { DrawScopeCanvas(textMeasurer, fonts.fontAwesome, fonts.regular, fonts.bold) }
     Canvas(modifier.graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)) {
+        version
         beforeDraw()
         canvas.scope = this
         view.draw(canvas)

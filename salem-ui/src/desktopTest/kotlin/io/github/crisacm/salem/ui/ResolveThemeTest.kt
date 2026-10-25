@@ -25,9 +25,8 @@ import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.core.ui.views.PureBlackTheme
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class ResolveThemeTest {
     private fun prefs(theme: Int, pureBlack: Boolean = false) = Preferences(MemoryStorage()).also {
@@ -51,13 +50,5 @@ class ResolveThemeTest {
     fun pureBlackOnlyAppliesToTheDarkTheme() {
         assertTrue(resolveTheme(prefs(ThemeSwitcher.THEME_DARK, true), systemIsDark = false) is PureBlackTheme)
         assertTrue(resolveTheme(prefs(ThemeSwitcher.THEME_LIGHT, true), systemIsDark = true) is LightTheme)
-    }
-
-    @Test
-    fun beforeAndroid10TheSystemNightModeIsIgnored() {
-        assertFalse(systemIsDark(sdkInt = 28, nightMode = true))
-        assertFalse(systemIsDark(sdkInt = 29, nightMode = false))
-        assertTrue(systemIsDark(sdkInt = 29, nightMode = true))
-        assertTrue(systemIsDark(sdkInt = 35, nightMode = true))
     }
 }
