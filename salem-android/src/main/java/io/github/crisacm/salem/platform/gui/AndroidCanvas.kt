@@ -75,6 +75,16 @@ class AndroidCanvas : Canvas {
         )
     }
 
+    override fun strokeText(text: String, x: Double, y: Double) {
+        textPaint.style = Paint.Style.STROKE
+        textPaint.strokeWidth = paint.strokeWidth
+        try {
+            drawText(text, x, y)
+        } finally {
+            textPaint.style = Paint.Style.FILL
+        }
+    }
+
     override fun fillRect(x: Double, y: Double, width: Double, height: Double) {
         paint.style = Paint.Style.FILL
         rect(x, y, width, height)

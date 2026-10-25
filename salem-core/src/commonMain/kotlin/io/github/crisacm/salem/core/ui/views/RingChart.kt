@@ -31,7 +31,7 @@ import kotlin.math.min
  * A ring that is filled up to [percentage] (0 to 1, in steps of [precision]), with an optional [text] at the
  * centre. The ring is as wide as [thickness] dp. The hole is painted with [holeColor]; with no colour it is
  * cut out of the canvas (see `Canvas.clearCircle`), which is what the widgets need so that their own
- * background shows through. The drawing follows the old `RingView`, with sizes in dp.
+ * background shows through. With [isTextStroked] the text is only outlined. The drawing follows the old `RingView`, with sizes in dp.
  */
 class RingChart(
     var color: Color,
@@ -42,7 +42,8 @@ class RingChart(
     var precision: Double = 0.01,
     var text: String = "",
     var isFontAwesome: Boolean = false,
-    var textSize: Double = 14.0
+    var textSize: Double = 14.0,
+    var isTextStroked: Boolean = false
 ) : View {
 
     override fun draw(canvas: Canvas) {
@@ -70,7 +71,12 @@ class RingChart(
         canvas.setFontSize(textSize)
         canvas.setTextAlign(TextAlign.CENTER)
         canvas.setColor(color)
-        canvas.drawText(text, centerX, centerY)
+        if (isTextStroked) {
+            canvas.setStrokeWidth(textSize / 15)
+            canvas.strokeText(text, centerX, centerY)
+        } else {
+            canvas.drawText(text, centerX, centerY)
+        }
     }
 
     private companion object {
