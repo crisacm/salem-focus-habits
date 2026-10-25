@@ -38,7 +38,9 @@ class TargetChart(
     var values: List<Double> = emptyList(),
     var targets: List<Double> = emptyList(),
     var color: Color = Color.BLACK,
-    var formatValue: (Double) -> String = { it.toString() }
+    var formatValue: (Double) -> String = { it.toString() },
+    // With stretchRows the rows share the whole height (a widget); otherwise each one is ROW_HEIGHT dp tall.
+    var stretchRows: Boolean = false
 ) : View {
 
     val height: Double
@@ -54,25 +56,26 @@ class TargetChart(
         canvas.setFontSize(fontSize)
         val maxLabelWidth = labels.maxOf { canvas.measureText(it) }
         val width = canvas.getWidth()
-        var top = (canvas.getHeight() - ROW_HEIGHT * labels.size) / 2
+        val rowHeight = if (stretchRows) canvas.getHeight() / labels.size else ROW_HEIGHT
+        var top = (canvas.getHeight() - rowHeight * labels.size) / 2
         for (row in labels.indices) {
-            drawRow(canvas, width, top, row, maxLabelWidth, fontSize)
-            top += ROW_HEIGHT
+            drawRow(canvas, width, top, rowHeight, row, maxLabelWidth)
+            top += rowHeight
         }
     }
 
-    private fun drawRow(canvas: Canvas, width: Double, top: Double, row: Int, maxLabelWidth: Double, fontSize: Double) {
+    private fun drawRow(canvas: Canvas, width: Double, top: Double, rowHeight: Double, row: Int, maxLabelWidth: Double) {
         val stop = maxLabelWidth + 2 * PADDING
-        val centerY = top + ROW_HEIGHT / 2
+        val centerY = top + rowHeight / 2
         // The old chart centred the text with the ascent and descent of the font; the canvas centres it by itself.
         canvas.setColor(theme.mediumContrastTextColor)
         canvas.setTextAlign(TextAlign.RIGHT)
         canvas.drawText(labels[row], stop - PADDING, centerY)
 
         val barLeft = stop + PADDING
-        val barTop = top + 0.05 * ROW_HEIGHT
+        val barTop = top + 0.05 * rowHeight
         val barWidth = width - PADDING - barLeft
-        val barHeight = ROW_HEIGHT * 0.9
+        val barHeight = rowHeight * 0.9
         canvas.setColor(theme.lowContrastTextColor)
         canvas.fillRoundRect(barLeft, barTop, barWidth, barHeight, ROUND)
 
@@ -86,7 +89,7 @@ class TargetChart(
         canvas.fillRoundRect(barLeft, barTop, completedWidth, barHeight, ROUND)
 
         canvas.setTextAlign(TextAlign.CENTER)
-        canvas.setFontSize(fontSize)
+        canvas.setFontSize(theme.smallTextSize)
         val completedText = formatValue(value)
         val remainingText = formatValue(max(0.0, target - value))
         if (completedWidth > canvas.measureText(completedText) + 2 * PADDING) {
