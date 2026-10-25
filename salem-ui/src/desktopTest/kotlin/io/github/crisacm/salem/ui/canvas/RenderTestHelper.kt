@@ -61,8 +61,8 @@ fun render(width: Int, height: Int, block: (DrawScopeCanvas) -> Unit): BufferedI
     return bitmap.toBufferedImage()
 }
 
-/** Renders [view] and compares it with the image of salem-core. */
-fun assertRendersLikeCore(width: Int, height: Int, path: String, view: View, maxDistance: Double = 0.2) {
+/** The distance, in percent of luminosity, between [view] drawn here and the image of salem-core at [path]. */
+fun distanceToCore(width: Int, height: Int, path: String, view: View): Double {
     val actual = render(width, height) { view.draw(it) }
     val expectedFile = File(assets, "test/$path")
     val failed = File("/tmp/failed-ui/$path")
@@ -71,16 +71,20 @@ fun assertRendersLikeCore(width: Int, height: Int, path: String, view: View, max
         ImageIO.write(actual, "png", failed)
         fail("Missing $path. Actual image: $failed")
     }
-    val expected = ImageIO.read(expectedFile)
     val diff = JavaImage(ImageIO.read(expectedFile))
     diff.diff(JavaImage(actual))
     val distance = diff.averageLuminosity * 100
-    if (distance >= maxDistance) {
-        failed.parentFile.mkdirs()
-        ImageIO.write(actual, "png", failed)
-        ImageIO.write(expected, "png", File(failed.path.replace(".png", ".expected.png")))
-        fail("Images differ for $path (distance=$distance). Actual image: $failed")
-    }
+    // Kept so that a failing or surprising comparison can be looked at
+    failed.parentFile.mkdirs()
+    ImageIO.write(actual, "png", failed)
+    ImageIO.write(ImageIO.read(expectedFile), "png", File(failed.path.replace(".png", ".expected.png")))
+    return distance
+}
+
+/** Renders [view] and compares it with the image of salem-core. */
+fun assertRendersLikeCore(width: Int, height: Int, path: String, view: View, maxDistance: Double = 0.2) {
+    val distance = distanceToCore(width, height, path, view)
+    if (distance >= maxDistance) fail("Images differ for $path (distance=$distance). See /tmp/failed-ui/$path")
 }
 
 private fun ImageBitmap.toBufferedImage(): BufferedImage {
