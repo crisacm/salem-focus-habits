@@ -20,6 +20,7 @@
 package io.github.crisacm.salem.ui.ios
 
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
+import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import io.github.crisacm.salem.platform.io.FileOpener
 import io.github.crisacm.salem.platform.io.UserFile
 import platform.Foundation.NSBundle
@@ -38,6 +39,6 @@ class IosBugReporter : ListHabitsBehavior.BugReporter {
 }
 
 /** The folder of the CSV export, inside the files of the app. */
-class IosDirFinder(private val fileOpener: FileOpener) : ListHabitsBehavior.DirFinder {
+class IosDirFinder(private val fileOpener: FileOpener) : ListHabitsBehavior.DirFinder, ShowHabitMenuPresenter.System {
     override fun getCSVOutputDir(): UserFile = fileOpener.openUserFile("CSV")
 }

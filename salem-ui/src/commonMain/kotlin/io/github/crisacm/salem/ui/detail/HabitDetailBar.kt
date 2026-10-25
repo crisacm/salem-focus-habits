@@ -84,7 +84,7 @@ fun HabitDetailBar(session: HabitDetailSession, title: String, barColor: Color, 
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         MenuItem(Res.string.export, "export") {
                             expanded = false
-                            menu.onExportCSV()
+                            session.onExport()
                         }
                         if (session.canArchive) {
                             MenuItem(Res.string.archive, "action_archive_habit") {

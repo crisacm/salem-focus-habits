@@ -53,7 +53,8 @@ class ShowHabitCallbacks(
  * platform gives it the [Hooks] for what only it can do (popups, other screens, sharing, closing) and calls
  * [attach] and [detach] while the screen is shown, so the state follows the commands that change the habit
  * (for example Archive turns into Unarchive). [theme] is read on every refresh; [scope] must run on the main
- * thread, because the state is read by the composition.
+ * thread, because the state is read by the composition. [developerOptions] shows Randomize in the menu, and
+ * [exportOverride] replaces Export on a platform that cannot share the file.
  */
 class HabitDetailSession(
     private val habit: Habit,
@@ -64,7 +65,9 @@ class HabitDetailSession(
     system: ShowHabitMenuPresenter.System,
     private val theme: () -> Theme,
     private val hooks: Hooks,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    developerOptions: Boolean = preferences.isDeveloper,
+    private val exportOverride: (() -> Unit)? = null
 ) : CommandRunner.Listener, ShowHabitPresenter.Screen, ShowHabitMenuPresenter.Screen {
 
     /** What the session asks of the platform. */
@@ -99,7 +102,7 @@ class HabitDetailSession(
         private set
     var canUnarchive by mutableStateOf(false)
         private set
-    val isDeveloper = preferences.isDeveloper
+    val isDeveloper = developerOptions
 
     private val presenter = ShowHabitPresenter(
         commandRunner = commandRunner,
@@ -125,6 +128,12 @@ class HabitDetailSession(
         onBoolSpinner = presenter.barCardPresenter::onBoolSpinnerPosition,
         onNumericalSpinner = presenter.barCardPresenter::onNumericalSpinnerPosition
     )
+
+    /** The Export item of the menu: [exportOverride] when the platform cannot share a file, the presenter otherwise. */
+    fun onExport() {
+        val override = exportOverride
+        if (override != null) override() else menu.onExportCSV()
+    }
 
     /** Follows the commands that change the habit and shows its current state. */
     fun attach() {

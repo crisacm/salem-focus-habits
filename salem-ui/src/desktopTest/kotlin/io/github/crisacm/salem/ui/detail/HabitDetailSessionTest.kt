@@ -155,4 +155,27 @@ class HabitDetailSessionTest : BaseUiTest() {
         )
         assertTrue(developer.isDeveloper)
     }
+
+    @Test
+    fun developerOptionsCanBeGivenApartFromThePreferences() {
+        val developer = HabitDetailSession(
+            habit, habitList, preferences, commandRunner, taskRunner, mock<ShowHabitMenuPresenter.System>(),
+            { LightTheme() }, hooks, CoroutineScope(UnconfinedTestDispatcher()), developerOptions = true
+        )
+        assertTrue(developer.isDeveloper)
+        assertFalse(preferences.isDeveloper)
+    }
+
+    @Test
+    fun anExportOverrideReplacesTheExportOfThePresenter() {
+        var exports = 0
+        val overridden = HabitDetailSession(
+            habit, habitList, preferences, commandRunner, taskRunner, mock<ShowHabitMenuPresenter.System>(),
+            { LightTheme() }, hooks, CoroutineScope(UnconfinedTestDispatcher()), exportOverride = { exports++ }
+        )
+        overridden.onExport()
+        assertEquals(1, exports)
+        assertNull(hooks.sentFile)
+        assertTrue(hooks.messages.isEmpty())
+    }
 }

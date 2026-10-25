@@ -44,6 +44,7 @@ import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
+import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
 import io.github.crisacm.salem.ui.list.ListHabitsMenu
@@ -80,6 +81,9 @@ class IosHabitsGraph private constructor(
     val habitList: HabitList,
     val logging: Logging,
     val taskRunner: TaskRunner,
+    val commandRunner: CommandRunner,
+    val dirFinder: IosDirFinder,
+    val navigation: DetailNavigation,
     val midnightTimer: MidnightTimer,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
@@ -117,10 +121,12 @@ class IosHabitsGraph private constructor(
             val midnightTimer = MidnightTimer(logging, preferences, Dispatchers.Main)
             val themeSwitcher = IosThemeSwitcher(preferences)
             val overlays = ListOverlays()
-            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays)
+            val navigation = DetailNavigation()
+            val dirFinder = IosDirFinder(fileOpener)
+            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays, navigation)
             val behavior = ListHabitsBehavior(
                 habitList,
-                IosDirFinder(fileOpener),
+                dirFinder,
                 taskRunner,
                 screen,
                 commandRunner,
@@ -142,7 +148,8 @@ class IosHabitsGraph private constructor(
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, midnightTimer, themeSwitcher, screen, overlays,
+                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, midnightTimer,
+                themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior
             )
