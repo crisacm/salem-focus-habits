@@ -30,12 +30,15 @@ import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
+import io.github.crisacm.salem.ui.AppScreen
+import io.github.crisacm.salem.ui.ScreenNavigation
+import io.github.crisacm.salem.ui.about.SalemLinks
 import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.list.ListOverlays
 
 /**
  * The actions of the habit list that need another screen. The dialogs, the popups and the editor are opened through
- * [overlays]; the others (detail, settings, about, help, sharing, intro) arrive with their screens, so they only leave a
+ * [overlays]; the others (settings, sharing, intro) arrive with their screens, so they only leave a
  * line in the log. [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was
  * applied again.
  */
@@ -43,7 +46,9 @@ class IosListScreen(
     private val logger: Logger,
     private val themeSwitcher: ThemeSwitcher,
     private val overlays: ListOverlays,
-    private val navigation: DetailNavigation
+    private val navigation: DetailNavigation,
+    private val screens: ScreenNavigation,
+    private val openUrl: (String) -> Unit
 ) : ListHabitsBehavior.Screen,
     ListHabitsMenuBehavior.Screen,
     ListHabitsSelectionMenuBehavior.Screen {
@@ -87,9 +92,9 @@ class IosListScreen(
         themeVersion++
     }
 
-    override fun showAboutScreen() = todo("about")
+    override fun showAboutScreen() = screens.open(AppScreen.ABOUT)
 
-    override fun showFAQScreen() = todo("help")
+    override fun showFAQScreen() = openUrl(SalemLinks.HELP)
 
     override fun showSettingsScreen() = todo("settings")
 

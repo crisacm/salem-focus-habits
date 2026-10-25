@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.about
+package io.github.crisacm.salem.ui.about
 
 /*
  * Developers who contributed at least 100 lines of code or 5 commits, sorted by the number of
@@ -42,3 +42,6 @@ val aboutDevelopers = listOf(
     "Nikhil (@regularcoder)",
     "JanetQC"
 )
+
+/** The people who translated the app into [language], sorted by name. */
+class TranslatorLanguage(val language: String, val names: List<String>)

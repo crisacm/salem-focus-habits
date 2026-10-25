@@ -40,6 +40,8 @@ import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
+import io.github.crisacm.salem.ui.AppScreen
+import io.github.crisacm.salem.ui.about.AboutRoute
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.detail.HabitDetailRoute
@@ -123,11 +125,12 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     SalemTheme(theme) {
         Box(Modifier.fillMaxSize()) {
             val detailOpen = graph.navigation.habit != null
+            val screenOpen = graph.screens.current != null
             ListHabitsContent(
                 model,
                 theme,
                 // The list stays under the detail: hide it from VoiceOver while the detail is open
-                modifier = Modifier.hiddenWhileOverlay(graph.overlays).then(if (detailOpen) Modifier.clearAndSetSemantics { } else Modifier)
+                modifier = Modifier.hiddenWhileOverlay(graph.overlays).then(if (detailOpen || screenOpen) Modifier.clearAndSetSemantics { } else Modifier)
             )
             ListOverlayHost(
                 overlays = graph.overlays,
@@ -152,6 +155,14 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     decimalSeparator = remember { iosDecimalSeparator() },
                     onClose = graph.navigation::close,
                     developer = Platform.isDebugBinary
+                )
+            }
+            if (graph.screens.current == AppScreen.ABOUT) {
+                AboutRoute(
+                    versionName = remember { iosVersionName() },
+                    preferences = graph.preferences,
+                    openUrl = ::openUrl,
+                    onBack = { graph.screens.close(AppScreen.ABOUT) }
                 )
             }
         }

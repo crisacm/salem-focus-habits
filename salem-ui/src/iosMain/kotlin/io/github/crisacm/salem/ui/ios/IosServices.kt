@@ -24,7 +24,18 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresente
 import io.github.crisacm.salem.platform.io.FileOpener
 import io.github.crisacm.salem.platform.io.UserFile
 import platform.Foundation.NSBundle
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
 import platform.UIKit.UIDevice
+
+/** The version of the app as the user sees it, from the Info.plist. */
+fun iosVersionName(): String = NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "unknown"
+
+/** Opens [url] in the browser (or the app that handles it); a malformed address does nothing. */
+fun openUrl(url: String) {
+    val target = NSURL.URLWithString(url) ?: return
+    UIApplication.sharedApplication.openURL(target, emptyMap<Any?, Any?>(), null)
+}
 
 /** The report of an iOS app is its version and the device; there is no log file to dump yet. */
 class IosBugReporter : ListHabitsBehavior.BugReporter {

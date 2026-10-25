@@ -29,8 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import io.github.crisacm.salem.R
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.navigate_up
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +42,7 @@ fun SalemTopAppBar(title: String, onBack: () -> Unit) {
             IconButton(onClick = onBack) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.navigate_up)
+                    contentDescription = stringResource(Res.string.navigate_up)
                 )
             }
         },

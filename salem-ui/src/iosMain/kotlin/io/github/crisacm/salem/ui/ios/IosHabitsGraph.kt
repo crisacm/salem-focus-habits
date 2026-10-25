@@ -44,6 +44,7 @@ import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
+import io.github.crisacm.salem.ui.ScreenNavigation
 import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
@@ -84,6 +85,7 @@ class IosHabitsGraph private constructor(
     val commandRunner: CommandRunner,
     val dirFinder: IosDirFinder,
     val navigation: DetailNavigation,
+    val screens: ScreenNavigation,
     val midnightTimer: MidnightTimer,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
@@ -122,8 +124,9 @@ class IosHabitsGraph private constructor(
             val themeSwitcher = IosThemeSwitcher(preferences)
             val overlays = ListOverlays()
             val navigation = DetailNavigation()
+            val screens = ScreenNavigation()
             val dirFinder = IosDirFinder(fileOpener)
-            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays, navigation)
+            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays, navigation, screens, ::openUrl)
             val behavior = ListHabitsBehavior(
                 habitList,
                 dirFinder,
@@ -148,7 +151,7 @@ class IosHabitsGraph private constructor(
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, midnightTimer,
+                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer,
                 themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior
