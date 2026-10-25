@@ -23,7 +23,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -48,11 +47,10 @@ fun AboutRoute(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val unlocked = stringResource(Res.string.you_are_now_a_developer)
-    val currentOnBack = rememberUpdatedState(onBack)
-    BackHandler { currentOnBack.value() }
+    BackHandler(onBack = onBack)
     AboutContent(
         versionName = versionName,
-        onBack = { currentOnBack.value() },
+        onBack = onBack,
         onVersionTap = {
             if (countdown.onTap()) {
                 preferences.isDeveloper = true

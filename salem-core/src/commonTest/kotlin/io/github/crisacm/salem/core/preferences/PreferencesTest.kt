@@ -155,10 +155,26 @@ class PreferencesTest : BaseUnitTest() {
         assertTrue(prefs.isMidnightDelayEnabled)
     }
 
+    private fun localeWeekday() =
+        DayOfWeek.entries.first { it.daysSinceSunday + 1 == getFirstWeekdayNumberAccordingToLocale() }
+
     @Test
     fun testFirstWeekdayFollowsTheLocaleUntilItIsSet() {
-        val localeDay = DayOfWeek.entries.first { it.daysSinceSunday + 1 == getFirstWeekdayNumberAccordingToLocale() }
-        assertEquals(localeDay, prefs.firstWeekday)
+        assertEquals(localeWeekday(), prefs.firstWeekday)
+        // A chosen day replaces the locale, and removing it brings the locale back
+        val other = DayOfWeek.entries.first { it != localeWeekday() }
+        prefs.firstWeekday = other
+        assertEquals(other, prefs.firstWeekday)
+        storage.remove("pref_first_weekday")
+        assertEquals(localeWeekday(), prefs.firstWeekday)
+    }
+
+    @Test
+    fun testFirstWeekdayFallsBackToTheLocaleOnAStoredValueThatMakesNoSense() {
+        for (stored in listOf("", "0", "8", "-1", "-5", "abc", "2.5")) {
+            storage.putString("pref_first_weekday", stored)
+            assertEquals(localeWeekday(), prefs.firstWeekday, "stored '$stored'")
+        }
     }
 
     @Test

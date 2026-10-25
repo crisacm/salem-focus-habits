@@ -60,16 +60,16 @@ private val INTERFACE_SWITCHES = listOf(
 /**
  * The Settings screen: the interface rows, the help and rate links, About and the developer switch. A platform adds its
  * own rows in [interfaceExtras] (after the switches, before the first day of the week) and [middleSections] (between
- * the interface and the links). [weekdayNames] start at Saturday. Animations are not shown when [showAnimations] is off.
- * [showDeveloper] shows the developer switch. Back calls [onBack].
+ * the interface and the links). [weekdayNames] start at Saturday. The switch that turns the animations off is only
+ * shown when [showAnimationsSwitch] is on. The developer section is shown while the developer mode is on. Back calls
+ * [onBack].
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SettingsContent(
     state: SettingsState,
     weekdayNames: List<String>,
-    showDeveloper: Boolean,
-    showAnimations: Boolean,
+    showAnimationsSwitch: Boolean,
     onBack: () -> Unit,
     onHelp: () -> Unit,
     onRate: () -> Unit,
@@ -89,7 +89,7 @@ fun SettingsContent(
         ) {
             CategoryHeader(stringResource(Res.string.interface_preferences))
             INTERFACE_SWITCHES
-                .filter { showAnimations || it != SettingsSwitch.DISABLE_ANIMATION }
+                .filter { showAnimationsSwitch || it != SettingsSwitch.DISABLE_ANIMATION }
                 .forEach { SettingsSwitchRow(state, it) }
             interfaceExtras()
             FirstWeekdayRow(state, weekdayNames)
@@ -98,7 +98,7 @@ fun SettingsContent(
             ClickRow(stringResource(Res.string.help), onClick = onHelp)
             ClickRow(stringResource(Res.string.pref_rate_this_app), onClick = onRate)
             ClickRow(stringResource(Res.string.about), onClick = onAbout)
-            if (showDeveloper) {
+            if (state.isOn(SettingsSwitch.DEVELOPER)) {
                 CategoryHeader(stringResource(Res.string.development))
                 SettingsSwitchRow(state, SettingsSwitch.DEVELOPER)
             }

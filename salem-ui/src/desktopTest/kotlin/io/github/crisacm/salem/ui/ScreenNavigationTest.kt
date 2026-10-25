@@ -72,4 +72,14 @@ class ScreenNavigationTest {
         navigation.close(AppScreen.ABOUT)
         assertNull(navigation.current)
     }
+
+    @Test
+    fun openingAScreenThatIsBelowMovesItToTheTop() {
+        val navigation = ScreenNavigation()
+        navigation.open(AppScreen.ABOUT)
+        navigation.open(AppScreen.INTRO)
+        navigation.open(AppScreen.ABOUT)
+        assertEquals(AppScreen.ABOUT, navigation.current)
+        assertEquals(listOf(AppScreen.INTRO, AppScreen.ABOUT), navigation.openScreens)
+    }
 }

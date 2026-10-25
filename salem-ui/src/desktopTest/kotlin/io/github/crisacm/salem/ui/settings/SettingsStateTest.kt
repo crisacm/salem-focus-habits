@@ -92,4 +92,14 @@ class SettingsStateTest {
         assertEquals(DayOfWeek.MONDAY, state.firstWeekday)
         assertEquals("2", storage.getString("pref_first_weekday", ""))
     }
+
+    @Test
+    fun refreshReadsWhatChangedBehindItsBack() {
+        assertFalse(state.isOn(SettingsSwitch.DEVELOPER))
+        preferences.isDeveloper = true
+        preferences.firstWeekday = DayOfWeek.WEDNESDAY
+        state.refresh()
+        assertTrue(state.isOn(SettingsSwitch.DEVELOPER))
+        assertEquals(DayOfWeek.WEDNESDAY, state.firstWeekday)
+    }
 }

@@ -53,7 +53,6 @@ class SettingsContentTest {
     private val names = listOf("Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 
     private fun androidx.compose.ui.test.ComposeUiTest.showSettings(
-        developer: Boolean = false,
         animations: Boolean = true,
         extras: Boolean = false
     ) {
@@ -67,8 +66,7 @@ class SettingsContentTest {
                 SettingsContent(
                     state = state,
                     weekdayNames = names,
-                    showDeveloper = developer,
-                    showAnimations = animations,
+                    showAnimationsSwitch = animations,
                     onBack = { calls += "back" },
                     onHelp = { calls += "help" },
                     onRate = { calls += "rate" },
@@ -112,16 +110,20 @@ class SettingsContentTest {
     }
 
     @Test
-    fun theDeveloperSwitchFollowsTheFlag() = runComposeUiTest {
-        showSettings(developer = false)
+    fun theDeveloperSwitchIsHiddenUntilTheDeveloperModeIsOn() = runComposeUiTest {
+        showSettings()
         onNodeWithText("Enable developer mode").assertDoesNotExist()
     }
 
     @Test
-    fun theDeveloperSwitchWorksWhenShown() = runComposeUiTest {
-        showSettings(developer = true)
+    fun turningTheDeveloperModeOffHidesItsSection() = runComposeUiTest {
+        preferences.isDeveloper = true
+        showSettings()
+        onNodeWithText("Development").performScrollTo().assertIsDisplayed()
         onNodeWithText("Enable developer mode").performScrollTo().performClick()
-        assertTrue(preferences.isDeveloper)
+        assertFalse(preferences.isDeveloper)
+        onNodeWithText("Enable developer mode").assertDoesNotExist()
+        onNodeWithText("Development").assertDoesNotExist()
     }
 
     @Test

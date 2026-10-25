@@ -29,7 +29,7 @@ class ScreenNavigation {
     private val stack = mutableStateListOf<AppScreen>()
 
     /** Every screen open, the one on top last. */
-    val open: List<AppScreen> get() = stack.toList()
+    val openScreens: List<AppScreen> get() = stack.toList()
 
     /** The screen on top, if any. */
     val current: AppScreen? get() = stack.lastOrNull()

@@ -35,3 +35,7 @@ fun firstWeekdaySummary(dayNames: List<String>, sundayBasedWeekday: Int) =
 /** The day for a stored Sunday-based number ("1" is Sunday, "7" is Saturday). */
 fun weekdayFromNumber(number: String): DayOfWeek =
     DayOfWeek.entries.first { it.daysSinceSunday + 1 == number.toInt() }
+
+/** The names of the seven days starting at Saturday, which is the order of [firstWeekdayOptions]. */
+fun weekdayNamesFromSaturday(nameOf: (DayOfWeek) -> String): List<String> =
+    (listOf(DayOfWeek.SATURDAY) + DayOfWeek.entries.filter { it != DayOfWeek.SATURDAY }).map(nameOf)

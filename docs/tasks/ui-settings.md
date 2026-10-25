@@ -16,13 +16,13 @@ Haiku `explorer` brief on Settings: rows, keys, `RESULT_*` contract, the storage
 
 ## Incertidumbre
 - The first weekday still does not apply live on Android (only at process start), as before. On iOS the change applies at once (`setFirstWeekday`, header and rows refresh).
-- Android writes now go through the setters, so the listeners fire twice for the four bridged keys (setter, then the storage bridge calls it again). Harmless, not measured.
+- Android writes now go through the setters, and `SharedPreferencesStorage` reported them again; `EchoFilter` stops the bridge from calling the setter for a change the app wrote itself (found by the review, see below). Not measured on a device.
 - iOS pure black, midnight delay, unknown marks, skip and reverse order apply through `onSettingsChanged` (theme, today, first weekday, header, list refresh); not seen on the simulator.
 
 ## Checklist
 - [x] TASK-1: `PreferencesTest` for `firstWeekday` — RED observed (`'val' cannot be reassigned`), then the setter
-- [x] TASK-2: `SettingsStateTest` (5), `SettingsModelTest` (3), `SettingsContentTest` (9), then the code
-- [x] TASK-3: Android host and sections; `SettingsModelTest` of Android kept as `SafPathsTest`
+- [x] TASK-2: `SettingsStateTest` (6), `WeekdayOptionsTest` (5), `SettingsContentTest` (9), then the code
+- [x] TASK-3: Android host and sections; the SAF path test of Android kept as `SafPathsTest`
 - [x] TASK-4: `ScreenNavigationTest` (stack) and the iOS layer
 - [x] TASK-5: docs and changelog
 
@@ -31,3 +31,6 @@ Stacked PRs 5a to 5c. 5a is in `develop` (#69); the Intro is in #71 (`feat/ui-ab
 
 ## Evidencia
 See the verification run in the PR. Not run: the simulator, any emulator, the instrumented tests. To check by hand: every switch and the first day of the week on Android (and that the widgets, backups, CSV, import, bug report, repair, notification settings and the folder picker still work from Settings), Settings from the iOS menu with each switch (dark mode with pure black, reverse order in the header, skip and unknown marks in the cells, first day in the history), About from Settings and back, the back gesture.
+
+## Revisión (rdd-full, 4 lenses on `ad45328..c833357`)
+Fixed: `updateTranslators` read its header from a file that moved (now a literal); the bridge fired the listeners twice for four keys (`EchoFilter` + test); `Preferences.firstWeekday` threw on a stored value that makes no sense (falls back to the locale, test red first); the developer section is read from `SettingsState` (observable, `refresh()` on resume and when a screen above closes); naming and texts (`showAnimationsSwitch`, `ScreenNavigation.openScreens`, `WeekdayOptions.kt`, `AboutRouteTest`, KDocs, `AGENTS.md`, stale `lint-baseline.xml` entries). Left in `docs/PENDING.md`: a change of the first weekday does not recompute the weekly numerical habits already cached, and on Android it is applied at the next launch; the iOS back handlers with stacked layers and taps through the empty area of a layer were not checked on the simulator; `openUrl` on iOS gives no message when nothing opens the link.

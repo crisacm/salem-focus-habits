@@ -23,7 +23,7 @@ import io.github.crisacm.salem.platform.time.DayOfWeek
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class SettingsModelTest {
+class WeekdayOptionsTest {
     private val names = listOf("Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 
     @Test
@@ -50,5 +50,14 @@ class SettingsModelTest {
     @Test
     fun weekdayOptionsAreTruncatedWhenNamesAreMissing() {
         assertEquals(2, firstWeekdayOptions(names.take(2)).size)
+    }
+
+    @Test
+    fun namesStartAtSaturdayWhateverTheFormatter() {
+        val all = weekdayNamesFromSaturday { it.name }
+        assertEquals(
+            listOf("SATURDAY", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"),
+            all
+        )
     }
 }

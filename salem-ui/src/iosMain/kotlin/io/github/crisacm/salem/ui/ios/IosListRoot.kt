@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import io.github.crisacm.salem.platform.notifications.AppLifecycleObserver
 import io.github.crisacm.salem.platform.time.AppleLocalDateFormatter
-import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
@@ -54,6 +53,7 @@ import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
 import io.github.crisacm.salem.ui.settings.SettingsContent
 import io.github.crisacm.salem.ui.settings.SettingsState
+import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -139,7 +139,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     SalemTheme(theme) {
         Box(Modifier.fillMaxSize()) {
             val detailOpen = graph.navigation.habit != null
-            val screenOpen = graph.screens.open.isNotEmpty()
+            val screenOpen = graph.screens.openScreens.isNotEmpty()
             ListHabitsContent(
                 model,
                 theme,
@@ -171,7 +171,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     developer = Platform.isDebugBinary
                 )
             }
-            val openScreens = graph.screens.open
+            val openScreens = graph.screens.openScreens
             openScreens.forEachIndexed { index, screen ->
                 key(screen) {
                     // Only the screen on top is read by VoiceOver; the ones below it stay composed to keep their state
@@ -186,14 +186,15 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                             AppScreen.INTRO -> IntroContent(onFinish = { graph.screens.close(AppScreen.INTRO) })
                             AppScreen.SETTINGS -> {
                                 val dateFormatter = remember { AppleLocalDateFormatter() }
-                                val weekdayNames = remember { DayOfWeek.entries.let { days -> (listOf(DayOfWeek.SATURDAY) + days.dropLast(1)).map { dateFormatter.longWeekdayName(it) } } }
+                                val weekdayNames = remember { weekdayNamesFromSaturday(dateFormatter::longWeekdayName) }
                                 val state = remember(model) { SettingsState(graph.preferences, onSettingsChanged) }
+                                // About may have turned the developer mode on while this screen was below it
+                                LaunchedEffect(openScreens.size) { state.refresh() }
                                 SettingsContent(
                                     state = state,
                                     weekdayNames = weekdayNames,
-                                    showDeveloper = graph.preferences.isDeveloper,
-                                    // Neither the confetti nor the sticky notifications exist on iOS yet
-                                    showAnimations = false,
+                                    // There is no confetti on iOS yet
+                                    showAnimationsSwitch = false,
                                     onBack = { graph.screens.close(AppScreen.SETTINGS) },
                                     onHelp = { openUrl(SalemLinks.HELP) },
                                     onRate = { openUrl(SalemLinks.RATE) },

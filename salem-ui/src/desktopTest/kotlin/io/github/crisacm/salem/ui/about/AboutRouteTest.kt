@@ -35,7 +35,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class, ExperimentalComposeUiApi::class)
-class AboutContentTest {
+class AboutRouteTest {
     private val preferences = Preferences(MemoryStorage())
     private val opened = mutableListOf<String>()
     private var backs = 0

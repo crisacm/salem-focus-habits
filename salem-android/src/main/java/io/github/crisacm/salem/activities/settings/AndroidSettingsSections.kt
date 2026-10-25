@@ -55,8 +55,8 @@ class AndroidSettingsActions(
 
 /** The widget opacity, which only the Android widgets use. It goes after the shared switches of the interface. */
 @Composable
-fun WidgetOpacityRow(prefs: SharedPreferences) {
-    val opacity by rememberPrefString(prefs, PREF_WIDGET_OPACITY, "255")
+fun WidgetOpacityRow(sharedPrefs: SharedPreferences) {
+    val opacity by rememberPrefString(sharedPrefs, PREF_WIDGET_OPACITY, "255")
     val opacityLabels = stringArrayResource(R.array.widget_opacity_entries)
     val opacityValues = stringArrayResource(R.array.widget_opacity_values)
     ChoiceRow(
@@ -64,13 +64,13 @@ fun WidgetOpacityRow(prefs: SharedPreferences) {
         summary = stringResource(R.string.widget_opacity_description),
         options = opacityValues.zip(opacityLabels) { value, label -> ChoiceOption(value, label) },
         selected = opacity,
-        onSelect = { prefs.edit().putString(PREF_WIDGET_OPACITY, it).apply() }
+        onSelect = { sharedPrefs.edit().putString(PREF_WIDGET_OPACITY, it).apply() }
     )
 }
 
 /** The reminder, database and troubleshooting sections: notifications, backups and the files of the device. */
 @Composable
-fun AndroidSettingsSections(state: SettingsState, prefs: SharedPreferences, actions: AndroidSettingsActions) {
+fun AndroidSettingsSections(state: SettingsState, sharedPrefs: SharedPreferences, actions: AndroidSettingsActions) {
     CategoryHeader(stringResource(R.string.reminder))
     SettingsSwitchRow(state, SettingsSwitch.STICKY_NOTIFICATIONS)
     ClickRow(
@@ -92,7 +92,7 @@ fun AndroidSettingsSections(state: SettingsState, prefs: SharedPreferences, acti
         stringResource(R.string.import_data),
         stringResource(R.string.import_data_summary)
     ) { actions.onResult(RESULT_IMPORT_DATA) }
-    val folder by rememberPrefString(prefs, PREF_PUBLIC_BACKUP_FOLDER)
+    val folder by rememberPrefString(sharedPrefs, PREF_PUBLIC_BACKUP_FOLDER)
     ClickRow(
         stringResource(R.string.select_public_backup_folder),
         folder?.let { publicFolderDescription(it) } ?: stringResource(R.string.no_public_backup_folder_selected),

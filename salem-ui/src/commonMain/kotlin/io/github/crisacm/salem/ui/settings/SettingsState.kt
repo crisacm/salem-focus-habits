@@ -60,16 +60,24 @@ enum class SettingsSwitch(val title: StringResource, val summary: StringResource
 
 /**
  * What the Settings screen shows and changes. Every change goes through the setters of [preferences] (so its
- * listeners hear it, whatever the platform storage does) and then calls [onChanged], which the platform uses to apply
- * the setting to what is on screen.
+ * listeners hear it, whatever the platform storage does) and then calls [onChanged], which a platform uses to apply
+ * the setting to what is already on screen (iOS does; Android reads its settings again when it opens each screen).
  */
 class SettingsState(private val preferences: Preferences, private val onChanged: () -> Unit = {}) {
-    private val switches = mutableStateMapOf<SettingsSwitch, Boolean>().apply {
-        SettingsSwitch.entries.forEach { put(it, read(it)) }
-    }
+    private val switches = mutableStateMapOf<SettingsSwitch, Boolean>()
 
     var firstWeekday by mutableStateOf(preferences.firstWeekday)
         private set
+
+    init {
+        refresh()
+    }
+
+    /** Reads everything again, for what other screens may have changed since (the developer mode, for one). */
+    fun refresh() {
+        SettingsSwitch.entries.forEach { switches[it] = read(it) }
+        firstWeekday = preferences.firstWeekday
+    }
 
     fun isOn(switch: SettingsSwitch): Boolean = switches.getValue(switch)
 
