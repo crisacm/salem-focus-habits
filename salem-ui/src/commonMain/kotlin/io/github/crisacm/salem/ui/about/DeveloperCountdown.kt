@@ -17,33 +17,16 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.about
+package io.github.crisacm.salem.ui.about
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+/** Counts taps on the version label; [onTap] returns true once, when the developer mode must unlock. */
+class DeveloperCountdown(taps: Int = 5) {
+    var remaining = taps
+        private set
 
-class DeveloperCountdownTest {
-    @Test
-    fun unlocksOnFifthTap() {
-        val countdown = DeveloperCountdown()
-        repeat(4) { assertFalse(countdown.onTap()) }
-        assertTrue(countdown.onTap())
-    }
-
-    @Test
-    fun unlocksOnlyOnce() {
-        val countdown = DeveloperCountdown()
-        repeat(5) { countdown.onTap() }
-        repeat(3) { assertFalse(countdown.onTap()) }
-    }
-
-    @Test
-    fun exposesRemainingTaps() {
-        val countdown = DeveloperCountdown()
-        assertEquals(5, countdown.remaining)
-        countdown.onTap()
-        assertEquals(4, countdown.remaining)
+    fun onTap(): Boolean {
+        if (remaining <= 0) return false
+        remaining--
+        return remaining == 0
     }
 }

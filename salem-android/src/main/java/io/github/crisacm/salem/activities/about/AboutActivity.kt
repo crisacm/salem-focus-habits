@@ -19,14 +19,17 @@
 
 package io.github.crisacm.salem.activities.about
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import io.github.crisacm.salem.BuildConfig
 import io.github.crisacm.salem.HabitsApplication
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
+import io.github.crisacm.salem.ui.about.AboutRoute
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.utils.startActivitySafely
 
 /**
  * Activity that allows the user to see information about the app itself.
@@ -36,26 +39,18 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val app = application as HabitsApplication
-        val screen = AboutScreen(
-            this,
-            app.component.intentFactory,
-            app.component.preferences
-        )
-        val themeSwitcher = AndroidThemeSwitcher(this, app.component.preferences)
+        val preferences = app.component.preferences
+        val themeSwitcher = AndroidThemeSwitcher(this, preferences)
         themeSwitcher.apply()
-        val version = getString(R.string.version_n, BuildConfig.VERSION_NAME)
-        val actions = AboutActions(
-            onBack = { finish() },
-            onVersionTap = screen::onPressDeveloperCountdown,
-            onRate = screen::showRateAppWebsite,
-            onFeedback = screen::showSendFeedbackScreen,
-            onTranslate = screen::showTranslationWebsite,
-            onSource = screen::showSourceCodeWebsite,
-            onPrivacy = screen::showPrivacyPolicyWebsite,
-            onContributors = screen::showCodeContributorsWebsite
-        )
         setContent {
-            SalemTheme(themeSwitcher.currentTheme) { AboutContent(version, actions) }
+            SalemTheme(themeSwitcher.currentTheme) {
+                AboutRoute(
+                    versionName = BuildConfig.VERSION_NAME,
+                    preferences = preferences,
+                    openUrl = { startActivitySafely(Intent(Intent.ACTION_VIEW, Uri.parse(it))) },
+                    onBack = { finish() }
+                )
+            }
         }
     }
 }

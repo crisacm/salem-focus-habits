@@ -18,6 +18,7 @@ attribution.
 
 ### Added
 
+- Show the About screen on iOS (menu About, and Help opens the project page): the screen moves to `salem-ui` and is shared with Android, with the app version, the links, the developers and the translators (the list is generated as Kotlin by `updateTranslators` and drawn with Compose instead of an XML layout); five taps on the version turn on the developer mode and a message says so (a snackbar instead of a toast).
 - Open the habit detail from the iOS habit list: tapping a habit shows its screen with the cards, the six charts, the history editor and the popups of each day, and the menu with Edit, Archive/Unarchive and Delete (Export says that it is not available on iOS yet). Back closes the topmost layer first.
 - Move the history editor (the calendar that opens from the History card of the habit detail) to `salem-ui`, with a layer that shows it over the detail screen so the popup of a day opens above it; the Android dialog draws the shared content, and the Android-only chart host is gone.
 - Move the habit detail screen to `salem-ui` (Compose Multiplatform), shared with the future iOS screen: the top bar and its menu, the eight cards and the six charts are the same code on both platforms, and `ShowHabitActivity` only hosts them. On Android the charts of the detail are now drawn with Noto Sans and the shared text placement, and the Edit icon is the one of Material.

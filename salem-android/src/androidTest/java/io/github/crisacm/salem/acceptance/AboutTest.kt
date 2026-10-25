@@ -28,7 +28,6 @@ import androidx.test.filters.LargeTest
 import io.github.crisacm.salem.BaseUserInterfaceTest
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.clickComposeText
 import io.github.crisacm.salem.acceptance.steps.CommonSteps.launchApp
-import io.github.crisacm.salem.acceptance.steps.CommonSteps.verifyDisplaysText
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.ABOUT
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.MenuItem.SETTINGS
 import io.github.crisacm.salem.acceptance.steps.ListHabitsSteps.clickMenu
@@ -53,7 +52,7 @@ class AboutTest : BaseUserInterfaceTest() {
         verifyDisplaysComposeText("Salem")
         verifyDisplaysComposeText("Rate this app on Google Play")
         verifyDisplaysComposeText("Developers")
-        verifyDisplaysText("Translators")
+        verifyDisplaysComposeText("Translators")
     }
 
     @Test
@@ -61,6 +60,6 @@ class AboutTest : BaseUserInterfaceTest() {
         launchApp()
         clickMenu(SETTINGS)
         clickComposeText("About")
-        verifyDisplaysText("Translators")
+        verifyDisplaysComposeText("Translators")
     }
 }

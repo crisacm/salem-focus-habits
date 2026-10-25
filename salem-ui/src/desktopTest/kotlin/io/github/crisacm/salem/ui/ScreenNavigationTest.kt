@@ -17,16 +17,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.about
+package io.github.crisacm.salem.ui
 
-/** Counts taps on the version label; [onTap] returns true once, when the developer mode must unlock. */
-class DeveloperCountdown(taps: Int = 5) {
-    var remaining = taps
-        private set
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
-    fun onTap(): Boolean {
-        if (remaining <= 0) return false
-        remaining--
-        return remaining == 0
+class ScreenNavigationTest {
+    @Test
+    fun opensAndClosesAScreen() {
+        val navigation = ScreenNavigation()
+        assertNull(navigation.current)
+        navigation.open(AppScreen.ABOUT)
+        assertEquals(AppScreen.ABOUT, navigation.current)
+        navigation.close(AppScreen.ABOUT)
+        assertNull(navigation.current)
     }
 }
