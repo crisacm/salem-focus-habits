@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.common.dialogs
+package io.github.crisacm.salem.ui.dialogs
 
 enum class FrequencyMode { EVERY_DAY, EVERY_X_DAYS, X_TIMES_PER_WEEK, X_TIMES_PER_MONTH, X_TIMES_IN_Y_DAYS }
 
