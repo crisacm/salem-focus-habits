@@ -4588,16 +4588,6 @@
 
 
 
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `AndroidDataView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    override fun onTouchEvent(event: MotionEvent) = detector.onTouchEvent(event)"
-        errorLine2="                 ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/io/github/crisacm/salem/platform/gui/AndroidDataView.kt"
-            line="47"
-            column="18"/>
-    </issue>
 
 
 

@@ -65,4 +65,11 @@ class TargetChartTest {
         val chart = chart(theme = WidgetTheme(), values = listOf(1.0, 3.0, 12.0), targets = listOf(1.0, 5.0, 20.0))
         assertRenders(300, chart.height.toInt(), "$base/themeWidget.png", chart)
     }
+
+    @Test
+    fun testDrawWidgetThemeWithStretchedRows() = runTest {
+        val chart = chart(theme = WidgetTheme(), values = listOf(1.0, 3.0, 12.0), targets = listOf(1.0, 5.0, 20.0))
+        chart.stretchRows = true
+        assertRenders(300, 150, "$base/themeWidgetStretched.png", chart)
+    }
 }

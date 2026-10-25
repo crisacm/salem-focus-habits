@@ -22,12 +22,14 @@ package io.github.crisacm.salem.widgets
 import android.app.PendingIntent
 import android.content.Context
 import android.view.View
-import io.github.crisacm.salem.activities.common.views.FrequencyChart
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.core.ui.views.FrequencyChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
 import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
+import java.util.Locale
 
 class FrequencyWidget(
     context: Context,
@@ -47,14 +49,17 @@ class FrequencyWidget(
         widgetView.setTitle(habit.name)
         widgetView.setBackgroundAlpha(preferedBackgroundAlpha)
         if (preferedBackgroundAlpha >= 255) widgetView.setShadowAlpha(0x4f)
-        (widgetView.dataView as FrequencyChart).apply {
-            setFirstWeekday(firstWeekday)
-            setColor(WidgetTheme().color(habit.color).toInt())
-            setIsNumerical(habit.isNumerical)
-            setFrequency(habit.originalEntries.computeWeekdayFrequency(habit.isNumerical))
-        }
+        val theme = WidgetTheme()
+        (widgetView.dataView as CoreWidgetView).view = FrequencyChart(
+            theme = theme,
+            dateFormatter = JavaLocalDateFormatter(Locale.getDefault()),
+            frequency = habit.originalEntries.computeWeekdayFrequency(habit.isNumerical),
+            color = theme.color(habit.color),
+            isNumerical = habit.isNumerical,
+            firstWeekday = firstWeekday
+        )
     }
 
     override fun buildView() =
-        GraphWidgetView(context, FrequencyChart(context))
+        GraphWidgetView(context, CoreWidgetView(context))
 }

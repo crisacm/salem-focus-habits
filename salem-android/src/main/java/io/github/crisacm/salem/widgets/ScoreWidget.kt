@@ -22,12 +22,14 @@ package io.github.crisacm.salem.widgets
 import android.app.PendingIntent
 import android.content.Context
 import android.view.View
-import io.github.crisacm.salem.activities.common.views.ScoreChart
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardPresenter
+import io.github.crisacm.salem.core.ui.views.ScoreChart
 import io.github.crisacm.salem.core.ui.views.WidgetTheme
-import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.widgets.views.GraphWidgetView
+import java.util.Locale
 
 class ScoreWidget(
     context: Context,
@@ -42,25 +44,27 @@ class ScoreWidget(
         pendingIntentFactory.showHabit(habit)
 
     override fun refreshData(view: View) {
+        val theme = WidgetTheme()
         val viewModel = ScoreCardPresenter.buildState(
             habit = habit,
             firstWeekday = prefs.firstWeekdayInt,
             spinnerPosition = prefs.scoreCardSpinnerPosition,
-            theme = WidgetTheme()
+            theme = theme
         )
         val widgetView = view as GraphWidgetView
         widgetView.setBackgroundAlpha(preferedBackgroundAlpha)
         if (preferedBackgroundAlpha >= 255) widgetView.setShadowAlpha(0x4f)
-        (widgetView.dataView as ScoreChart).apply {
-            setIsTransparencyEnabled(true)
-            setBucketSize(viewModel.bucketSize)
-            setColor(WidgetTheme().color(habit.color).toInt())
-            setScores(viewModel.scores)
-        }
+        (widgetView.dataView as CoreWidgetView).view = ScoreChart(
+            theme = theme,
+            dateFormatter = JavaLocalDateFormatter(Locale.getDefault()),
+            scores = viewModel.scores,
+            color = theme.color(habit.color),
+            bucketSize = viewModel.bucketSize
+        )
     }
 
     override fun buildView() =
-        GraphWidgetView(context, ScoreChart(context)).apply {
+        GraphWidgetView(context, CoreWidgetView(context)).apply {
             setTitle(habit.name)
         }
 }
