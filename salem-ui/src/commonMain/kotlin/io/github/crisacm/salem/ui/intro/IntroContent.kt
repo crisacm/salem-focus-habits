@@ -17,9 +17,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.intro
+package io.github.crisacm.salem.ui.intro
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,18 +42,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.crisacm.salem.R
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.done_label
+import io.github.crisacm.salem.ui.resources.intro_next
+import io.github.crisacm.salem.ui.resources.skip_day
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun IntroContent(onFinish: () -> Unit) {
     val pager = IntroPager(introSlides.size)
@@ -81,7 +86,7 @@ fun IntroContent(onFinish: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (pager.showSkip(page)) {
-                IntroButton(stringResource(R.string.skip_day), onFinish)
+                IntroButton(stringResource(Res.string.skip_day), onFinish)
             } else {
                 Box(modifier = Modifier.size(48.dp))
             }
@@ -96,9 +101,9 @@ fun IntroContent(onFinish: () -> Unit) {
                 }
             }
             if (pager.isLast(page)) {
-                IntroButton(stringResource(R.string.done_label), onFinish)
+                IntroButton(stringResource(Res.string.done_label), onFinish)
             } else {
-                IntroButton(stringResource(R.string.intro_next)) {
+                IntroButton(stringResource(Res.string.intro_next)) {
                     scope.launch { pagerState.animateScrollToPage(pager.next(page)) }
                 }
             }

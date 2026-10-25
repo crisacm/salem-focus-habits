@@ -33,4 +33,21 @@ class ScreenNavigationTest {
         navigation.close(AppScreen.ABOUT)
         assertNull(navigation.current)
     }
+
+    @Test
+    fun openingAScreenReplacesTheOneShown() {
+        val navigation = ScreenNavigation()
+        navigation.open(AppScreen.ABOUT)
+        navigation.open(AppScreen.INTRO)
+        assertEquals(AppScreen.INTRO, navigation.current)
+    }
+
+    @Test
+    fun closingAScreenThatWasReplacedKeepsTheCurrentOne() {
+        val navigation = ScreenNavigation()
+        navigation.open(AppScreen.ABOUT)
+        navigation.open(AppScreen.INTRO)
+        navigation.close(AppScreen.ABOUT)
+        assertEquals(AppScreen.INTRO, navigation.current)
+    }
 }

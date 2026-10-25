@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import io.github.crisacm.salem.ui.intro.IntroContent
 
 /**
  * Activity that introduces the app to the user, shown only after the app is

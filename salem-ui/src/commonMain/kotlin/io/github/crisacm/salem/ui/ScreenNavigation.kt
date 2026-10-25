@@ -24,7 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 /** The screens that open above the habit list, besides the habit detail. */
-enum class AppScreen { ABOUT }
+enum class AppScreen { ABOUT, INTRO }
 
 /** The screen shown above the habit list, if any. Opening one replaces the one that was open. */
 class ScreenNavigation {
