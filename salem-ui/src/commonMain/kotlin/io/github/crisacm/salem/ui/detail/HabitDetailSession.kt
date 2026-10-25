@@ -135,14 +135,25 @@ class HabitDetailSession(
         if (override != null) override() else menu.onExportCSV()
     }
 
-    /** Follows the commands that change the habit and shows its current state. */
+    private var attached = false
+
+    /**
+     * Follows the commands that change the habit and shows its current state. Calling it again while attached only
+     * refreshes: the session is registered once, so one [detach] stops it.
+     */
     fun attach() {
-        commandRunner.addListener(this)
+        if (!attached) {
+            commandRunner.addListener(this)
+            attached = true
+        }
         refresh()
     }
 
     fun detach() {
-        commandRunner.removeListener(this)
+        if (attached) {
+            commandRunner.removeListener(this)
+            attached = false
+        }
     }
 
     /** The listener of the date clicks of the history, for a history editor that was opened before a recreation. */
@@ -150,8 +161,11 @@ class HabitDetailSession(
 
     override fun onCommandFinished(command: Command) = refresh()
 
+    /** Builds the state again. Nothing happens while detached, and a refresh queued before [detach] is dropped. */
     override fun refresh() {
+        if (!attached) return
         scope.launch {
+            if (!attached) return@launch
             val built = ShowHabitPresenter.buildState(habit, preferences, theme())
             canArchive = menu.canArchive()
             canUnarchive = menu.canUnarchive()

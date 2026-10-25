@@ -31,9 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -106,6 +108,16 @@ fun HabitDetailRoute(
     DisposableEffect(session) {
         session.attach()
         onDispose { session.detach() }
+    }
+    // The cards keep the theme they were built with: build them again when the kind of theme changes. The kind is the
+    // class because a theme is a new object on every composition.
+    val themeKind = theme::class
+    var shownThemeKind by remember(session) { mutableStateOf(themeKind) }
+    LaunchedEffect(themeKind) {
+        if (themeKind != shownThemeKind) {
+            shownThemeKind = themeKind
+            session.refresh()
+        }
     }
 
     // Composed first, so it is the last one asked: the history editor and the overlays below take back before it

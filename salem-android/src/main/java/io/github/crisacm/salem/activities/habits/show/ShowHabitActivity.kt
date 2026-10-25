@@ -59,6 +59,7 @@ import io.github.crisacm.salem.utils.showSendFileScreen
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import java.util.Locale
 
 /**
@@ -72,6 +73,9 @@ class ShowHabitActivity : AppCompatActivity() {
     private lateinit var habit: Habit
     private lateinit var themeSwitcher: AndroidThemeSwitcher
     private lateinit var widgetUpdater: WidgetUpdater
+
+    // The refreshes of the session run here; leaving the screen cancels the ones that are still queued
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +103,7 @@ class ShowHabitActivity : AppCompatActivity() {
             system = HabitsDirFinder(AndroidDirFinder(this)),
             theme = { themeSwitcher.currentTheme },
             hooks = Hooks(),
-            scope = CoroutineScope(Dispatchers.Main)
+            scope = scope
         )
         setContent {
             SalemTheme {
@@ -126,6 +130,11 @@ class ShowHabitActivity : AppCompatActivity() {
         dismissCurrentDialog()
         session.detach()
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
     }
 
     /** The colour of the top bar: the habit colour or the primary colour, as the old toolbar did. */

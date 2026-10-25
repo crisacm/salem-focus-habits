@@ -30,6 +30,7 @@ import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.ui.BaseUiTest
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Before
 import org.junit.Test
@@ -177,5 +178,48 @@ class HabitDetailSessionTest : BaseUiTest() {
         assertEquals(1, exports)
         assertNull(hooks.sentFile)
         assertTrue(hooks.messages.isEmpty())
+    }
+
+    @Test
+    fun attachingTwiceRegistersTheSessionOnlyOnce() {
+        session.attach()
+        session.attach()
+        val before = hooks.states.size
+        commandRunner.run(CreateRepetitionCommand(habitList, habit, getToday(), Entry.YES_MANUAL, ""))
+        assertEquals(before + 1, hooks.states.size)
+        session.detach()
+    }
+
+    @Test
+    fun oneDetachStopsASessionThatWasAttachedTwice() {
+        session.attach()
+        session.attach()
+        session.detach()
+        val before = hooks.states.size
+        commandRunner.run(CreateRepetitionCommand(habitList, habit, getToday(), Entry.YES_MANUAL, ""))
+        assertEquals(before, hooks.states.size)
+    }
+
+    @Test
+    fun aRefreshQueuedBeforeDetachingDoesNotRunAfterIt() {
+        val dispatcher = StandardTestDispatcher()
+        val queued = HabitDetailSession(
+            habit, habitList, preferences, commandRunner, taskRunner, mock<ShowHabitMenuPresenter.System>(),
+            { LightTheme() }, hooks, CoroutineScope(dispatcher)
+        )
+        queued.attach()
+        queued.detach()
+        dispatcher.scheduler.advanceUntilIdle()
+        assertTrue(hooks.states.isEmpty(), "the queued refresh was dropped")
+        assertNull(queued.state)
+    }
+
+    @Test
+    fun aRefreshAskedWhileDetachedDoesNothing() {
+        session.attach()
+        session.detach()
+        val before = hooks.states.size
+        session.refresh()
+        assertEquals(before, hooks.states.size)
     }
 }

@@ -151,4 +151,18 @@ class HabitDetailScreenTest : BaseUiTest() {
         onNodeWithTag("overflowMenu").performClick()
         onNodeWithTag("action_randomize").assertExists()
     }
+
+    @Test
+    fun theScreenFillsTheAreaBeforeTheStateExists() = runComposeUiTest {
+        val habit = fixtures.createShortHabit()
+        habitList.add(habit)
+        val session = sessionFor(habit)
+        setContent {
+            MaterialTheme {
+                HabitDetailScreen(session, Color(0xFF388E3C), JavaLocalDateFormatter(Locale.US), onBack = { backs++ })
+            }
+        }
+        onNodeWithTag("showHabitScreen").assertExists()
+        onNodeWithTag("showHabitBack").assertDoesNotExist()
+    }
 }
