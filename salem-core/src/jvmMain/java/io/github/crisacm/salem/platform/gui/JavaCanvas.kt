@@ -94,36 +94,29 @@ class JavaCanvas(
     }
 
     override fun drawText(text: String, x: Double, y: Double) {
+        val (px, py) = textOrigin(text, x, y)
+        g2d.drawString(text, px, py)
+    }
+
+    override fun strokeText(text: String, x: Double, y: Double) {
+        val (px, py) = textOrigin(text, x, y)
+        val outline = g2d.font.createGlyphVector(frc, text).getOutline(px.toFloat(), py.toFloat())
+        g2d.draw(outline)
+    }
+
+    private fun textOrigin(text: String, x: Double, y: Double): Pair<Int, Int> {
         updateFont()
         val bounds = g2d.font.getStringBounds(text, frc)
         val bWidth = bounds.width.roundToInt()
         val bHeight = bounds.height.roundToInt()
         val bx = bounds.x.roundToInt()
         val by = bounds.y.roundToInt()
-
-        when (textAlign) {
-            TextAlign.CENTER -> {
-                g2d.drawString(
-                    text,
-                    toPixel(x) - bx - bWidth / 2,
-                    toPixel(y) - by - bHeight / 2
-                )
-            }
-            TextAlign.LEFT -> {
-                g2d.drawString(
-                    text,
-                    toPixel(x) - bx,
-                    toPixel(y) - by - bHeight / 2
-                )
-            }
-            else -> {
-                g2d.drawString(
-                    text,
-                    toPixel(x) - bx - bWidth,
-                    toPixel(y) - by - bHeight / 2
-                )
-            }
+        val left = when (textAlign) {
+            TextAlign.CENTER -> toPixel(x) - bx - bWidth / 2
+            TextAlign.LEFT -> toPixel(x) - bx
+            else -> toPixel(x) - bx - bWidth
         }
+        return Pair(left, toPixel(y) - by - bHeight / 2)
     }
 
     override fun fillRect(x: Double, y: Double, width: Double, height: Double) {

@@ -63,6 +63,22 @@ class RingChartTest {
     }
 
     @Test
+    fun testDrawStrokedFontAwesomeText() = runTest {
+        val ring = RingChart(
+            green,
+            0.9,
+            6.0,
+            Color.WHITE.withAlpha(0.15),
+            holeColor = null,
+            text = FontAwesome.CHECK,
+            isFontAwesome = true,
+            textSize = 28.0,
+            isTextStroked = true
+        )
+        assertRenders(100, 100, "$base/strokedCheckmark.png", ring)
+    }
+
+    @Test
     fun testDrawFullAndEmpty() = runTest {
         assertRenders(
             100,

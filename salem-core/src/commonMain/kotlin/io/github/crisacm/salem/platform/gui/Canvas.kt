@@ -38,6 +38,9 @@ interface Canvas {
     fun setColor(color: Color)
     fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double)
     fun drawText(text: String, x: Double, y: Double)
+
+    /** Draws only the outline of the text, as wide as [setStrokeWidth], at the same place [drawText] would put it. */
+    fun strokeText(text: String, x: Double, y: Double)
     fun fillRect(x: Double, y: Double, width: Double, height: Double)
     fun fillRoundRect(x: Double, y: Double, width: Double, height: Double, cornerRadius: Double)
     fun drawRect(x: Double, y: Double, width: Double, height: Double)

@@ -22,10 +22,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.common.views.RingView
 import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.core.models.Entry.Companion.NO
 import io.github.crisacm.salem.core.models.Entry.Companion.SKIP
@@ -33,7 +34,10 @@ import io.github.crisacm.salem.core.models.Entry.Companion.UNKNOWN
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_AUTO
 import io.github.crisacm.salem.core.models.Entry.Companion.YES_MANUAL
 import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.ui.views.RingChart
 import io.github.crisacm.salem.inject.HabitsApplicationComponent
+import io.github.crisacm.salem.platform.gui.Color
+import io.github.crisacm.salem.platform.gui.CoreWidgetView
 import io.github.crisacm.salem.utils.InterfaceUtils.getDimension
 import io.github.crisacm.salem.utils.PaletteUtils.getAndroidTestColor
 import io.github.crisacm.salem.utils.StyledResources
@@ -46,7 +50,10 @@ class CheckmarkWidgetView : HabitWidgetView {
 
     var percentage = 0f
     var name: String? = null
-    private lateinit var ring: RingView
+    private lateinit var ring: CoreWidgetView
+    private var ringTextSize = 0f
+    private var ringThickness = 0f
+    private var ringColor = 0
     private lateinit var label: TextView
     var entryValue = 0
     var entryState = 0
@@ -83,15 +90,27 @@ class CheckmarkWidgetView : HabitWidgetView {
                 fgColor = res.getColor(R.attr.contrast60)
             }
         }
-        ring.setPercentage(percentage)
-        ring.setColor(fgColor)
-        ring.setBackgroundColor(bgColor)
-        ring.setText(text)
-        ring.setIsStrokedTextEnabled(strokedTextEnabled)
+        ringColor = fgColor
+        updateRing()
         label.text = name
         label.setTextColor(fgColor)
         requestLayout()
         postInvalidate()
+    }
+
+    private fun updateRing() {
+        val density = resources.displayMetrics.density
+        ring.view = RingChart(
+            color = Color(ringColor),
+            percentage = percentage.toDouble(),
+            thickness = (ringThickness / density).toDouble(),
+            inactiveColor = Color(StyledResources(context).getColor(R.attr.contrast100)).withAlpha(0.15),
+            text = text,
+            isFontAwesome = true,
+            textSize = (ringTextSize / density).toDouble(),
+            isTextStroked = strokedTextEnabled
+        )
+        ring.invalidate()
     }
 
     private val strokedTextEnabled: Boolean
@@ -139,12 +158,9 @@ class CheckmarkWidgetView : HabitWidgetView {
         }
         val textSize = min(0.175f * width, getDimension(context, R.dimen.smallTextSize))
         label.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-        if (isNumerical) {
-            ring.setTextSize(textSize * 0.9f)
-        } else {
-            ring.setTextSize(textSize)
-        }
-        ring.setThickness(0.03f * width)
+        ringTextSize = if (isNumerical) textSize * 0.9f else textSize
+        ringThickness = 0.03f * width
+        updateRing()
         super.onMeasure(
             MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
@@ -155,9 +171,12 @@ class CheckmarkWidgetView : HabitWidgetView {
         val appComponent: HabitsApplicationComponent =
             (context.applicationContext as HabitsApplication).component
         preferences = appComponent.preferences
-        ring = findViewById<View>(R.id.scoreRing) as RingView
+        ring = CoreWidgetView(context)
+        findViewById<FrameLayout>(R.id.scoreRing).addView(
+            ring,
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        )
         label = findViewById<View>(R.id.label) as TextView
-        ring.setIsTransparencyEnabled(true)
         if (isInEditMode) {
             percentage = 0.75f
             name = "Wake up early"
