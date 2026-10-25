@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -51,6 +52,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.compose.systemIsDark
+import io.github.crisacm.salem.ui.list.EmptyListContent
+import io.github.crisacm.salem.ui.list.HabitListContent
+import io.github.crisacm.salem.ui.list.HeaderContent
+import io.github.crisacm.salem.ui.list.HintContent
+import io.github.crisacm.salem.ui.list.LocalCondensedFonts
 
 /**
  * The whole habit list screen in one composition: the top bar, the day header, the rows (or the empty
@@ -70,35 +76,38 @@ fun ListHabitsContent(host: ListHabitsHost) {
     val left = horizontalInsets.getLeft(density, direction)
     val right = horizontalInsets.getRight(density, direction)
     SideEffect { host.onSideInsets(left, right) }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            // The width of the whole screen decides how many days fit, before the side insets are taken out.
-            .onSizeChanged { host.onWidthChanged(it.width) }
-            .windowInsetsPadding(horizontalInsets)
-            .background(host.windowBackground)
-            .semantics { testTagsAsResourceId = true }
-            .testTag("habitListScreen")
-    ) {
-        Column(Modifier.fillMaxSize()) {
-            ListHabitsBar(host.menu, host.selectionMenu, host.barColor, Color.White)
-            HeaderContent(host.headerState, host.headerBackground, host.headerText)
-            Box(Modifier.fillMaxSize()) {
-                HabitListContent(
-                    state = host.listState,
-                    header = host.headerState,
-                    theme = resolveTheme(host.preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())),
-                    preferences = host.preferences,
-                    callbacks = host.rowCallbacks,
-                    contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
-                )
-                EmptyListContent(host.emptyState.value)
-                AndroidView(
-                    factory = { host.progressBar },
-                    modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter).offset(y = (-6).dp)
-                )
-                Box(Modifier.align(Alignment.BottomCenter)) { HintContent(host.hintList) }
+    CompositionLocalProvider(LocalCondensedFonts provides host.condensedFonts) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                // The width of the whole screen decides how many days fit, before the side insets are taken out.
+                .onSizeChanged { host.onWidthChanged(it.width) }
+                .windowInsetsPadding(horizontalInsets)
+                .background(host.windowBackground)
+                .semantics { testTagsAsResourceId = true }
+                .testTag("habitListScreen")
+        ) {
+            Column(Modifier.fillMaxSize()) {
+                ListHabitsBar(host.menu, host.selectionMenu, host.barColor, Color.White)
+                HeaderContent(host.headerState, host.dateFormatter, host.headerBackground, host.headerText)
+                Box(Modifier.fillMaxSize()) {
+                    HabitListContent(
+                        state = host.listState,
+                        header = host.headerState,
+                        theme = resolveTheme(host.preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())),
+                        colors = host.listColors,
+                        preferences = host.preferences,
+                        callbacks = host.rowCallbacks,
+                        contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+                    )
+                    EmptyListContent(host.emptyState.value)
+                    AndroidView(
+                        factory = { host.progressBar },
+                        modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter).offset(y = (-6).dp)
+                    )
+                    Box(Modifier.align(Alignment.BottomCenter)) { HintContent(host.hintList) }
+                }
             }
         }
     }

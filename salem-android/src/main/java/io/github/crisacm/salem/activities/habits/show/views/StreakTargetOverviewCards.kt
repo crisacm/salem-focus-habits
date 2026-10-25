@@ -37,16 +37,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.habits.list.ScoreRing
-import io.github.crisacm.salem.activities.habits.list.toShortString
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
 import io.github.crisacm.salem.core.ui.views.StreakChart
 import io.github.crisacm.salem.core.ui.views.TargetChart
+import io.github.crisacm.salem.core.ui.views.toShortString
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.CoreView
+import io.github.crisacm.salem.ui.list.ScoreRing
 import java.util.Locale
 import kotlin.math.abs
 
