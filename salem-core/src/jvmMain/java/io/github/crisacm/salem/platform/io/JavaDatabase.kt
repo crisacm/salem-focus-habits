@@ -90,6 +90,19 @@ class JavaDatabase(private val conn: Connection) : Database {
                 }
             }
         }
+        if (trimmed.startsWith("ROLLBACK")) {
+            return object : NoOpStatement() {
+                override fun step(): StepResult {
+                    // A rollback ends the whole transaction, whatever the depth
+                    if (transactionDepth > 0) {
+                        transactionDepth = 0
+                        conn.rollback()
+                        conn.autoCommit = true
+                    }
+                    return StepResult.DONE
+                }
+            }
+        }
         return JavaPreparedStatement(conn.prepareStatement(sql))
     }
 

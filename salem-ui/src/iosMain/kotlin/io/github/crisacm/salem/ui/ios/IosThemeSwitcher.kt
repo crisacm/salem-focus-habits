@@ -36,6 +36,10 @@ class IosThemeSwitcher(preferences: Preferences) : ThemeSwitcher(preferences) {
     override var currentTheme: Theme? = null
         private set
 
+    /** Whether the system appearance is dark: the screen sets it from what Compose reports for its window. */
+    var systemIsDark: Boolean =
+        UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyle.UIUserInterfaceStyleDark
+
     init {
         apply()
     }
@@ -52,10 +56,5 @@ class IosThemeSwitcher(preferences: Preferences) : ThemeSwitcher(preferences) {
         currentTheme = PureBlackTheme()
     }
 
-    override fun getSystemTheme(): Int =
-        if (UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyle.UIUserInterfaceStyleDark) {
-            THEME_DARK
-        } else {
-            THEME_LIGHT
-        }
+    override fun getSystemTheme(): Int = if (systemIsDark) THEME_DARK else THEME_LIGHT
 }

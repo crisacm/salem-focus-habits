@@ -28,7 +28,9 @@ import io.github.crisacm.salem.platform.io.setVersion
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class HabitsSchemaTest {
@@ -77,5 +79,18 @@ class HabitsSchemaTest {
         val db = createTestDatabaseOpener().open(":memory:")
         db.setVersion(DATABASE_VERSION + 1)
         assertFailsWith<UnsupportedDatabaseVersionException> { db.initializeHabitsSchema(loadMigrationSQL = load) }
+    }
+
+    @Test
+    fun aMigrationThatFailsHalfWayLeavesNothingBehind() = runTest {
+        val db = createTestDatabaseOpener().open(":memory:")
+        db.setVersion(11)
+        val broken: suspend (Int) -> String = { version ->
+            if (version == 12) "CREATE TABLE half_done (id INTEGER); THIS IS NOT SQL;" else TestDatabaseHelper.loadMigrationSQL(version)
+        }
+        assertFails { db.initializeHabitsSchema(loadMigrationSQL = broken) }
+        // The first statement of the migration was rolled back, and so was the version
+        assertEquals(11, db.getVersion())
+        assertFalse("half_done" in tables(db))
     }
 }

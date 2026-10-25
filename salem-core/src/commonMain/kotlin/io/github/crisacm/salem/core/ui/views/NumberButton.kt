@@ -24,8 +24,11 @@ import io.github.crisacm.salem.platform.gui.Color
 import io.github.crisacm.salem.platform.gui.Font
 import io.github.crisacm.salem.platform.gui.View
 import io.github.crisacm.salem.platform.io.format
-import kotlin.math.round
 
+/**
+ * A short form of a number: 4300 is "4.3k" and 2.5e9 is "2.5G". Below 100 it has up to one decimal (up to two below
+ * 10) and no trailing zeros, so 5.004 is "5" and 0.125 is "0.13".
+ */
 fun Double.toShortString(): String = when {
     this >= 1e9 -> format("%.1fG", this / 1e9)
     this >= 1e8 -> format("%.0fM", this / 1e6)
@@ -35,15 +38,16 @@ fun Double.toShortString(): String = when {
     this >= 1e4 -> format("%.1fk", this / 1e3)
     this >= 1e3 -> format("%.1fk", this / 1e3)
     this >= 1e2 -> format("%.0f", this)
-    this >= 1e1 -> when {
-        round(this) == this -> format("%.0f", this)
-        else -> format("%.1f", this)
-    }
-    else -> when {
-        round(this) == this -> format("%.0f", this)
-        round(this * 10) == this * 10 -> format("%.1f", this)
-        else -> format("%.2f", this)
-    }
+    this >= 1e1 -> format("%.1f", this).trimDecimalZeros()
+    else -> format("%.2f", this).trimDecimalZeros()
+}
+
+// The separator may be a comma: format is locale-sensitive
+private fun String.trimDecimalZeros(): String {
+    val separator = indexOfFirst { it == '.' || it == ',' }
+    if (separator < 0) return this
+    val trimmed = trimEnd('0')
+    return if (trimmed.length - 1 == separator) trimmed.dropLast(1) else trimmed
 }
 
 class NumberButton(

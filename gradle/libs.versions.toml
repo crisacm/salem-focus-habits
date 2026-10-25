@@ -8,6 +8,8 @@ compose-multiplatform = "1.10.3"
 # The Material 3 of Compose Multiplatform has its own version; 1.9.0-beta03 is the one that 1.10.3 uses
 compose-multiplatform-material3 = "1.9.0-beta03"
 compose-multiplatform-icons = "1.7.3"
+# What the back handler of Compose Multiplatform listens to; the tests send back gestures through it
+navigationevent = "1.0.2"
 kotlin-inject = "0.9.0"
 desugar = "2.1.4"
 espresso = "3.6.1"
@@ -60,6 +62,7 @@ compose-mp-resources = { module = "org.jetbrains.compose.components:components-r
 compose-mp-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform-material3" }
 compose-mp-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-multiplatform-icons" }
 compose-mp-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
+navigationevent = { module = "androidx.navigationevent:navigationevent", version.ref = "navigationevent" }
 compose-mp-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
 compose-mp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 compose-mp-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }

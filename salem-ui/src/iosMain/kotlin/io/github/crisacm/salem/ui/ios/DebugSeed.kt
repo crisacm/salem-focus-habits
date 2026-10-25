@@ -24,14 +24,20 @@ import io.github.crisacm.salem.core.models.ModelFactory
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.test.HabitFixtures
 import platform.Foundation.NSProcessInfo
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.Platform
 
 private const val SEED_VARIABLE = "SALEM_SEED_DEBUG_DATA"
 
 /**
  * Example habits to look at while the iOS app cannot create habits: only when the environment variable
- * `SALEM_SEED_DEBUG_DATA` is `1` (`SIMCTL_CHILD_SALEM_SEED_DEBUG_DATA=1` with `simctl launch`) and the list is empty.
+ * `SALEM_SEED_DEBUG_DATA` is `1` (`SIMCTL_CHILD_SALEM_SEED_DEBUG_DATA=1` with `simctl launch`), the list is empty and
+ * the binary is a debug one.
  */
+@OptIn(ExperimentalNativeApi::class)
 fun seedDebugHabitsIfRequested(modelFactory: ModelFactory, habitList: HabitList) {
+    // Never in a release binary, whatever the environment says
+    if (!Platform.isDebugBinary) return
     if (NSProcessInfo.processInfo.environment[SEED_VARIABLE] != "1") return
     if (habitList.count() > 0) return
     val fixtures = HabitFixtures(modelFactory, habitList)

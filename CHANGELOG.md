@@ -7,6 +7,13 @@ attribution.
 
 ## [Unreleased]
 
+### Fixed
+
+- Migrations on iOS are atomic: each one and its version number are a transaction (`ROLLBACK` is now understood by the JVM and iOS databases), so a crash in the middle no longer leaves a half-migrated file that cannot be opened again
+- The short form of numbers (`toShortString`, used by numerical cells, charts and widgets) no longer keeps trailing zeros: 5.004 shows "5" and 12.04 shows "12", as before the list moved to `salem-ui`; exact halves still round up
+- The shared strings are copied as UTF-8 whatever the machine charset, accept the legacy language folders without a region, and the build fails on a format it cannot adapt (`%.1f`, `%%`...) instead of shipping it
+- The task progress bar of the habit list sits at the top of the rows again (it was shifted 6 dp up), and the iOS app creates its timer on the main thread, no longer swallows cancellations, follows the system appearance as Compose reports it, refreshes the first weekday when it returns, and inserts the debug habits only in debug binaries
+
 ### Added
 
 - Show the habit list in the iOS app over a real SQLite database: the app opens `uhabits.db` in its files and migrates it with the schema of `salem-core` (new `initializeHabitsSchema`, with the same version rules as Android), builds the list by hand on iOS (theme from the system appearance, day header, rows, bar, hint) and marks days with a tap. Creating, editing, settings, dialogs, reminders and the confetti are not on iOS yet; example habits can be inserted in debug runs with `SALEM_SEED_DEBUG_DATA=1`

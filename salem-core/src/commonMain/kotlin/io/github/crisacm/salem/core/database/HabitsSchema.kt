@@ -32,7 +32,8 @@ const val OLDEST_SUPPORTED_DATABASE_VERSION = 8
  * Prepares the habits database to be used: a new file (version 0) gets the oldest supported schema version and
  * is then migrated, an older one is migrated, and a file from a version that is too old, or newer than this app
  * knows, is refused with [UnsupportedDatabaseVersionException]. These are the rules of the Android opener, for
- * platforms that open the file themselves.
+ * platforms that open the file themselves. Each migration is one transaction (Android's opener gets that from
+ * `SQLiteOpenHelper`), so a crash in the middle leaves the file at the version before and it can be migrated again.
  */
 suspend fun Database.initializeHabitsSchema(
     targetVersion: Int = DATABASE_VERSION,
@@ -41,5 +42,5 @@ suspend fun Database.initializeHabitsSchema(
     if (getVersion() == 0) setVersion(OLDEST_SUPPORTED_DATABASE_VERSION)
     val version = getVersion()
     if (version < OLDEST_SUPPORTED_DATABASE_VERSION || version > targetVersion) throw UnsupportedDatabaseVersionException()
-    migrateTo(targetVersion, loadMigrationSQL)
+    migrateTo(targetVersion, atomic = true, loadMigrationSQL = loadMigrationSQL)
 }

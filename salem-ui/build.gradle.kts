@@ -54,6 +54,7 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.uiTest)
                 implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.navigationevent)
             }
         }
 
@@ -122,36 +123,22 @@ tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().config
 // The fonts of the core are copied too (one copy): fontawesome, notosans_regular and notosans_bold
 val sharedStringsDir = layout.buildDirectory.dir("generated/sharedStrings")
 val syncSharedStrings by tasks.registering(Sync::class) {
-    val placeholder = Regex("%(\\d+\\$)?[sd]")
-    fun CopySpec.adaptStrings() {
-        filter { line ->
-            var next = 0
-            line.replace("\\'", "'").replace("\\\"", "\"").replace(placeholder) { match ->
-                val position = match.groupValues[1]
-                if (position.isNotEmpty()) "%${position}s" else "%${++next}\$s"
-            }
-        }
-    }
-    fun renamed(folder: String, language: String, to: String) = folder.replace("values-$language", "values-$to")
+    filteringCharset = "UTF-8"
+    val legacyFolder = Regex("^values-(in|iw|no)(?=-|$)")
+    val legacyLanguages = mapOf("in" to "id", "iw" to "he", "no" to "nb")
 
     from("../salem-android/src/main/res") {
         include("values*/strings.xml")
         eachFile {
             val folder = relativePath.parent.lastName
-            val target = when {
-                folder.startsWith("values-in-") -> renamed(folder, "in", "id")
-                folder.startsWith("values-iw-") -> renamed(folder, "iw", "he")
-                folder.startsWith("values-no-") -> renamed(folder, "no", "nb")
-                else -> folder
-            }
+            val target = legacyFolder.replace(folder) { "values-" + legacyLanguages.getValue(it.groupValues[1]) }
             if (target != folder) relativePath = RelativePath(true, target, name)
         }
-        adaptStrings()
         includeEmptyDirs = false
     }
+    // Norwegian is both nb (iOS) and no (the JVM): keep the original folder too
     from("../salem-android/src/main/res") {
-        include("values-no-*/strings.xml")
-        adaptStrings()
+        include("values-no/strings.xml", "values-no-*/strings.xml")
         includeEmptyDirs = false
     }
     from("../salem-core/assets/main/fonts") {
@@ -160,6 +147,28 @@ val syncSharedStrings by tasks.registering(Sync::class) {
         rename { it.replace("-", "_").lowercase() }
     }
     into(sharedStringsDir.map { it.dir("composeResources") })
+
+    // Adapt the copied strings once they are in place, whole file at a time, element by element
+    doLast {
+        val element = Regex("(<(?:string|item)\\b[^>]*>)(.*?)(</(?:string|item)>)", RegexOption.DOT_MATCHES_ALL)
+        // Anything that looks like a printf specification: %s, %d, %1$s, %.1f, %5d, %x, %%
+        val specification = Regex("%(?:\\d+\\$)?[-#+0,(]*\\d*(?:\\.\\d+)?[a-zA-Z%]")
+        val supported = Regex("%(\\d+\\$)?[sd]")
+        fileTree(destinationDir).matching { include("**/strings.xml") }.forEach { file ->
+            val adapted = element.replace(file.readText(Charsets.UTF_8)) { match ->
+                var next = 0
+                val body = match.groupValues[2].replace("\\'", "'").replace("\\\"", "\"").replace(specification) { spec ->
+                    val parts = supported.matchEntire(spec.value)
+                        ?: throw GradleException("Unsupported format ${spec.value} in ${file.parentFile.name}/${file.name}: ${match.value}")
+                    // Compose substitutes only the positional form
+                    val position = parts.groupValues[1]
+                    if (position.isNotEmpty()) "%${position}s" else "%${++next}\$s"
+                }
+                match.groupValues[1] + body + match.groupValues[3]
+            }
+            file.writeText(adapted, Charsets.UTF_8)
+        }
+    }
 }
 
 compose.resources {

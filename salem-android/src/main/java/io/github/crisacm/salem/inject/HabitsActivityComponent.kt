@@ -73,7 +73,7 @@ abstract class HabitsActivityComponent(
         cache: HabitCardListCache,
         preferences: Preferences,
         midnightTimer: MidnightTimer
-    ) = HabitListState(cache, preferences, midnightTimer)
+    ): HabitListState = HabitListState(cache, preferences, midnightTimer)
 
     @ActivityScope
     @Provides
@@ -81,7 +81,7 @@ abstract class HabitsActivityComponent(
         state: HabitListState,
         behavior: ListHabitsBehavior,
         selection: Lazy<SelectionListener>
-    ) = HabitListController(state, behavior, selection)
+    ): HabitListController = HabitListController(state, behavior, selection)
 
     @ActivityScope
     @Provides
@@ -89,7 +89,7 @@ abstract class HabitsActivityComponent(
         preferences: Preferences,
         themeSwitcher: ThemeSwitcher,
         behavior: ListHabitsMenuBehavior
-    ) = ListHabitsMenu(preferences, themeSwitcher, behavior)
+    ): ListHabitsMenu = ListHabitsMenu(preferences, themeSwitcher, behavior)
 
     @ActivityScope
     @Provides
@@ -100,7 +100,7 @@ abstract class HabitsActivityComponent(
         behavior: ListHabitsSelectionMenuBehavior,
         listController: Lazy<HabitListController>,
         notificationTray: NotificationTray
-    ) = ListHabitsSelectionMenu(listState, commandRunner, preferences, behavior, listController, notificationTray)
+    ): ListHabitsSelectionMenu = ListHabitsSelectionMenu(listState, commandRunner, preferences, behavior, listController, notificationTray)
 
     open val HabitListState.bindAdapter: ListHabitsMenuBehavior.Adapter
         @Provides get() = this
