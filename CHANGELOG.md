@@ -9,6 +9,7 @@ attribution.
 
 ### Added
 
+- Add the `salem-ui` module (Compose Multiplatform for Android and iOS) with a `Canvas` of `salem-core` over a Compose `DrawScope` (`DrawScopeCanvas`, `CoreCanvasView`), checked against the core reference images on the JVM, and the `iosApp` Xcode project that hosts it and builds for the simulator. No screen uses it yet; the CI builds the module and the iOS app
 - Move the rows of the habit list to Compose (`LazyColumn`): score ring, name and one cell per day, with long press to select, tap to open or change the selection, and drag to reorder when the order is manual. The data now comes from `HabitListState` and the gestures from `HabitListController`, with their rules in tested pure functions. The old `RecyclerView`, card and button Views and their image tests are removed. The list does not scroll by itself while dragging near an edge yet, and a toggled cell no longer shows a ripple
 - Move the day header of the habit list to Compose, and add the Compose cells (checkmark, number and score ring) that the rows will use next; the header no longer has a dead zone when dragged past today
 - Move the top bar of the habit list (add, filter, sort, search and overflow menus) and the multi-selection bar to Compose, replacing the Android menus and the action mode. The label of the hide completed filter now follows the skip setting too. The new "More options" and "Close" labels are not translated yet

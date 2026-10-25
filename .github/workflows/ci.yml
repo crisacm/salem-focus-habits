@@ -38,6 +38,10 @@ jobs:
       - name: Android JVM unit tests
         run: ./gradlew :salem-android:testDebugUnitTest
 
+      # The desktop target of salem-ui only exists to render the core charts with Skia and compare them with the core images
+      - name: Shared UI tests
+        run: ./gradlew :salem-ui:desktopTest :salem-ui:compileDebugKotlinAndroid
+
       - name: Lint (ktlint)
         run: ./gradlew ktlintCheck
 
@@ -75,3 +79,13 @@ jobs:
       # Tests that need an iOS actual that is still a TODO stub are skipped (salem-core/ios-blocked-tests.txt)
       - name: Run iOS tests
         run: ./gradlew :salem-core:iosSimulatorArm64Test
+
+      - name: Compile the shared UI for iOS
+        run: ./gradlew :salem-ui:compileKotlinIosSimulatorArm64 :salem-ui:compileKotlinIosArm64
+
+      # Builds the Kotlin framework through Gradle and the app with it, for the simulator, without signing
+      - name: Build the iOS app
+        run: >
+          xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug
+          -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO build
