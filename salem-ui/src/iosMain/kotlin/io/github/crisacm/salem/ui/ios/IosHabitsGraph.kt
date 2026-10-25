@@ -109,7 +109,8 @@ class IosHabitsGraph private constructor(
             val taskRunner = CoroutineTaskRunner(Dispatchers.Main, Dispatchers.IO)
             val commandRunner = CommandRunner(taskRunner)
             val cache = HabitCardListCache(habitList, commandRunner, taskRunner, logging)
-            val midnightTimer = MidnightTimer(logging, preferences)
+            // The listeners of the timer write the state of the screen, so they run on the main thread
+            val midnightTimer = MidnightTimer(logging, preferences, Dispatchers.Main)
             val themeSwitcher = IosThemeSwitcher(preferences)
             val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher)
             val behavior = ListHabitsBehavior(
@@ -135,7 +136,6 @@ class IosHabitsGraph private constructor(
             val hints = arrayOf(getString(Res.string.hint_drag), getString(Res.string.hint_landscape))
             val hintList = HintListFactory(preferences).create(hints)
 
-            behavior.onStartup()
             return IosHabitsGraph(
                 preferences, habitList, logging, taskRunner, midnightTimer, themeSwitcher, screen, hintList,
                 listState, menu, selectionMenu, controller, behavior

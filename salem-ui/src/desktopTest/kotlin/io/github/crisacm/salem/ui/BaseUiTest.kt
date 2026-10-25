@@ -25,6 +25,7 @@ import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.test.HabitFixtures
 import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.resetToday
 import io.github.crisacm.salem.platform.time.setToday
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
@@ -51,6 +52,5 @@ open class BaseUiTest {
     }
 
     @After
-    fun tearDown() {
-    }
+    fun tearDown() = resetToday()
 }

@@ -36,10 +36,12 @@ import androidx.compose.ui.platform.LocalDensity
 import io.github.crisacm.salem.platform.notifications.AppLifecycleObserver
 import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.getToday
+import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.list.ListHabitsContent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -58,6 +60,8 @@ fun IosListRoot() {
     LaunchedEffect(Unit) {
         loading = try {
             Loading.Ready(withContext(Dispatchers.Default) { IosHabitsGraph.create() })
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Loading.Failed(e)
         }
@@ -80,7 +84,12 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     graph.screen.themeVersion
     val theme = resolveTheme(graph.preferences, systemIsDark)
     model.theme = theme
-    LaunchedEffect(systemIsDark) { graph.screen.applyTheme() }
+    LaunchedEffect(systemIsDark) {
+        graph.themeSwitcher.systemIsDark = systemIsDark
+        graph.screen.applyTheme()
+    }
+    // The first launch of the app and the intro are decided on the main thread, once the screen is shown
+    LaunchedEffect(graph) { graph.behavior.onStartup() }
 
     DisposableEffect(graph) {
         graph.midnightTimer.onResume()
@@ -88,6 +97,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
         val observer = AppLifecycleObserver(
             onForeground = {
                 setToday(computeToday(graph.preferences.midnightDelayHours, 0))
+                setFirstWeekday(graph.preferences.firstWeekday)
                 model.headerState.today = getToday()
                 graph.midnightTimer.onResume()
                 graph.listState.refresh()

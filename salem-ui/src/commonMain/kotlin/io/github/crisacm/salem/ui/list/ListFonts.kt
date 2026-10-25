@@ -30,7 +30,10 @@ import org.jetbrains.compose.resources.Font
 
 /** The FontAwesome glyphs of the cells and the empty state, from the font of the core. */
 @Composable
-fun rememberFontAwesome(): FontFamily = FontFamily(Font(Res.font.fontawesome))
+fun rememberFontAwesome(): FontFamily {
+    val font = Font(Res.font.fontawesome)
+    return remember(font) { FontFamily(font) }
+}
 
 /** The fonts of the numbers and the units of a numerical cell. */
 class CondensedFonts(val regular: FontFamily, val bold: FontFamily)

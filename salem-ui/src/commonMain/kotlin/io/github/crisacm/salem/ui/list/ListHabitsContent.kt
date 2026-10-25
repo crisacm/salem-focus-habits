@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
@@ -43,7 +42,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.views.Theme
 
 /**
@@ -96,7 +94,7 @@ fun ListHabitsContent(
                     contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
                 )
                 EmptyListContent(model.emptyState.value)
-                TaskProgress(model.taskRunner, Modifier.fillMaxWidth().align(Alignment.TopCenter).offset(y = (-6).dp))
+                TaskProgress(model.taskRunner, Modifier.fillMaxWidth().align(Alignment.TopCenter))
                 Box(Modifier.align(Alignment.BottomCenter)) { HintContent(model.hintList) }
             }
         }

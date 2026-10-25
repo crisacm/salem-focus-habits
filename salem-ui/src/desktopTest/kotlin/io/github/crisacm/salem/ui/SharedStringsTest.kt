@@ -21,6 +21,8 @@ package io.github.crisacm.salem.ui
 
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.add_habit
+import io.github.crisacm.salem.ui.resources.help
+import io.github.crisacm.salem.ui.resources.no_boolean_habits
 import io.github.crisacm.salem.ui.resources.no_habits_left_to_do
 import io.github.crisacm.salem.ui.resources.toast_habits_deleted
 import io.github.crisacm.salem.ui.resources.x_times_per_y_days
@@ -33,10 +35,13 @@ import org.jetbrains.compose.resources.ResourceEnvironment
 import org.jetbrains.compose.resources.ThemeQualifier
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
+import java.io.File
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 /** The strings of salem-android, copied into the Compose resources of this module, resolve like the Android ones. */
 class SharedStringsTest {
@@ -75,14 +80,34 @@ class SharedStringsTest {
     }
 
     @Test
-    fun resolvesTranslationsAndLegacyLanguageCodes() = runBlocking {
+    fun resolvesTranslations() = runBlocking {
         val english = add("en", "US")
-        for ((language, country) in listOf(
-            "es" to "ES", "pt" to "BR", "zh" to "CN", "id" to "ID", "in" to "ID", "he" to "IL", "iw" to "IL",
-            "nb" to "NO", "no" to "NO"
-        )) {
+        for ((language, country) in listOf("es" to "ES", "pt" to "BR", "zh" to "CN", "id" to "ID", "he" to "IL", "nb" to "NO", "no" to "NO")) {
             assertNotEquals(english, add(language, country), "$language-$country")
         }
         assertEquals("Agregar hábito", add("es", "ES"))
+    }
+
+    @Test
+    fun theFoldersOfTheLegacyLanguageCodesAreRenamed() {
+        val dir = File("build/generated/sharedStrings/composeResources")
+        for (folder in listOf("values-id-rID", "values-he-rIL", "values-nb-rNO", "values-no-rNO")) {
+            assertTrue(File(dir, "$folder/strings.xml").exists(), folder)
+        }
+        for (folder in listOf("values-in-rID", "values-iw-rIL")) {
+            assertFalse(File(dir, folder).exists(), folder)
+        }
+    }
+
+    @Test
+    fun placeholdersOfTranslationsAreSubstituted() = runBlocking {
+        assertEquals("2 번 3 일 동안", getString(environment("ko", "KR"), Res.string.x_times_per_y_days, 2, 3))
+    }
+
+    @Test
+    fun xmlEntitiesAndEscapedQuotesAreDecoded() = runBlocking {
+        assertEquals("Help & FAQ", getString(environment("en", "US"), Res.string.help))
+        assertEquals("Ayuda & Preguntas frecuentes", getString(environment("es", "ES"), Res.string.help))
+        assertEquals("Не са намерени навици от тип \"да или не\"", getString(environment("bg", "BG"), Res.string.no_boolean_habits))
     }
 }
