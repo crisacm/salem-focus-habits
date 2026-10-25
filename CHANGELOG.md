@@ -42,6 +42,7 @@ attribution.
 
 ### Changed
 
+- The checkmark widget draws its ring with the core `RingChart` (through `CoreWidgetView`), and the `Canvas` of `salem-core` can outline text (`strokeText`) for the automatic checkmark; the last chart View, `RingView`, is removed. The image tests of the checkmark widget need new reference images (`./build.sh android-accept-images` on a device)
 - The score, frequency, streak, target and history widgets draw their charts with the chart classes of `salem-core` (through `CoreWidgetView`), the same code as the cards of the detail screen, and the old chart Views, `ScrollableChart`, `AndroidDataView` and `AndroidView` are removed. The rows of the target widget still share the height of the widget. The image tests of these widgets in `src/androidTest` need new reference images (`./build.sh android-accept-images` on a device)
 - The `Canvas` of `salem-core` can cut a hole in what it draws (`clearCircle`); the score chart of the widgets uses it for the markers, and a new `RingChart` (replacing the unused `Ring`) draws the ring of the checkmark widget with a transparent hole. Nothing uses them in the app yet: the widgets move to them in the next changes
 - Remove code and resources that nothing used after the Compose migration: 78 entries of the lint baseline for files that no longer exist, 5 drawables, a layout, 13 styles, 2 strings, the `HabitChart` interface, `AndroidTestView`, 13 helpers of `ViewExtensions.kt` and the scroll controller of `ScrollableChart`

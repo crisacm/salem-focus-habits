@@ -23,18 +23,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:habit="http://isoron.org/android"
     android:gravity="center"
     android:orientation="vertical">
 
-    <io.github.crisacm.salem.activities.common.views.RingView
+    <FrameLayout
         android:id="@+id/scoreRing"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.9"
-        habit:thickness="2"
-        habit:textSize="16"
-        habit:enableFontAwesome="true"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"/>
