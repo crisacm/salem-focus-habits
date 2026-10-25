@@ -19,6 +19,7 @@
 
 package io.github.crisacm.salem.ui.canvas
 
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
@@ -42,21 +43,27 @@ private val assets = File("../salem-core/assets")
 private fun font(name: String, weight: FontWeight = FontWeight.Normal) =
     Font(name, File(assets, "main/fonts/$name.ttf").readBytes(), weight)
 
-/** Renders [view] at 2 pixels per dp with a [DrawScopeCanvas] and compares it with the image of salem-core. */
-fun assertRendersLikeCore(width: Int, height: Int, path: String, view: View, maxDistance: Double = 0.2) {
-    val noto = FontFamily(font("NotoSans-Regular"), font("NotoSans-Bold", FontWeight.Bold))
-    val fontAwesome = FontFamily(font("FontAwesome"))
+private val noto by lazy { FontFamily(font("NotoSans-Regular"), font("NotoSans-Bold", FontWeight.Bold)) }
+private val fontAwesome by lazy { FontFamily(font("FontAwesome")) }
+
+fun textMeasurerForTest() = TextMeasurer(createFontFamilyResolver(), Density(SCALE.toFloat()), LayoutDirection.Ltr)
+
+/** Draws on a transparent bitmap of [width] x [height] dp at 2 pixels per dp with a [DrawScopeCanvas]. */
+fun render(width: Int, height: Int, block: (DrawScopeCanvas) -> Unit): BufferedImage {
     val density = Density(SCALE.toFloat())
-    val measurer = TextMeasurer(createFontFamilyResolver(), density, LayoutDirection.Ltr)
-    val canvas = DrawScopeCanvas(measurer, fontAwesome, noto, noto)
-
+    val canvas = DrawScopeCanvas(textMeasurerForTest(), fontAwesome, noto, noto)
     val bitmap = ImageBitmap(width * SCALE, height * SCALE)
-    CanvasDrawScope().draw(density, LayoutDirection.Ltr, Canvas(bitmap), androidx.compose.ui.geometry.Size(bitmap.width.toFloat(), bitmap.height.toFloat())) {
+    val size = Size(bitmap.width.toFloat(), bitmap.height.toFloat())
+    CanvasDrawScope().draw(density, LayoutDirection.Ltr, Canvas(bitmap), size) {
         canvas.scope = this
-        view.draw(canvas)
+        block(canvas)
     }
-    val actual = bitmap.toBufferedImage()
+    return bitmap.toBufferedImage()
+}
 
+/** Renders [view] and compares it with the image of salem-core. */
+fun assertRendersLikeCore(width: Int, height: Int, path: String, view: View, maxDistance: Double = 0.2) {
+    val actual = render(width, height) { view.draw(it) }
     val expectedFile = File(assets, "test/$path")
     val failed = File("/tmp/failed-ui/$path")
     if (!expectedFile.exists()) {

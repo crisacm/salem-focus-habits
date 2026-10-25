@@ -30,5 +30,8 @@ Step 7 moves the screens to Compose Multiplatform. Before any screen moves, the 
 ## Estrategia de entrega
 `single-pr`, branch `feat/kmp-ui-infra`, base `develop` (the diff is mostly new files; the next PRs move the screens). Commits only when the user asks.
 
+## Revisión (rdd-full)
+Fixed after the review: the ktlint filter now fails if the plugin renames its tasks and also covers the format tasks; the Xcode build phase accepts JDK 17 or 21 and fails with a message otherwise; tests for the primitives, text alignment, bold, measuring, `toImage`, and `CoreCanvasView` (the offscreen layer, checked to fail without it). The rest is listed in `docs/PENDING.md`.
+
 ## Evidencia
-`:salem-ui:desktopTest` (4 tests), `:salem-ui:compileDebugKotlinAndroid`, `:salem-ui:linkDebugFrameworkIosSimulatorArm64`, `xcodebuild` build succeeded. The app was not launched in the simulator.
+`:salem-ui:desktopTest` (16 tests), `:salem-ui:compileDebugKotlinAndroid`, `:salem-ui:linkDebugFrameworkIosSimulatorArm64`, `xcodebuild` build succeeded. The app was not launched in the simulator.

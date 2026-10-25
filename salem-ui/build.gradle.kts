@@ -50,6 +50,8 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation(compose.desktop.currentOs)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
@@ -85,8 +87,16 @@ compose.resources {
 }
 
 // Compose Multiplatform writes Kotlin files into build/generated (Res.kt, the resource accessors) that do not follow
-// ktlint, and the plugin adds them to the source sets. Check only the files under src/<source set>
+// ktlint, and the plugin adds them to the source sets of its check and format tasks (excludes and .editorconfig globs
+// do not reach them). Limit each task to the files under src/<source set>. The check fails if the plugin renames its
+// tasks, so the check can never pass because it silently looked at nothing
 tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
-    val sourceSet = name.removePrefix("runKtlintCheckOver").removeSuffix("SourceSet").replaceFirstChar { it.lowercase() }
+    // The tasks for the Gradle scripts have no generated files
+    if (name.endsWith("KotlinScripts")) return@configureEach
+    val prefix = listOf("runKtlintCheckOver", "runKtlintFormatOver").firstOrNull { name.startsWith(it) }
+    if (prefix == null || !name.endsWith("SourceSet")) {
+        throw GradleException("Unexpected ktlint task name '$name': update the filter of the sources in salem-ui/build.gradle.kts")
+    }
+    val sourceSet = name.removePrefix(prefix).removeSuffix("SourceSet").replaceFirstChar { it.lowercase() }
     setSource(fileTree("src/$sourceSet") { include("**/*.kt") })
 }
