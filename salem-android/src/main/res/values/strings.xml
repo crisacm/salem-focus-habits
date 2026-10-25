@@ -55,6 +55,8 @@
     <string name="overview">Overview</string>
     <string name="habit_strength">Habit strength</string>
     <string name="history">History</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="clear">Clear</string>
     <string name="reminder">Reminder</string>
     <string name="save">Save</string>

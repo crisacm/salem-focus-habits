@@ -20,24 +20,11 @@
 package io.github.crisacm.salem.activities.common.dialogs
 
 import android.os.Bundle
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDefaults
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
-import io.github.crisacm.salem.ui.compose.DialogButton
-import io.github.crisacm.salem.ui.compose.DialogSurface
+import io.github.crisacm.salem.ui.dialogs.TimePickerContent
 
 /**
  * A dialog to pick a time of the day with the Material 3 clock. The colour of the clock is the one of the
@@ -53,44 +40,27 @@ class TimePickerDialog : ComposeDialogFragment() {
         if (savedInstanceState != null) dismissAllowingStateLoss()
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val args = requireArguments()
-        val color = Color(args.getInt(KEY_COLOR))
-        val state = rememberTimePickerState(
-            initialHour = args.getInt(KEY_HOUR),
-            initialMinute = args.getInt(KEY_MINUTE),
-            is24Hour = args.getBoolean(KEY_IS_24_HOUR)
-        )
-        DialogSurface(
-            title = null,
+        TimePickerContent(
+            hour = args.getInt(KEY_HOUR),
+            minute = args.getInt(KEY_MINUTE),
+            is24Hour = args.getBoolean(KEY_IS_24_HOUR),
+            color = Color(args.getInt(KEY_COLOR)),
+            showClear = args.getBoolean(KEY_SHOW_CLEAR),
+            onPicked = { hour, minute ->
+                listener?.onTimePicked(hour, minute)
+                dismiss()
+            },
+            onCleared = {
+                listener?.onTimeCleared()
+                dismiss()
+            },
             onDismiss = ::dismiss,
-            buttons = {
-                if (args.getBoolean(KEY_SHOW_CLEAR)) {
-                    DialogButton(stringResource(R.string.clear), tag = "timePickerClear") {
-                        listener?.onTimeCleared()
-                        dismiss()
-                    }
-                }
-                DialogButton(stringResource(android.R.string.cancel), tag = "timePickerCancel", onClick = ::dismiss)
-                DialogButton(stringResource(android.R.string.ok), tag = "timePickerOk") {
-                    listener?.onTimePicked(state.hour, state.minute)
-                    dismiss()
-                }
-            }
-        ) {
-            Box(Modifier.fillMaxWidth().padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-                TimePicker(
-                    state = state,
-                    colors = TimePickerDefaults.colors(
-                        selectorColor = color,
-                        timeSelectorSelectedContainerColor = color.copy(alpha = 0.2f)
-                    ),
-                    modifier = Modifier.testTag("timePicker")
-                )
-            }
-        }
+            confirmLabel = stringResource(android.R.string.ok),
+            cancelLabel = stringResource(android.R.string.cancel)
+        )
     }
 
     fun interface OnTimePickedListener {
