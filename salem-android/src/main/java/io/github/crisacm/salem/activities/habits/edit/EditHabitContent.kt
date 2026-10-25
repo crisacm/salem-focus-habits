@@ -19,7 +19,6 @@
 
 package io.github.crisacm.salem.activities.habits.edit
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +58,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -72,8 +70,12 @@ import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitErrors
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
-import io.github.crisacm.salem.utils.formatTime
-import io.github.crisacm.salem.utils.toFormattedString
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.ui.edit.frequencyText
+import io.github.crisacm.salem.ui.edit.numericalFrequencyText
+import io.github.crisacm.salem.ui.edit.rememberTimeFormat
+import io.github.crisacm.salem.ui.edit.weekdaysText
+import java.util.Locale
 
 private const val MAX_NAME_LENGTH = 50
 
@@ -103,7 +105,8 @@ fun EditHabitContent(
     onBarColor: Color,
     actions: EditHabitActions
 ) {
-    val context = LocalContext.current
+    val timeFormat = rememberTimeFormat()
+    val dateFormatter = remember { JavaLocalDateFormatter(Locale.getDefault()) }
     var attempted by remember { mutableStateOf(false) }
     var saving by remember { mutableStateOf(false) }
     val errors = if (attempted) form.validate() else EditHabitErrors(nameBlank = false, targetBlank = false)
@@ -183,7 +186,7 @@ fun EditHabitContent(
             ) { onFormChange(form.copy(question = it)) }
 
             if (!isNumerical) {
-                PickerRow(R.string.frequency, formatFrequency(form.freqNum, form.freqDen, context.resources), "frequencyPicker", actions.onPickFrequency)
+                PickerRow(R.string.frequency, frequencyText(form.freqNum, form.freqDen), "frequencyPicker", actions.onPickFrequency)
             } else {
                 TextInput(
                     label = R.string.unit,
@@ -201,7 +204,7 @@ fun EditHabitContent(
                     maxLines = 1,
                     keyboardType = KeyboardType.Decimal
                 ) { onFormChange(form.copy(targetText = it)) }
-                PickerRow(R.string.frequency, numericalFrequencyText(context, form), "numericalFrequencyPicker", actions.onPickNumericalFrequency)
+                PickerRow(R.string.frequency, numericalFrequencyText(form.freqNum, form.freqDen), "numericalFrequencyPicker", actions.onPickNumericalFrequency)
                 PickerRow(
                     R.string.target_type,
                     stringResource(
@@ -214,12 +217,12 @@ fun EditHabitContent(
 
             PickerRow(
                 R.string.reminder,
-                if (form.hasReminder) formatTime(context, form.reminderHour, form.reminderMin).orEmpty() else stringResource(R.string.reminder_off),
+                if (form.hasReminder) timeFormat.format(form.reminderHour, form.reminderMin) else stringResource(R.string.reminder_off),
                 "reminderTimePicker",
                 actions.onPickTime
             )
             if (form.hasReminder) {
-                PickerRow(null, form.reminderDays.toFormattedString(context), "reminderDatePicker", actions.onPickDays)
+                PickerRow(null, weekdaysText(form.reminderDays, dateFormatter), "reminderDatePicker", actions.onPickDays)
             }
 
             TextInput(
@@ -231,13 +234,6 @@ fun EditHabitContent(
             ) { onFormChange(form.copy(notes = it)) }
         }
     }
-}
-
-private fun numericalFrequencyText(context: Context, form: EditHabitForm) = when (form.freqDen) {
-    1 -> context.getString(R.string.every_day)
-    7 -> context.getString(R.string.every_week)
-    30 -> context.getString(R.string.every_month)
-    else -> "${form.freqNum}/${form.freqDen}"
 }
 
 @Composable

@@ -19,7 +19,6 @@
 
 package io.github.crisacm.salem.activities.habits.edit
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.activity.compose.setContent
@@ -39,42 +38,34 @@ import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactor
 import io.github.crisacm.salem.activities.common.dialogs.FrequencyPickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.TimePickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.WeekdayPickerDialog
-import io.github.crisacm.salem.core.commands.CreateHabitCommand
-import io.github.crisacm.salem.core.commands.EditHabitCommand
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
+import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
+import io.github.crisacm.salem.core.ui.screens.habits.edit.SaveResult
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.ui.compose.SalemTheme
-import io.github.crisacm.salem.ui.dialogs.FrequencyLabel
-import io.github.crisacm.salem.ui.dialogs.frequencyLabel
+import io.github.crisacm.salem.ui.edit.EditHabitFormSaver
+import io.github.crisacm.salem.ui.edit.denominatorForChoice
+import io.github.crisacm.salem.ui.edit.reminderStartTime
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
-
-fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when (val label = frequencyLabel(freqNum, freqDen)) {
-    FrequencyLabel.EveryMonth -> resources.getString(R.string.every_month)
-    is FrequencyLabel.TimesPerMonth -> resources.getString(R.string.x_times_per_month, label.times)
-    FrequencyLabel.EveryDay -> resources.getString(R.string.every_day)
-    FrequencyLabel.EveryWeek -> resources.getString(R.string.every_week)
-    is FrequencyLabel.EveryXDays -> resources.getString(R.string.every_x_days, label.days)
-    is FrequencyLabel.TimesPerWeek -> resources.getString(R.string.x_times_per_week, label.times)
-    is FrequencyLabel.TimesInDays -> resources.getString(R.string.x_times_per_y_days, label.times, label.days)
-}
 
 /**
  * Screen that creates a habit (extra `habitType`) or edits one (extra `habitId`).
  */
 class EditHabitActivity : AppCompatActivity() {
     private lateinit var themeSwitcher: AndroidThemeSwitcher
+    private lateinit var saver: HabitEditorSaver
     private var habitId = -1L
     private var formState: MutableState<EditHabitForm>? = null
-    private var saving = false
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
 
         val component = (application as HabitsApplication).component
         themeSwitcher = AndroidThemeSwitcher(this, component.preferences)
+        saver = HabitEditorSaver(component.modelFactory, component.habitList, component.commandRunner)
         themeSwitcher.apply()
 
         val initial = if (intent.hasExtra("habitId")) {
@@ -155,19 +146,13 @@ class EditHabitActivity : AppCompatActivity() {
         ChoiceDialog.newInstance(
             listOf(getString(R.string.every_day), getString(R.string.every_week), getString(R.string.every_month))
         ) { which ->
-            val den = when (which) {
-                1 -> 7
-                2 -> 30
-                else -> 1
-            }
-            update { it.copy(freqDen = den) }
+            update { it.copy(freqDen = denominatorForChoice(which)) }
         }.dismissCurrentAndShow(supportFragmentManager, "numericalFrequencyPicker")
     }
 
     private fun pickTime() {
         val current = form
-        val hour = if (current.reminderHour >= 0) current.reminderHour else 8
-        val minute = if (current.reminderMin >= 0) current.reminderMin else 0
+        val (hour, minute) = reminderStartTime(current.reminderHour, current.reminderMin)
         val androidColor = themeSwitcher.currentTheme.color(current.color).toInt()
         val dialog = TimePickerDialog.newInstance(
             object : TimePickerDialog.OnTimePickedListener {
@@ -198,26 +183,8 @@ class EditHabitActivity : AppCompatActivity() {
     }
 
     private fun save(form: EditHabitForm) {
-        // A second tap before the screen closes must not create the habit twice.
-        if (saving) return
-        saving = true
-        val component = (application as HabitsApplication).component
-        val habit = component.modelFactory.buildHabit()
-        if (habitId >= 0) {
-            val original = component.habitList.getById(habitId)
-            if (original == null) {
-                finish()
-                return
-            }
-            habit.copyFrom(original)
-        }
-        form.applyTo(habit)
-        val command = if (habitId >= 0) {
-            EditHabitCommand(component.habitList, habitId, habit)
-        } else {
-            CreateHabitCommand(component.modelFactory, component.habitList, habit)
-        }
-        component.commandRunner.run(command)
-        finish()
+        val result = saver.save(form, habitId.takeIf { it >= 0 })
+        // A second tap before the screen closes is ignored; a habit that is gone closes the screen.
+        if (result != SaveResult.ALREADY_SAVING) finish()
     }
 }
