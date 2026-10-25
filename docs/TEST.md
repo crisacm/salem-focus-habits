@@ -5,7 +5,7 @@ Salem inherits the automated test suite of Loop Habit Tracker, which has a fairl
 - **Unit tests:** These tests run very quickly on the developer's computer, inside a JVM, and do not need an Android emulator or device. They typically test the correctness of core functions of the application, such as the computation of scores and streaks.
 - **Instrumented tests:** These tests require an Android emulator or device. _Medium_ instrumented tests are still quite fast to run, since only individual classes are tested. The app itself does not need to be launched. Examples include _view tests_, which render our custom views on the device and compare them against prerendered images. _Large_ instrumented tests launch the application on an Android emulator and interact with it by touching the screen, much like a regular user.
 
-Tests for the Jetpack Compose, Kotlin Multiplatform and iOS parts of the project will be documented here once they exist.
+`salem-ui` renders the charts of `salem-core` with a Compose `DrawScope` and compares them with the reference images of `salem-core/assets/test` (`./gradlew :salem-ui:desktopTest`). They run on the JVM with Skia, through a `desktop` target that exists only for these tests; the same drawing code runs on Android and iOS. Tests for the rest of the Compose, Kotlin Multiplatform and iOS parts will be documented here once they exist.
 
 ## Running unit tests
 
