@@ -17,11 +17,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.list
+package io.github.crisacm.salem.ui.list
 
-import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class CheckmarkColumnsTest {
     // A phone in portrait: the name takes a third of the width or the minimum name width, whichever is larger.
