@@ -27,5 +27,9 @@ class FontAwesome {
         const val QUESTION = "\uf128"
         const val STAR_HALF_O = "\uf5c0"
         const val UMBRELLA_BEACH = "\uf5ca"
+        const val CALENDAR = "\uf073"
+        const val BELL_O = "\uf0f3"
+        const val ARROW_CIRCLE_UP = "\uf0aa"
+        const val ARROW_CIRCLE_DOWN = "\uf0ab"
     }
 }

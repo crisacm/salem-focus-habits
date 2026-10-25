@@ -17,21 +17,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.show.views
+package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
-import io.github.crisacm.salem.R
 
 /** The title of a card: the regular text size, in the colour of the habit, with room below it. */
 @Composable
 fun CardTitle(text: String, color: Color, modifier: Modifier = Modifier) {
-    val size = with(LocalDensity.current) { dimensionResource(R.dimen.regularTextSize).toSp() }
-    Text(text, color = color, fontSize = size, modifier = modifier.padding(bottom = 12.dp))
+    Text(text, color = color, fontSize = REGULAR_TEXT, modifier = modifier.padding(bottom = 12.dp))
 }
