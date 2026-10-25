@@ -17,19 +17,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.intro
+package io.github.crisacm.salem.ui.intro
 
-import io.github.crisacm.salem.R
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.intro_icon_1
+import io.github.crisacm.salem.ui.resources.intro_icon_2
+import io.github.crisacm.salem.ui.resources.intro_icon_4
+import io.github.crisacm.salem.ui.resources.intro_title_1
+import io.github.crisacm.salem.ui.resources.intro_title_2
+import io.github.crisacm.salem.ui.resources.intro_title_4
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class IntroModelTest {
     @Test
     fun slidesKeepTheOriginalOrderAndColors() {
         assertEquals(
-            listOf(R.string.intro_title_1, R.string.intro_title_2, R.string.intro_title_4),
+            listOf(Res.string.intro_title_1, Res.string.intro_title_2, Res.string.intro_title_4),
             introSlides.map { it.title }
         )
         assertEquals(
@@ -37,7 +43,7 @@ class IntroModelTest {
             introSlides.map { it.color }
         )
         assertEquals(
-            listOf(R.drawable.intro_icon_1, R.drawable.intro_icon_2, R.drawable.intro_icon_4),
+            listOf(Res.drawable.intro_icon_1, Res.drawable.intro_icon_2, Res.drawable.intro_icon_4),
             introSlides.map { it.icon }
         )
     }
