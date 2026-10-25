@@ -20,86 +20,43 @@
 package io.github.crisacm.salem.activities.common.dialogs
 
 import android.os.Bundle
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.WeekdayList
-import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
-import io.github.crisacm.salem.ui.compose.DialogButton
-import io.github.crisacm.salem.ui.compose.DialogSurface
-import io.github.crisacm.salem.ui.dialogs.toggleDay
+import io.github.crisacm.salem.ui.dialogs.WeekdayPickerContent
+import io.github.crisacm.salem.ui.dialogs.weekdayNames
 import java.util.Locale
 
 /**
  * Dialog that allows the user to pick one or more days of the week.
  */
 class WeekdayPickerDialog : ComposeDialogFragment() {
-    private var selectedDays = BooleanArray(7)
+    private var selectedDays = WeekdayList.EVERY_DAY
     private var listener: OnWeekdaysPickedListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.getBooleanArray(KEY_SELECTED_DAYS)?.let { selectedDays = it }
         // The listener is not saved: a dialog restored after a rotation could not report anything.
         if (savedInstanceState != null) dismissAllowingStateLoss()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBooleanArray(KEY_SELECTED_DAYS, selectedDays)
-    }
-
     @Composable
     override fun Content() {
-        // Names start at Saturday, as the weekday list does.
-        val names = remember { JavaLocalDateFormatter(Locale.getDefault()).longWeekdayNames(DayOfWeek.SATURDAY) }
-        val checked = remember { mutableStateListOf(*selectedDays.toTypedArray()) }
-        DialogSurface(
-            title = stringResource(R.string.select_weekdays),
+        val names = remember { weekdayNames(JavaLocalDateFormatter(Locale.getDefault())) }
+        WeekdayPickerContent(
+            dayNames = names,
+            selected = selectedDays,
+            onPicked = {
+                listener?.onWeekdaysSet(it)
+                dismiss()
+            },
             onDismiss = ::dismiss,
-            buttons = {
-                DialogButton(stringResource(android.R.string.cancel), ::dismiss)
-                DialogButton(stringResource(android.R.string.yes)) {
-                    listener?.onWeekdaysSet(WeekdayList(selectedDays))
-                    dismiss()
-                }
-            }
-        ) {
-            names.forEachIndexed { index, name ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(role = Role.Checkbox) {
-                            checked[index] = !checked[index]
-                            selectedDays = toggleDay(selectedDays, index, checked[index])
-                        }
-                        .padding(horizontal = 24.dp, vertical = 4.dp)
-                ) {
-                    Checkbox(checked = checked[index], onCheckedChange = null)
-                    Text(
-                        name,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-            }
-        }
+            confirmLabel = stringResource(android.R.string.yes),
+            cancelLabel = stringResource(android.R.string.cancel)
+        )
     }
 
     fun setListener(listener: OnWeekdaysPickedListener?) {
@@ -107,14 +64,10 @@ class WeekdayPickerDialog : ComposeDialogFragment() {
     }
 
     fun setSelectedDays(days: WeekdayList) {
-        selectedDays = days.toArray()
+        selectedDays = days
     }
 
     fun interface OnWeekdaysPickedListener {
         fun onWeekdaysSet(days: WeekdayList)
-    }
-
-    companion object {
-        private const val KEY_SELECTED_DAYS = "selectedDays"
     }
 }
