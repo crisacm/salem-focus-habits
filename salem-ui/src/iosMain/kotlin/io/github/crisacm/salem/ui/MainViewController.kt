@@ -20,7 +20,8 @@
 package io.github.crisacm.salem.ui
 
 import androidx.compose.ui.window.ComposeUIViewController
+import io.github.crisacm.salem.ui.ios.IosListRoot
 import platform.UIKit.UIViewController
 
 /** The root view controller that the iOS app shows. */
-fun MainViewController(): UIViewController = ComposeUIViewController { SalemUiSample() }
+fun MainViewController(): UIViewController = ComposeUIViewController { IosListRoot() }

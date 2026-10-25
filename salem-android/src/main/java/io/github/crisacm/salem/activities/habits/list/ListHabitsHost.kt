@@ -52,23 +52,13 @@ import io.github.crisacm.salem.ui.list.ListRowCallbacks
 import io.github.crisacm.salem.ui.list.ListScreenColors
 import io.github.crisacm.salem.ui.list.ListScreenModel
 import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
+import io.github.crisacm.salem.ui.list.checkmarkColumns
 import io.github.crisacm.salem.ui.list.emptyListState
 import io.github.crisacm.salem.utils.StyledResources
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.xml.KonfettiView
 import java.util.Locale
 import kotlin.math.max
-import kotlin.math.min
-
-/**
- * How many day columns fit in [width] pixels: the name of the habit takes a third of the width, or
- * [nameWidth] if that is larger, and each column is [buttonWidth] wide.
- */
-fun checkmarkColumns(width: Float, nameWidth: Float, buttonWidth: Float): Int {
-    val labelWidth = max(width / 3, nameWidth)
-    val buttonCount = ((width - labelWidth) / buttonWidth).toInt()
-    return min(MAX_CHECKMARK_COUNT, max(0, buttonCount))
-}
 
 /**
  * Everything the habit list screen keeps outside of its composition: the shared day offset of the header
