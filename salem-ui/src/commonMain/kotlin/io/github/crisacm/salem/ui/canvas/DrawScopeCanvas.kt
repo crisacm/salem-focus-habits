@@ -39,6 +39,12 @@ import io.github.crisacm.salem.platform.gui.TextAlign
 import androidx.compose.ui.graphics.Color as ComposeColor
 import io.github.crisacm.salem.platform.gui.Color as CoreColor
 
+/** The height of an "m" in Noto Sans, the font of the core on every platform, as a fraction of the font size. */
+private const val M_HEIGHT = 0.54
+
+/** `AndroidCanvas` puts the baseline this fraction of the height of an "m" below the `y` of a line of text. */
+private const val BASELINE_BELOW_Y = 0.6
+
 /**
  * The [Canvas] of salem-core over a Compose [DrawScope], for iOS and for the shared screens of Android. All
  * sizes and coordinates of the core are in dp; the scope is in pixels, so they are multiplied by its density,
@@ -46,7 +52,9 @@ import io.github.crisacm.salem.platform.gui.Color as CoreColor
  * the caller must draw on its own transparent layer (see [CoreChart]).
  *
  * [regularFamily] and [boldFamily] are the families of [Font.REGULAR] and [Font.BOLD]; [fontAwesomeFamily]
- * holds the glyphs of `FontAwesome`.
+ * holds the glyphs of `FontAwesome`. Like `AndroidCanvas`, the `y` of a line of text is about the middle of its
+ * lower-case letters (the baseline is 0.6 times the height of an "m" below it), which is what the charts of the core
+ * are laid out for; a `FontAwesome` glyph is centred on `y` by its line box.
  */
 class DrawScopeCanvas(
     private val textMeasurer: TextMeasurer,
@@ -113,7 +121,12 @@ class DrawScopeCanvas(
             TextAlign.CENTER -> x.px() - width / 2f
             TextAlign.RIGHT -> x.px() - width
         }
-        val top = y.px() - layout.size.height / 2f
+        val top = if (font == Font.FONT_AWESOME) {
+            // A glyph has no lower-case letters to measure: it is centred on y by its line box
+            y.px() - layout.size.height / 2f
+        } else {
+            y.px() + (BASELINE_BELOW_Y * M_HEIGHT * fontSize).px() - layout.firstBaseline
+        }
         scope.drawText(layout, topLeft = Offset(left, top))
     }
 

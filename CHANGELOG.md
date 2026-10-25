@@ -17,6 +17,7 @@ attribution.
 
 ### Added
 
+- Prepare the charts of the habit detail for iOS: the canvas of `salem-ui` now places text like the Android one (the line is centred on the middle of its lower-case letters, which the charts of the core are laid out for), and `salem-ui` has a `CoreChart` with drag, fling, tap and long press. The six charts are rendered through that canvas in the JVM tests and compared with the reference images of the core.
 - Create and edit habits in the iOS app: the new habit dialog, the editor, the colour picker, the delete confirmation and the checkmark and number popups of the shared UI open over the habit list (`ListOverlays` and `ListOverlayHost` in `salem-ui`, tested on the JVM); the back gesture closes them and a popup closed that way still saves the notes that changed.
 - Move the create and edit habit screen to `salem-ui` (`EditHabitScreen`), shared with the future iOS screens: the colour, frequency, target type, time and days pickers are now opened over the form instead of as separate dialogs, the back button closes the open picker first, and the form is hidden from accessibility services while a picker is open. `EditHabitActivity` only hosts it.
 - Share the save logic and the texts of the habit editor with the future iOS screens: a tested `HabitEditorSaver` in `salem-core` (a second tap on Save is ignored, a deleted habit is reported), and in `salem-ui` the frequency, reminder days and reminder time texts, the latter following the clock format of the device on Android, the desktop and iOS.
