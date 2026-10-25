@@ -41,5 +41,9 @@ class FontAwesomeGlyphsTest {
         assertEquals(glyph("fa_question"), FontAwesome.QUESTION)
         assertEquals(glyph("fa_star_half_o"), FontAwesome.STAR_HALF_O)
         assertEquals(glyph("fa_umbrella_beach"), FontAwesome.UMBRELLA_BEACH)
+        assertEquals(glyph("fa_calendar"), FontAwesome.CALENDAR)
+        assertEquals(glyph("fa_bell_o"), FontAwesome.BELL_O)
+        assertEquals(glyph("fa_arrow_circle_up"), FontAwesome.ARROW_CIRCLE_UP)
+        assertEquals(glyph("fa_arrow_circle_down"), FontAwesome.ARROW_CIRCLE_DOWN)
     }
 }

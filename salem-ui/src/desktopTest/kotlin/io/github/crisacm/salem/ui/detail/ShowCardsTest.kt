@@ -17,23 +17,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.show
+package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.crisacm.salem.activities.habits.show.views.BarCardContent
-import io.github.crisacm.salem.activities.habits.show.views.FrequencyCardContent
-import io.github.crisacm.salem.activities.habits.show.views.HistoryCardContent
-import io.github.crisacm.salem.activities.habits.show.views.NotesCardContent
-import io.github.crisacm.salem.activities.habits.show.views.OverviewCardContent
-import io.github.crisacm.salem.activities.habits.show.views.ScoreCardContent
-import io.github.crisacm.salem.activities.habits.show.views.StreakCardContent
-import io.github.crisacm.salem.activities.habits.show.views.SubtitleCardContent
-import io.github.crisacm.salem.activities.habits.show.views.TargetCardContent
+import androidx.compose.ui.test.runComposeUiTest
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Frequency
 import io.github.crisacm.salem.core.models.PaletteColor
@@ -53,21 +44,30 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
 import io.github.crisacm.salem.core.ui.views.HistoryChart
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
-import org.junit.Assert.assertEquals
-import org.junit.Rule
+import io.github.crisacm.salem.platform.time.resetToday
+import io.github.crisacm.salem.platform.time.setToday
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
+import java.util.Locale
+import kotlin.test.assertEquals
 
-@RunWith(AndroidJUnit4::class)
-class ShowCardsComposeTest {
-    @get:Rule
-    val composeRule = createComposeRule()
+@OptIn(ExperimentalTestApi::class)
+class ShowCardsTest {
+    private val formatter = JavaLocalDateFormatter(Locale.US)
 
     private val today = LocalDate(5000)
 
+    @Before
+    fun fixToday() = setToday(today)
+
+    @After
+    fun restoreToday() = resetToday()
+
     @Test
-    fun theHistoryCardDrawsItsChartAndTheEditButtonAsks() {
+    fun theHistoryCardDrawsItsChartAndTheEditButtonAsks() = runComposeUiTest {
         var edits = 0
         val state = HistoryCardState(
             color = PaletteColor(8),
@@ -78,14 +78,14 @@ class ShowCardsComposeTest {
             theme = LightTheme(),
             today = today
         )
-        composeRule.setContent { HistoryCardContent(state, onEdit = { edits++ }) }
-        composeRule.onNodeWithTag("historyChart").assertIsDisplayed()
-        composeRule.onNodeWithTag("historyEdit").performClick()
+        setContent { HistoryCardContent(state, onEdit = { edits++ }, dateFormatter = formatter) }
+        onNodeWithTag("historyChart").assertIsDisplayed()
+        onNodeWithTag("historyEdit").performClick()
         assertEquals(1, edits)
     }
 
     @Test
-    fun theBarCardShowsTheSpinnerOfItsKind() {
+    fun theBarCardShowsTheSpinnerOfItsKind() = runComposeUiTest {
         val entries = List(20) { Entry(today.minus(it), Entry.YES_MANUAL) }
         val state = BarCardState(
             theme = LightTheme(),
@@ -96,49 +96,49 @@ class ShowCardsComposeTest {
             isNumerical = false,
             numericalSpinnerPosition = 0
         )
-        composeRule.setContent { BarCardContent(state, onBoolSpinner = {}, onNumericalSpinner = {}) }
-        composeRule.onNodeWithTag("barChart").assertIsDisplayed()
+        setContent { BarCardContent(state, onBoolSpinner = {}, onNumericalSpinner = {}, dateFormatter = formatter) }
+        onNodeWithTag("barChart").assertIsDisplayed()
     }
 
     @Test
-    fun theScoreCardDrawsItsChart() {
+    fun theScoreCardDrawsItsChart() = runComposeUiTest {
         val scores = List(30) { Score(today.minus(it), 0.5 + it / 100.0) }
         val state = ScoreCardState(scores, 7, 0, PaletteColor(8), LightTheme())
-        composeRule.setContent { ScoreCardContent(state, onSpinner = {}) }
-        composeRule.onNodeWithTag("scoreChart").assertIsDisplayed()
+        setContent { ScoreCardContent(state, onSpinner = {}, dateFormatter = formatter) }
+        onNodeWithTag("scoreChart").assertIsDisplayed()
     }
 
     @Test
-    fun theFrequencyCardDrawsItsChart() {
+    fun theFrequencyCardDrawsItsChart() = runComposeUiTest {
         val frequency = hashMapOf(LocalDate(today.year, today.month, 1) to arrayOf(1, 2, 3, 4, 5, 6, 7))
         val state = FrequencyCardState(PaletteColor(8), DayOfWeek.MONDAY, frequency, LightTheme(), false)
-        composeRule.setContent { FrequencyCardContent(state) }
-        composeRule.onNodeWithTag("frequencyChart").assertIsDisplayed()
+        setContent { FrequencyCardContent(state, formatter) }
+        onNodeWithTag("frequencyChart").assertIsDisplayed()
     }
 
     @Test
-    fun theStreakCardDrawsItsChart() {
+    fun theStreakCardDrawsItsChart() = runComposeUiTest {
         val streaks = listOf(Streak(today.minus(20), today.minus(10)), Streak(today.minus(5), today))
-        composeRule.setContent { StreakCardContent(StreakCardState(PaletteColor(8), streaks, LightTheme())) }
-        composeRule.onNodeWithTag("streakChart").assertIsDisplayed()
+        setContent { StreakCardContent(StreakCardState(PaletteColor(8), streaks, LightTheme()), formatter) }
+        onNodeWithTag("streakChart").assertIsDisplayed()
     }
 
     @Test
-    fun theTargetCardDrawsItsChart() {
+    fun theTargetCardDrawsItsChart() = runComposeUiTest {
         val state = TargetCardState(PaletteColor(8), listOf(1.0, 3.0), listOf(1.0, 5.0), listOf(1, 7), LightTheme())
-        composeRule.setContent { TargetCardContent(state) }
-        composeRule.onNodeWithTag("targetChart").assertIsDisplayed()
+        setContent { TargetCardContent(state) }
+        onNodeWithTag("targetChart").assertIsDisplayed()
     }
 
     @Test
-    fun theOverviewCardShowsItsValues() {
+    fun theOverviewCardShowsItsValues() = runComposeUiTest {
         val state = OverviewCardState(PaletteColor(8), 0.23f, -0.12f, 0.74f, 44, LightTheme())
-        composeRule.setContent { OverviewCardContent(state) }
-        composeRule.onNodeWithTag("overviewCard").assertIsDisplayed()
+        setContent { OverviewCardContent(state) }
+        onNodeWithTag("overviewCard").assertIsDisplayed()
     }
 
     @Test
-    fun theSubtitleShowsTheQuestionTheFrequencyAndTheReminder() {
+    fun theSubtitleShowsTheQuestionTheFrequencyAndTheReminder() = runComposeUiTest {
         val state = SubtitleCardState(
             color = PaletteColor(8),
             frequency = Frequency(3, 7),
@@ -147,15 +147,15 @@ class ShowCardsComposeTest {
             reminder = Reminder(8, 30, WeekdayList.EVERY_DAY),
             theme = LightTheme()
         )
-        composeRule.setContent { SubtitleCardContent(state) }
-        composeRule.onNodeWithTag("subtitleQuestion").assertIsDisplayed()
-        composeRule.onNodeWithTag("subtitleFrequency").assertIsDisplayed()
-        composeRule.onNodeWithTag("subtitleReminder").assertIsDisplayed()
+        setContent { SubtitleCardContent(state) }
+        onNodeWithTag("subtitleQuestion").assertIsDisplayed()
+        onNodeWithTag("subtitleFrequency").assertIsDisplayed()
+        onNodeWithTag("subtitleReminder").assertIsDisplayed()
     }
 
     @Test
-    fun theNotesAreShownOnlyWithADescription() {
-        composeRule.setContent { NotesCardContent(NotesCardState("Remember to breathe"), Color.Black) }
-        composeRule.onNodeWithTag("notesCard").assertIsDisplayed()
+    fun theNotesAreShownOnlyWithADescription() = runComposeUiTest {
+        setContent { NotesCardContent(NotesCardState("Remember to breathe"), Color.Black) }
+        onNodeWithTag("notesCard").assertIsDisplayed()
     }
 }

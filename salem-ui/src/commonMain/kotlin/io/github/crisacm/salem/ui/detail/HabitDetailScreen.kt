@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.show
+package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,23 +33,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
+import io.github.crisacm.salem.platform.time.LocalDateFormatter
+import io.github.crisacm.salem.ui.list.exposeTestTags
 
-/** The whole detail screen of a habit in one composition: the top bar and the cards. */
+/**
+ * The whole detail screen of a habit in one composition: the top bar and the cards. [barColor] is the colour of the
+ * top bar, which the platform chooses; [onBack] leaves the screen.
+ */
 @Composable
-fun ShowHabitScreen(host: ShowHabitHost, onBack: () -> Unit) {
-    val state = host.state ?: return
+fun HabitDetailScreen(
+    session: HabitDetailSession,
+    barColor: Color,
+    dateFormatter: LocalDateFormatter,
+    onBack: () -> Unit
+) {
+    val state = session.state ?: return
     val sideInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
     Column(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
             .windowInsetsPadding(sideInsets)
-            .semantics { testTagsAsResourceId = true }
+            .exposeTestTags()
             .testTag("showHabitScreen")
     ) {
-        ShowHabitBar(host, state.title, host.barColor(state), onBack)
-        ShowHabitContent(state, host.callbacks, Modifier.weight(1f))
+        HabitDetailBar(session, state.title, barColor, onBack)
+        HabitDetailContent(state, session.callbacks, dateFormatter, Modifier.weight(1f))
     }
 }

@@ -211,6 +211,9 @@ interface LocalDateFormatter {
     fun shortMonthName(date: LocalDate): String
     fun longWeekdayName(weekday: DayOfWeek): String
     fun longMonthName(date: LocalDate): String
+
+    /** The date as the locale writes it in its medium form, such as `Jan 15, 2015`. */
+    fun longFormat(date: LocalDate): String
 }
 
 private fun isLeapYear(year: Int): Boolean {

@@ -17,20 +17,16 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.show.views
+package io.github.crisacm.salem.widgets
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import android.content.res.Resources
+import io.github.crisacm.salem.R
 
-class OverviewCardTest {
-    @Test
-    fun aGrowingScoreHasAPlusSign() {
-        assertEquals("+23%", formatPercentageDiff(0.23f))
-        assertEquals("+0%", formatPercentageDiff(0f))
-    }
-
-    @Test
-    fun aFallingScoreHasATypographicMinus() {
-        assertEquals("\u221212%", formatPercentageDiff(-0.12f))
-    }
+/** The label of the interval, in days, of a row of the target widget. */
+fun intervalToLabel(resources: Resources, interval: Int): String = when (interval) {
+    1 -> resources.getString(R.string.today)
+    7 -> resources.getString(R.string.week)
+    30 -> resources.getString(R.string.month)
+    91 -> resources.getString(R.string.quarter)
+    else -> resources.getString(R.string.year)
 }

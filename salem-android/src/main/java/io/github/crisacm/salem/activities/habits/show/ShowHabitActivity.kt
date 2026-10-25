@@ -16,12 +16,16 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package io.github.crisacm.salem.activities.habits.show
 
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
@@ -31,20 +35,23 @@ import io.github.crisacm.salem.activities.common.dialogs.CheckmarkDialog
 import io.github.crisacm.salem.activities.common.dialogs.ConfirmDeleteDialog
 import io.github.crisacm.salem.activities.common.dialogs.HistoryEditorDialog
 import io.github.crisacm.salem.activities.common.dialogs.NumberDialog
-import io.github.crisacm.salem.core.commands.Command
-import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.PaletteColor
-import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
 import io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
-import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
+import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.detail.HabitDetailScreen
+import io.github.crisacm.salem.ui.detail.HabitDetailSession
+import io.github.crisacm.salem.ui.detail.barColorFor
+import io.github.crisacm.salem.ui.detail.habitIdFrom
+import io.github.crisacm.salem.utils.StyledResources
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
 import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.showMessage
@@ -52,20 +59,19 @@ import io.github.crisacm.salem.utils.showSendFileScreen
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.Locale
 
-class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
+/**
+ * The detail screen of a habit. The screen and its state are the shared [HabitDetailScreen] and
+ * [HabitDetailSession]; this activity finds the habit, owns the dialogs and the status bar, and gives the session
+ * the actions that only Android can do.
+ */
+class ShowHabitActivity : AppCompatActivity() {
 
-    private lateinit var commandRunner: CommandRunner
-    private lateinit var host: ShowHabitHost
+    private lateinit var session: HabitDetailSession
     private lateinit var habit: Habit
-    private lateinit var preferences: Preferences
     private lateinit var themeSwitcher: AndroidThemeSwitcher
     private lateinit var widgetUpdater: WidgetUpdater
-
-    private val scope = CoroutineScope(Dispatchers.Main)
-    private lateinit var presenter: ShowHabitPresenter
-    private val screen = Screen()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,74 +85,70 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             return
         }
         habit = foundHabit
-        preferences = appComponent.preferences
-        commandRunner = appComponent.commandRunner
         widgetUpdater = appComponent.widgetUpdater
 
-        themeSwitcher = AndroidThemeSwitcher(this, preferences)
+        themeSwitcher = AndroidThemeSwitcher(this, appComponent.preferences)
         themeSwitcher.apply()
 
-        presenter = ShowHabitPresenter(
-            commandRunner = commandRunner,
+        session = HabitDetailSession(
             habit = habit,
             habitList = habitList,
-            preferences = preferences,
-            screen = screen
-        )
-
-        val menuPresenter = ShowHabitMenuPresenter(
-            commandRunner = commandRunner,
-            habit = habit,
-            habitList = habitList,
-            screen = screen,
+            preferences = appComponent.preferences,
+            commandRunner = appComponent.commandRunner,
+            taskRunner = appComponent.taskRunner,
             system = HabitsDirFinder(AndroidDirFinder(this)),
-            taskRunner = appComponent.taskRunner
+            theme = { themeSwitcher.currentTheme },
+            hooks = Hooks(),
+            scope = CoroutineScope(Dispatchers.Main)
         )
-
-        host = ShowHabitHost(this, menuPresenter, preferences)
-        host.callbacks = ShowHabitCallbacks(
-            onScoreSpinner = presenter.scoreCardPresenter::onSpinnerPosition,
-            onHistoryEdit = presenter.historyCardPresenter::onClickEditButton,
-            onBoolSpinner = presenter.barCardPresenter::onBoolSpinnerPosition,
-            onNumericalSpinner = presenter.barCardPresenter::onNumericalSpinnerPosition
-        )
-        setContent { SalemTheme { ShowHabitScreen(host, onBack = { onSupportNavigateUp() }) } }
+        setContent {
+            SalemTheme {
+                val state = session.state
+                HabitDetailScreen(
+                    session = session,
+                    barColor = state?.let(::barColor) ?: Color.Black,
+                    dateFormatter = remember { JavaLocalDateFormatter(Locale.getDefault()) },
+                    onBack = { onSupportNavigateUp() }
+                )
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        commandRunner.addListener(this)
         supportFragmentManager.findFragmentByTag("historyEditor")?.let {
-            (it as HistoryEditorDialog).setOnDateClickedListener(presenter.historyCardPresenter)
+            (it as HistoryEditorDialog).setOnDateClickedListener(session.dateClickedListener)
         }
-        screen.refresh()
+        session.attach()
     }
 
     override fun onPause() {
         dismissCurrentDialog()
-        commandRunner.removeListener(this)
+        session.detach()
         super.onPause()
     }
 
-    override fun onCommandFinished(command: Command) {
-        screen.refresh()
+    /** The colour of the top bar: the habit colour or the primary colour, as the old toolbar did. */
+    private fun barColor(state: ShowHabitState): Color {
+        val styled = StyledResources(this)
+        return Color(
+            barColorFor(
+                useHabitColor = styled.getBoolean(R.attr.useHabitColorAsPrimary),
+                habitColor = state.theme.color(state.color).toInt(),
+                primaryColor = styled.getColor(R.attr.colorPrimary)
+            )
+        )
     }
 
-    inner class Screen : ShowHabitMenuPresenter.Screen, ShowHabitPresenter.Screen {
-        override fun updateWidgets() {
-            widgetUpdater.updateWidgets()
+    private inner class Hooks : HabitDetailSession.Hooks {
+        // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the bar.
+        @Suppress("DEPRECATION")
+        override fun onStateChanged(state: ShowHabitState) {
+            window.statusBarColor = barColor(state).toArgb()
         }
 
-        override fun refresh() {
-            scope.launch {
-                val state = ShowHabitPresenter.buildState(
-                    habit = habit,
-                    preferences = preferences,
-                    theme = themeSwitcher.currentTheme
-                )
-                host.onState(state)
-                host.paintStatusBar(this@ShowHabitActivity, host.barColor(state))
-            }
+        override fun updateWidgets() {
+            widgetUpdater.updateWidgets()
         }
 
         override fun showHistoryEditorDialog(listener: OnDateClickedListener) {
@@ -206,21 +208,11 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                 }
 
                 ShowHabitMenuPresenter.Message.HABIT_ARCHIVED -> {
-                    showMessage(
-                        resources.getQuantityString(
-                            R.plurals.toast_habits_archived,
-                            1
-                        )
-                    )
+                    showMessage(resources.getQuantityString(R.plurals.toast_habits_archived, 1))
                 }
 
                 ShowHabitMenuPresenter.Message.HABIT_UNARCHIVED -> {
-                    showMessage(
-                        resources.getQuantityString(
-                            R.plurals.toast_habits_unarchived,
-                            1
-                        )
-                    )
+                    showMessage(resources.getQuantityString(R.plurals.toast_habits_unarchived, 1))
                 }
 
                 else -> {}

@@ -86,4 +86,11 @@ class AppleLocalDateFormatterTest {
         val formatter = AppleLocalDateFormatter()
         assertEquals(false, formatter.shortWeekdayName(DayOfWeek.MONDAY).isEmpty())
     }
+
+    @Test
+    fun testLongFormat() {
+        assertEquals("Dec 1, 2020", us.longFormat(LocalDate(2020, 12, 1)))
+        assertEquals("Jan 15, 2015", us.longFormat(LocalDate(2015, 1, 15)))
+        assertEquals("Feb 28, 2000", us.longFormat(LocalDate(2000, 2, 28)))
+    }
 }

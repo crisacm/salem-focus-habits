@@ -57,6 +57,7 @@ class EditHabitScreenTest {
         override fun shortMonthName(date: LocalDate) = "month"
         override fun longWeekdayName(weekday: DayOfWeek) = "long"
         override fun longMonthName(date: LocalDate) = "long month"
+        override fun longFormat(date: LocalDate) = "long date"
     }
 
     private val dispatcher = NavigationEventDispatcher()

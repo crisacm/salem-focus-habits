@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.show
+package io.github.crisacm.salem.ui.detail
 
 import io.github.crisacm.salem.core.ui.views.toShortString
 

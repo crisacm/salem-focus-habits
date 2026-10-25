@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.ui.compose
+package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

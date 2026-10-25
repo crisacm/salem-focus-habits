@@ -21,9 +21,15 @@ package io.github.crisacm.salem.platform.time
 
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSCalendarIdentifierGregorian
+import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
+import platform.Foundation.NSDateFormatterMediumStyle
+import platform.Foundation.NSDateFormatterNoStyle
 import platform.Foundation.NSLocale
+import platform.Foundation.NSTimeZone
 import platform.Foundation.currentLocale
+import platform.Foundation.dateWithTimeIntervalSince1970
+import platform.Foundation.timeZoneForSecondsFromGMT
 
 /**
  * [LocalDateFormatter] for iOS. Names come from the symbol tables of an NSDateFormatter in [locale]
@@ -36,6 +42,7 @@ class AppleLocalDateFormatter(locale: NSLocale = NSLocale.currentLocale) : Local
     private val narrowWeekdays: List<String>
     private val longMonths: List<String>
     private val shortMonths: List<String>
+    private val mediumFormatter: NSDateFormatter
 
     init {
         val formatter = NSDateFormatter()
@@ -46,6 +53,14 @@ class AppleLocalDateFormatter(locale: NSLocale = NSLocale.currentLocale) : Local
         narrowWeekdays = formatter.veryShortWeekdaySymbols.filterIsInstance<String>()
         longMonths = formatter.monthSymbols.filterIsInstance<String>()
         shortMonths = formatter.shortMonthSymbols.filterIsInstance<String>()
+        // A date has no time of day: it is written in GMT so the day does not move with the time zone of the device
+        mediumFormatter = NSDateFormatter().apply {
+            calendar = NSCalendar(calendarIdentifier = NSCalendarIdentifierGregorian)
+            this.locale = locale
+            dateStyle = NSDateFormatterMediumStyle
+            timeStyle = NSDateFormatterNoStyle
+            timeZone = NSTimeZone.timeZoneForSecondsFromGMT(0)
+        }
     }
 
     override fun narrowWeekdayName(weekday: DayOfWeek) = narrowWeekdays[weekday.daysSinceSunday]
@@ -67,4 +82,14 @@ class AppleLocalDateFormatter(locale: NSLocale = NSLocale.currentLocale) : Local
     override fun longWeekdayName(weekday: DayOfWeek) = longWeekdays[weekday.daysSinceSunday]
 
     override fun longMonthName(date: LocalDate) = longMonths[date.month - 1]
+
+    override fun longFormat(date: LocalDate): String =
+        mediumFormatter.stringFromDate(NSDate.dateWithTimeIntervalSince1970(date.daysSince2000 * SECONDS_PER_DAY + SECONDS_2000))
+
+    private companion object {
+        const val SECONDS_PER_DAY = 86_400.0
+
+        // 2000-01-01T00:00:00Z in the Unix epoch
+        const val SECONDS_2000 = 946_684_800.0
+    }
 }
