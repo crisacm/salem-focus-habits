@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Color
 import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.core.ui.views.PureBlackTheme
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import io.github.crisacm.salem.platform.gui.Color as CoreColor
 
 class SalemColorSchemeTest {

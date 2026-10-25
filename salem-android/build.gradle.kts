@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(project(":salem-core"))
+    implementation(project(":salem-ui"))
     ksp(libs.kotlin.inject.compiler)
 
     androidTestImplementation(platform(libs.compose.bom))
