@@ -42,6 +42,10 @@ class DrawScopeCanvasTextTest {
     private fun BufferedImage.inkBottom() =
         (height - 1 downTo 0).first { row -> (0 until width).any { (getRGB(it, row) ushr 24) != 0 } }
 
+    /** The first row, in pixels, with ink. */
+    private fun BufferedImage.inkTop() =
+        (0 until height).first { row -> (0 until width).any { (getRGB(it, row) ushr 24) != 0 } }
+
     private fun assertNear(expected: Int, actual: Int, tolerance: Int) =
         assertTrue(kotlin.math.abs(expected - actual) <= tolerance, "$actual is not within $tolerance of $expected")
 
@@ -112,5 +116,18 @@ class DrawScopeCanvasTextTest {
             it.setFontSize(28.0)
             assertEquals(2 * small, it.fontSpacing(), 0.1 * small)
         }
+    }
+
+    @Test
+    fun anMIsAboutFiftyFourHundredthsOfTheFontSizeTall() {
+        // The placement relies on this number, so it is measured on the font and not taken from the code
+        val image = render(160, 110) {
+            it.setColor(black)
+            it.setFontSize(size)
+            it.setTextAlign(TextAlign.LEFT)
+            it.drawText("m", 10.0, y)
+        }
+        val heightInDp = (image.inkBottom() - image.inkTop() + 1) / 2.0
+        assertEquals(0.54 * size, heightInDp, 1.5)
     }
 }

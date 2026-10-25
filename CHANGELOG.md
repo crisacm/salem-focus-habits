@@ -9,6 +9,7 @@ attribution.
 
 ### Fixed
 
+- The habit detail follows the dark mode while it is open on iOS (the cards, charts and history editor used to keep the old theme), it no longer refreshes after it was left or registers twice for the commands, it covers the screen from the first frame, and the Android detail stops its pending refreshes when it is destroyed.
 - The number popup only accepts ASCII digits and one decimal mark (other digits used to be accepted and then replaced by the old value without a warning), a popup whose notes only differ in spaces is not saved again when it is closed, a late callback can no longer close a newer dialog of the iOS list, and the iOS habit list is hidden from VoiceOver while a dialog, popup or the editor is open.
 - Migrations on iOS are atomic: each one and its version number are a transaction (`ROLLBACK` is now understood by the JVM and iOS databases), so a crash in the middle no longer leaves a half-migrated file that cannot be opened again
 - The short form of numbers (`toShortString`, used by numerical cells, charts and widgets) no longer keeps trailing zeros: 5.004 shows "5" and 12.04 shows "12", as before the list moved to `salem-ui`; exact halves still round up

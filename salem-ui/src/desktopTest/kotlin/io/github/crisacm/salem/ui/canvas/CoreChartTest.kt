@@ -27,9 +27,10 @@ import androidx.compose.ui.test.click
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.runSkikoComposeUiTest
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.platform.gui.Canvas
 import io.github.crisacm.salem.platform.gui.DataView
@@ -41,6 +42,13 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class CoreChartTest {
     private val fonts = SalemFonts(FontFamily.Default, FontFamily.Default, FontFamily.Default)
+
+    // Two pixels per dp in the whole window, so a mistake between px and dp shows in the position that the chart receives
+    private fun runAtTwoPixelsPerDp(block: androidx.compose.ui.test.SkikoComposeUiTest.() -> Unit) =
+        runSkikoComposeUiTest(density = Density(2f), block = block)
+
+    private fun androidx.compose.ui.test.ComposeUiTest.show(chart: FakeChart, scroll: ChartScrollState = ChartScrollState()) =
+        setContent { CoreChart(chart, scroll, fonts, Modifier.size(100.dp)) }
 
     private class FakeChart : DataView {
         val clicks = mutableListOf<Pair<Double, Double>>()
@@ -63,10 +71,10 @@ class CoreChartTest {
     }
 
     @Test
-    fun aTapReachesTheChartWithItsPosition() = runComposeUiTest {
+    fun aTapReachesTheChartWithItsPosition() = runAtTwoPixelsPerDp {
         val chart = FakeChart()
-        setContent { CoreChart(chart, ChartScrollState(), fonts, Modifier.size(100.dp)) }
-        onRoot().performTouchInput { click(Offset(20f, 30f)) }
+        show(chart)
+        onRoot().performTouchInput { click(Offset(40f, 60f)) }
         waitForIdle()
         assertEquals(1, chart.clicks.size)
         assertEquals(20.0, chart.clicks.single().first, 1.0)
@@ -74,20 +82,22 @@ class CoreChartTest {
     }
 
     @Test
-    fun aLongPressReachesTheChart() = runComposeUiTest {
+    fun aLongPressReachesTheChart() = runAtTwoPixelsPerDp {
         val chart = FakeChart()
-        setContent { CoreChart(chart, ChartScrollState(), fonts, Modifier.size(100.dp)) }
-        onRoot().performTouchInput { longClick(Offset(40f, 50f)) }
+        show(chart)
+        onRoot().performTouchInput { longClick(Offset(80f, 100f)) }
         waitForIdle()
         assertEquals(1, chart.longClicks.size)
+        assertEquals(40.0, chart.longClicks.single().first, 1.0)
+        assertEquals(50.0, chart.longClicks.single().second, 1.0)
         assertTrue(chart.clicks.isEmpty())
     }
 
     @Test
-    fun draggingScrollsTheDataAndTheChartSeesTheOffset() = runComposeUiTest {
+    fun draggingScrollsTheDataAndTheChartSeesTheOffset() = runAtTwoPixelsPerDp {
         val chart = FakeChart()
         val scroll = ChartScrollState()
-        setContent { CoreChart(chart, scroll, fonts, Modifier.size(200.dp)) }
+        show(chart, scroll)
         onRoot().performTouchInput { swipeRight() }
         waitForIdle()
         assertTrue(scroll.dataOffset > 0, "the data moved: ${scroll.dataOffset}")
@@ -95,9 +105,9 @@ class CoreChartTest {
     }
 
     @Test
-    fun theChartIsDrawn() = runComposeUiTest {
+    fun theChartIsDrawn() = runAtTwoPixelsPerDp {
         val chart = FakeChart()
-        setContent { CoreChart(chart, ChartScrollState(), fonts, Modifier.size(100.dp)) }
+        show(chart)
         waitForIdle()
         assertTrue(chart.draws > 0)
     }

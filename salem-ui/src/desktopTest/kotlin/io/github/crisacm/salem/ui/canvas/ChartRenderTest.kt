@@ -51,9 +51,14 @@ class ChartRenderTest : BaseUiTest() {
     private val theme = LightTheme()
     private val formatter = JavaLocalDateFormatter(Locale.US)
 
-    private fun check(name: String, width: Int, height: Int, path: String, view: View, limit: Double) {
+    /**
+     * [measured] is the distance when the limits were chosen (2026-10-25); the chart must stay under [limit] and differ
+     * from the image of `JavaCanvas` at all, because the text is placed in another way.
+     */
+    private fun check(name: String, width: Int, height: Int, path: String, view: View, measured: Double, limit: Double) {
         val distance = distanceToCore(width, height, path, view)
-        kotlin.test.assertTrue(distance < limit, "$name differs from $path: $distance (limit $limit)")
+        kotlin.test.assertTrue(distance < limit, "$name differs from $path: $distance (measured $measured, limit $limit)")
+        kotlin.test.assertTrue(distance > 0.0, "$name is identical to the image of JavaCanvas: its text should sit elsewhere")
     }
 
     @Test
@@ -63,7 +68,7 @@ class ChartRenderTest : BaseUiTest() {
         chart.axis = (0..100).map { today.minus(it) }
         chart.series.add(listOf(200.0, 0.0, 150.0, 137.0, 0.0, 0.0, 500.0, 30.0, 100.0, 0.0, 300.0))
         chart.colors.add(theme.color(8))
-        check("BarChart", 300, 200, "views/BarChart/base.png", chart, 0.2)
+        check("BarChart", 300, 200, "views/BarChart/base.png", chart, 0.105, 0.2)
     }
 
     @Test
@@ -71,7 +76,7 @@ class ChartRenderTest : BaseUiTest() {
         val habit = fixtures.createLongHabit()
         val state = buildState(habit = habit, firstWeekday = 7, spinnerPosition = 0, theme = theme)
         val chart = ScoreChart(theme, formatter, state.scores, theme.color(state.color), state.bucketSize)
-        check("ScoreChart", 300, 200, "views/ScoreChart/base.png", chart, 0.2)
+        check("ScoreChart", 300, 200, "views/ScoreChart/base.png", chart, 0.127, 0.2)
     }
 
     @Test
@@ -85,7 +90,7 @@ class ChartRenderTest : BaseUiTest() {
             isNumerical = habit.isNumerical,
             firstWeekday = DayOfWeek.SATURDAY
         )
-        check("FrequencyChart", 300, 100, "views/FrequencyChart/base.png", chart, 0.6)
+        check("FrequencyChart", 300, 100, "views/FrequencyChart/base.png", chart, 0.425, 0.6)
     }
 
     @Test
@@ -97,7 +102,7 @@ class ChartRenderTest : BaseUiTest() {
             streaks = habit.streaks.getBest(5),
             color = theme.color(habit.color)
         )
-        check("StreakChart", 300, chart.height.toInt(), "views/StreakChart/base.png", chart, 0.2)
+        check("StreakChart", 300, chart.height.toInt(), "views/StreakChart/base.png", chart, 0.126, 0.2)
     }
 
     @Test
@@ -110,7 +115,7 @@ class ChartRenderTest : BaseUiTest() {
             color = theme.color(8),
             formatValue = { if (it == it.toLong().toDouble()) it.toLong().toString() else it.toString() }
         )
-        check("TargetChart", 300, chart.height.toInt(), "views/TargetChart/base.png", chart, 0.1)
+        check("TargetChart", 300, chart.height.toInt(), "views/TargetChart/base.png", chart, 0.059, 0.1)
     }
 
     @Test
@@ -142,6 +147,6 @@ class ChartRenderTest : BaseUiTest() {
             series = series,
             notesIndicators = MutableList(series.size) { it % 3 == 0 }
         )
-        check("HistoryChart", 400, 200, "views/HistoryChart/base.png", chart, 0.35)
+        check("HistoryChart", 400, 200, "views/HistoryChart/base.png", chart, 0.250, 0.35)
     }
 }

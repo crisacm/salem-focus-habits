@@ -21,11 +21,17 @@ package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -48,7 +54,9 @@ import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.test.HabitFixtures
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
+import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
+import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.resetToday
@@ -59,6 +67,7 @@ import org.junit.Before
 import org.junit.Test
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /** The whole detail as iOS shows it: the screen, the history editor, the popups and the messages over it. */
 @OptIn(ExperimentalTestApi::class, ExperimentalComposeUiApi::class, InternalComposeUiApi::class)
@@ -80,7 +89,10 @@ class HabitDetailRouteTest {
     @After
     fun restoreToday() = resetToday()
 
-    private fun androidx.compose.ui.test.ComposeUiTest.show(habit: Habit = fixtures.createShortHabit()): Habit {
+    private fun androidx.compose.ui.test.ComposeUiTest.show(
+        habit: Habit = fixtures.createShortHabit(),
+        theme: () -> Theme = { LightTheme() }
+    ): Habit {
         habits.add(habit)
         setContent {
             val owner = object : NavigationEventDispatcherOwner {
@@ -90,7 +102,7 @@ class HabitDetailRouteTest {
                 MaterialTheme {
                     HabitDetailRoute(
                         habit = habit,
-                        theme = LightTheme(),
+                        theme = theme(),
                         dateFormatter = JavaLocalDateFormatter(Locale.US),
                         habitList = habits,
                         preferences = preferences,
@@ -211,5 +223,25 @@ class HabitDetailRouteTest {
         show()
         onNodeWithTag("overflowMenu").performClick()
         onNodeWithTag("action_randomize").assertDoesNotExist()
+    }
+
+    @Test
+    fun aNewThemeRedrawsTheCardsWithIt() = runComposeUiTest {
+        var theme by mutableStateOf<Theme>(LightTheme())
+        show(theme = { theme })
+        fun background() = onNodeWithTag("showHabitCards").captureToImage().toPixelMap()[2, 2].luminance()
+        assertTrue(background() > 0.8, "the light theme is light: ${background()}")
+        runOnIdle { theme = DarkTheme() }
+        waitForIdle()
+        assertTrue(background() < 0.4, "the dark theme is dark: ${background()}")
+    }
+
+    @Test
+    fun theSameThemeAsANewInstanceDoesNotRefreshAgain() = runComposeUiTest {
+        var theme by mutableStateOf<Theme>(LightTheme())
+        show(theme = { theme })
+        runOnIdle { theme = LightTheme() }
+        waitForIdle()
+        onNodeWithTag("showHabitScreen").assertIsDisplayed()
     }
 }

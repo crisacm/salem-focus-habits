@@ -47,8 +47,9 @@ fun HabitDetailScreen(
     dateFormatter: LocalDateFormatter,
     onBack: () -> Unit
 ) {
-    val state = session.state ?: return
+    val state = session.state
     val sideInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
+    // The black screen is drawn from the first frame, before the state exists, so it covers what is under it
     Column(
         Modifier
             .fillMaxSize()
@@ -57,7 +58,9 @@ fun HabitDetailScreen(
             .exposeTestTags()
             .testTag("showHabitScreen")
     ) {
-        HabitDetailBar(session, state.title, barColor, onBack)
-        HabitDetailContent(state, session.callbacks, dateFormatter, Modifier.weight(1f))
+        if (state != null) {
+            HabitDetailBar(session, state.title, barColor, onBack)
+            HabitDetailContent(state, session.callbacks, dateFormatter, Modifier.weight(1f))
+        }
     }
 }
