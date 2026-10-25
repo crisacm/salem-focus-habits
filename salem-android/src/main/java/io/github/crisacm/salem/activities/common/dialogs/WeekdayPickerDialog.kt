@@ -42,6 +42,7 @@ import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
 import io.github.crisacm.salem.ui.compose.DialogButton
 import io.github.crisacm.salem.ui.compose.DialogSurface
+import io.github.crisacm.salem.ui.dialogs.toggleDay
 import java.util.Locale
 
 /**

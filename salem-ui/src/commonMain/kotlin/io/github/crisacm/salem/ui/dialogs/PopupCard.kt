@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.common.dialogs
+package io.github.crisacm.salem.ui.dialogs
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -43,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,8 +53,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.ui.compose.Scrim
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.notes
+import org.jetbrains.compose.resources.stringResource
 
 /** The small bordered card used by the checkmark and number popups. */
 @Composable
@@ -80,7 +81,7 @@ internal fun NotesField(notes: String, onChange: (String) -> Unit, onDone: () ->
         value = notes,
         onValueChange = onChange,
         placeholder = {
-            Text(stringResource(R.string.notes), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(stringResource(Res.string.notes), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         },
         textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 14.sp),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(

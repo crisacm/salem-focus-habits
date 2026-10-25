@@ -36,11 +36,9 @@ import io.github.crisacm.salem.R
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.activities.common.dialogs.ChoiceDialog
 import io.github.crisacm.salem.activities.common.dialogs.ColorPickerDialogFactory
-import io.github.crisacm.salem.activities.common.dialogs.FrequencyLabel
 import io.github.crisacm.salem.activities.common.dialogs.FrequencyPickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.TimePickerDialog
 import io.github.crisacm.salem.activities.common.dialogs.WeekdayPickerDialog
-import io.github.crisacm.salem.activities.common.dialogs.frequencyLabel
 import io.github.crisacm.salem.core.commands.CreateHabitCommand
 import io.github.crisacm.salem.core.commands.EditHabitCommand
 import io.github.crisacm.salem.core.models.HabitType
@@ -49,6 +47,8 @@ import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.dialogs.FrequencyLabel
+import io.github.crisacm.salem.ui.dialogs.frequencyLabel
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
 
 fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when (val label = frequencyLabel(freqNum, freqDen)) {

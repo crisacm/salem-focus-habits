@@ -20,19 +20,10 @@
 package io.github.crisacm.salem.activities.common.dialogs
 
 import android.os.Bundle
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
-import io.github.crisacm.salem.ui.compose.DialogButton
-import io.github.crisacm.salem.ui.compose.DialogSurface
+import io.github.crisacm.salem.ui.dialogs.ConfirmDeleteDialogContent
 
 /**
  * Dialog that asks the user confirmation before executing a delete operation.
@@ -48,24 +39,14 @@ class ConfirmDeleteDialog : ComposeDialogFragment() {
 
     @Composable
     override fun Content() {
-        val quantity = requireArguments().getInt(KEY_QUANTITY)
-        DialogSurface(
-            title = pluralStringResource(R.plurals.delete_habits_title, quantity),
-            onDismiss = ::dismiss,
-            buttons = {
-                DialogButton(stringResource(R.string.no), ::dismiss)
-                DialogButton(stringResource(R.string.yes)) {
-                    callback?.onConfirmed()
-                    dismiss()
-                }
-            }
-        ) {
-            Text(
-                pluralStringResource(R.plurals.delete_habits_message, quantity),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-            )
-        }
+        ConfirmDeleteDialogContent(
+            quantity = requireArguments().getInt(KEY_QUANTITY),
+            onConfirm = {
+                callback?.onConfirmed()
+                dismiss()
+            },
+            onDismiss = ::dismiss
+        )
     }
 
     companion object {

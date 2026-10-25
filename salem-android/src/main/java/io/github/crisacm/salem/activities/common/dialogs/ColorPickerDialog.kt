@@ -49,6 +49,7 @@ import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
 import io.github.crisacm.salem.ui.compose.DialogSurface
+import io.github.crisacm.salem.ui.dialogs.paletteRows
 import io.github.crisacm.salem.utils.StyledResources
 
 private const val COLUMNS = 4

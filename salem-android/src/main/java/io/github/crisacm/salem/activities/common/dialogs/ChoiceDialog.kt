@@ -20,16 +20,9 @@
 package io.github.crisacm.salem.activities.common.dialogs
 
 import android.os.Bundle
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
-import io.github.crisacm.salem.ui.compose.DialogSurface
+import io.github.crisacm.salem.ui.dialogs.ChoiceDialogContent
 
 /** A dialog with a list of options; [newInstance] gives the callback the index of the chosen one. */
 class ChoiceDialog : ComposeDialogFragment() {
@@ -44,22 +37,14 @@ class ChoiceDialog : ComposeDialogFragment() {
     @Composable
     override fun Content() {
         val options = requireArguments().getStringArrayList(KEY_OPTIONS).orEmpty()
-        DialogSurface(title = null, onDismiss = ::dismiss) {
-            options.forEachIndexed { index, option ->
-                Text(
-                    option,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onSelected(index)
-                            dismiss()
-                        }
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                )
-            }
-        }
+        ChoiceDialogContent(
+            options = options,
+            onSelected = {
+                onSelected(it)
+                dismiss()
+            },
+            onDismiss = ::dismiss
+        )
     }
 
     companion object {
