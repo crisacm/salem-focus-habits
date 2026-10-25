@@ -17,25 +17,34 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.intro
+package io.github.crisacm.salem.ui.intro
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import io.github.crisacm.salem.R
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.intro_description_1
+import io.github.crisacm.salem.ui.resources.intro_description_2
+import io.github.crisacm.salem.ui.resources.intro_description_4
+import io.github.crisacm.salem.ui.resources.intro_icon_1
+import io.github.crisacm.salem.ui.resources.intro_icon_2
+import io.github.crisacm.salem.ui.resources.intro_icon_4
+import io.github.crisacm.salem.ui.resources.intro_title_1
+import io.github.crisacm.salem.ui.resources.intro_title_2
+import io.github.crisacm.salem.ui.resources.intro_title_4
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 
 /** [color] is an ARGB value, kept as a Long so it can be written as 0xFF...... */
 class IntroSlide(
-    @StringRes val title: Int,
-    @StringRes val description: Int,
-    @DrawableRes val icon: Int,
+    val title: StringResource,
+    val description: StringResource,
+    val icon: DrawableResource,
     val color: Long
 )
 
 // There is no slide number 3 in the resources; the numbering is kept as it was.
 val introSlides = listOf(
-    IntroSlide(R.string.intro_title_1, R.string.intro_description_1, R.drawable.intro_icon_1, 0xFF194673),
-    IntroSlide(R.string.intro_title_2, R.string.intro_description_2, R.drawable.intro_icon_2, 0xFFFFA726),
-    IntroSlide(R.string.intro_title_4, R.string.intro_description_4, R.drawable.intro_icon_4, 0xFF9575CD)
+    IntroSlide(Res.string.intro_title_1, Res.string.intro_description_1, Res.drawable.intro_icon_1, 0xFF194673),
+    IntroSlide(Res.string.intro_title_2, Res.string.intro_description_2, Res.drawable.intro_icon_2, 0xFFFFA726),
+    IntroSlide(Res.string.intro_title_4, Res.string.intro_description_4, Res.drawable.intro_icon_4, 0xFF9575CD)
 )
 
 class IntroPager(private val pageCount: Int) {

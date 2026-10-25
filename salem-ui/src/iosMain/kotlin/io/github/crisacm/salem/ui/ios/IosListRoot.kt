@@ -45,6 +45,7 @@ import io.github.crisacm.salem.ui.about.AboutRoute
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.detail.HabitDetailRoute
+import io.github.crisacm.salem.ui.intro.IntroContent
 import io.github.crisacm.salem.ui.list.ListHabitsContent
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
@@ -164,6 +165,9 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     openUrl = ::openUrl,
                     onBack = { graph.screens.close(AppScreen.ABOUT) }
                 )
+            }
+            if (graph.screens.current == AppScreen.INTRO) {
+                IntroContent(onFinish = { graph.screens.close(AppScreen.INTRO) })
             }
         }
     }

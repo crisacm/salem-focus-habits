@@ -38,7 +38,7 @@ import io.github.crisacm.salem.ui.list.ListOverlays
 
 /**
  * The actions of the habit list that need another screen. The dialogs, the popups and the editor are opened through
- * [overlays]; the others (settings, sharing, intro) arrive with their screens, so they only leave a
+ * [overlays]; the others (settings, sharing) arrive with their screens, so they only leave a
  * line in the log. [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was
  * applied again.
  */
@@ -63,7 +63,7 @@ class IosListScreen(
     // ListHabitsBehavior.Screen
     override fun showHabitScreen(h: Habit) = navigation.open(h)
 
-    override fun showIntroScreen() = todo("intro")
+    override fun showIntroScreen() = screens.open(AppScreen.INTRO)
 
     override fun showMessage(m: ListHabitsBehavior.Message) {
         lastMessage = m
