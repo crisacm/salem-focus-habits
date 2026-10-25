@@ -21,7 +21,9 @@ package io.github.crisacm.salem.core.preferences
 import io.github.crisacm.salem.core.BaseUnitTest
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
+import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
+import io.github.crisacm.salem.platform.time.getFirstWeekdayNumberAccordingToLocale
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -151,5 +153,28 @@ class PreferencesTest : BaseUnitTest() {
         assertFalse(prefs.isMidnightDelayEnabled)
         prefs.isMidnightDelayEnabled = true
         assertTrue(prefs.isMidnightDelayEnabled)
+    }
+
+    @Test
+    fun testFirstWeekdayFollowsTheLocaleUntilItIsSet() {
+        val localeDay = DayOfWeek.entries.first { it.daysSinceSunday + 1 == getFirstWeekdayNumberAccordingToLocale() }
+        assertEquals(localeDay, prefs.firstWeekday)
+    }
+
+    @Test
+    fun testFirstWeekdayIsStoredSundayBased() {
+        for (day in DayOfWeek.entries) {
+            prefs.firstWeekday = day
+            assertEquals(day, prefs.firstWeekday)
+            assertEquals((day.daysSinceSunday + 1).toString(), storage.getString("pref_first_weekday", ""))
+        }
+    }
+
+    @Test
+    fun testFirstWeekdayReadsWhatTheOldSettingsWrote() {
+        storage.putString("pref_first_weekday", "2")
+        assertEquals(DayOfWeek.MONDAY, prefs.firstWeekday)
+        storage.putString("pref_first_weekday", "7")
+        assertEquals(DayOfWeek.SATURDAY, prefs.firstWeekday)
     }
 }

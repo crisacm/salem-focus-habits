@@ -17,7 +17,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.settings
+package io.github.crisacm.salem.ui.settings
+
+import io.github.crisacm.salem.platform.time.DayOfWeek
 
 class WeekdayOption(val value: String, val name: String)
 
@@ -30,11 +32,6 @@ fun firstWeekdayOptions(dayNames: List<String>) =
 fun firstWeekdaySummary(dayNames: List<String>, sundayBasedWeekday: Int) =
     dayNames[sundayBasedWeekday % 7]
 
-/** Path of a SAF tree document id such as `primary:Backups` or `1234-ABCD:Docs`. */
-fun treeDocumentPath(documentId: String, primaryStorage: String): String {
-    val parts = documentId.split(":", limit = 2)
-    val type = parts[0]
-    val relative = parts.getOrElse(1) { "" }
-    val base = if (type.equals("primary", true)) primaryStorage else "/storage/$type"
-    return if (relative.isEmpty()) base else "$base/$relative"
-}
+/** The day for a stored Sunday-based number ("1" is Sunday, "7" is Saturday). */
+fun weekdayFromNumber(number: String): DayOfWeek =
+    DayOfWeek.entries.first { it.daysSinceSunday + 1 == number.toInt() }

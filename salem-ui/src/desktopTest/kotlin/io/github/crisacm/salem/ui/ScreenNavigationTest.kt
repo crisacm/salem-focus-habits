@@ -35,19 +35,41 @@ class ScreenNavigationTest {
     }
 
     @Test
-    fun openingAScreenReplacesTheOneShown() {
+    fun theLastScreenOpenedIsTheOneShown() {
         val navigation = ScreenNavigation()
+        navigation.open(AppScreen.SETTINGS)
         navigation.open(AppScreen.ABOUT)
-        navigation.open(AppScreen.INTRO)
-        assertEquals(AppScreen.INTRO, navigation.current)
+        assertEquals(AppScreen.ABOUT, navigation.current)
     }
 
     @Test
-    fun closingAScreenThatWasReplacedKeepsTheCurrentOne() {
+    fun closingTheTopScreenShowsTheOneBelow() {
+        val navigation = ScreenNavigation()
+        navigation.open(AppScreen.SETTINGS)
+        navigation.open(AppScreen.ABOUT)
+        navigation.close(AppScreen.ABOUT)
+        assertEquals(AppScreen.SETTINGS, navigation.current)
+        navigation.close(AppScreen.SETTINGS)
+        assertNull(navigation.current)
+    }
+
+    @Test
+    fun closingAScreenThatIsBelowKeepsTheTopOne() {
         val navigation = ScreenNavigation()
         navigation.open(AppScreen.ABOUT)
         navigation.open(AppScreen.INTRO)
         navigation.close(AppScreen.ABOUT)
         assertEquals(AppScreen.INTRO, navigation.current)
+        navigation.close(AppScreen.INTRO)
+        assertNull(navigation.current)
+    }
+
+    @Test
+    fun openingAScreenAlreadyOpenDoesNotRepeatIt() {
+        val navigation = ScreenNavigation()
+        navigation.open(AppScreen.ABOUT)
+        navigation.open(AppScreen.ABOUT)
+        navigation.close(AppScreen.ABOUT)
+        assertNull(navigation.current)
     }
 }

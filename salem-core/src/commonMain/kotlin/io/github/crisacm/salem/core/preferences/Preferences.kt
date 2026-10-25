@@ -230,7 +230,10 @@ open class Preferences(private val storage: Storage) {
             val weekday = storage.getString("pref_first_weekday", "")
             return if (weekday.isEmpty()) getFirstWeekdayNumberAccordingToLocale() else weekday.toInt()
         }
-    open val firstWeekday: DayOfWeek
+    open var firstWeekday: DayOfWeek
+        set(day) {
+            storage.putString("pref_first_weekday", (day.daysSinceSunday + 1).toString())
+        }
         get() {
             var weekday = storage.getString("pref_first_weekday", "-1").toInt()
             if (weekday < 0) weekday = getFirstWeekdayNumberAccordingToLocale()

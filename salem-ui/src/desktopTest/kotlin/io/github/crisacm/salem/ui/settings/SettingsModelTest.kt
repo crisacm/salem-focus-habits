@@ -17,10 +17,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.settings
+package io.github.crisacm.salem.ui.settings
 
-import org.junit.Assert.assertEquals
+import io.github.crisacm.salem.platform.time.DayOfWeek
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class SettingsModelTest {
     private val names = listOf("Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
@@ -40,27 +41,10 @@ class SettingsModelTest {
     }
 
     @Test
-    fun treeDocumentPathOnPrimaryStorage() {
-        assertEquals("/sdcard/Backups/Salem", treeDocumentPath("primary:Backups/Salem", "/sdcard"))
-        assertEquals("/sdcard", treeDocumentPath("primary:", "/sdcard"))
-        assertEquals("/sdcard", treeDocumentPath("PRIMARY:", "/sdcard"))
-    }
-
-    @Test
-    fun treeDocumentPathOnRemovableStorage() {
-        assertEquals("/storage/1234-ABCD/Docs", treeDocumentPath("1234-ABCD:Docs", "/sdcard"))
-        assertEquals("/storage/1234-ABCD", treeDocumentPath("1234-ABCD:", "/sdcard"))
-    }
-
-    @Test
-    fun treeDocumentPathWithoutSeparatorOrId() {
-        assertEquals("/storage/1234-ABCD", treeDocumentPath("1234-ABCD", "/sdcard"))
-        assertEquals("/storage/", treeDocumentPath("", "/sdcard"))
-    }
-
-    @Test
-    fun treeDocumentPathKeepsColonsInTheRelativePart() {
-        assertEquals("/sdcard/a:b", treeDocumentPath("primary:a:b", "/sdcard"))
+    fun weekdaysAreConvertedFromAndToTheStoredNumber() {
+        for (day in DayOfWeek.entries) {
+            assertEquals(day, weekdayFromNumber((day.daysSinceSunday + 1).toString()))
+        }
     }
 
     @Test

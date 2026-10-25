@@ -96,7 +96,7 @@ class IosListScreen(
 
     override fun showFAQScreen() = openUrl(SalemLinks.HELP)
 
-    override fun showSettingsScreen() = todo("settings")
+    override fun showSettingsScreen() = screens.open(AppScreen.SETTINGS)
 
     override fun showSelectHabitTypeDialog() = overlays.showHabitType()
 
