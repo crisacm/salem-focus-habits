@@ -17,9 +17,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.activities.habits.list
+package io.github.crisacm.salem.ui.list
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -50,21 +49,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
-import io.github.crisacm.salem.R
-import io.github.crisacm.salem.ui.list.ListHabitsMenu
-import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
-import io.github.crisacm.salem.ui.list.SortItem
-import io.github.crisacm.salem.ui.list.SortMark
-import io.github.crisacm.salem.ui.list.sortMark
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.about
+import io.github.crisacm.salem.ui.resources.action_settings
+import io.github.crisacm.salem.ui.resources.add_habit
+import io.github.crisacm.salem.ui.resources.archive
+import io.github.crisacm.salem.ui.resources.by_color
+import io.github.crisacm.salem.ui.resources.by_name
+import io.github.crisacm.salem.ui.resources.by_score
+import io.github.crisacm.salem.ui.resources.by_status
+import io.github.crisacm.salem.ui.resources.close
+import io.github.crisacm.salem.ui.resources.color_picker_default_title
+import io.github.crisacm.salem.ui.resources.delete
+import io.github.crisacm.salem.ui.resources.edit
+import io.github.crisacm.salem.ui.resources.filter
+import io.github.crisacm.salem.ui.resources.help
+import io.github.crisacm.salem.ui.resources.hide_archived
+import io.github.crisacm.salem.ui.resources.hide_completed
+import io.github.crisacm.salem.ui.resources.hide_entered
+import io.github.crisacm.salem.ui.resources.main_activity_title
+import io.github.crisacm.salem.ui.resources.manually
+import io.github.crisacm.salem.ui.resources.more_options
+import io.github.crisacm.salem.ui.resources.night_mode
+import io.github.crisacm.salem.ui.resources.reminder
+import io.github.crisacm.salem.ui.resources.search
+import io.github.crisacm.salem.ui.resources.sort
+import io.github.crisacm.salem.ui.resources.unarchive
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The top bar of the habit list. It shows the title and the actions, a search field while searching,
@@ -91,7 +110,7 @@ fun ListHabitsBar(
         color = barColor,
         contentColor = onBarColor,
         shadowElevation = 2.dp,
-        modifier = Modifier.semantics { testTagsAsResourceId = true }
+        modifier = Modifier.exposeTestTags()
     ) {
         when {
             selection.active -> SelectionBar(selection, colors)
@@ -109,10 +128,10 @@ private fun barInsets() = WindowInsets.systemBars.only(WindowInsetsSides.Top)
 @Composable
 private fun MainBar(menu: ListHabitsMenu, colors: androidx.compose.material3.TopAppBarColors) {
     TopAppBar(
-        title = { Text(stringResource(R.string.main_activity_title)) },
+        title = { Text(stringResource(Res.string.main_activity_title)) },
         actions = {
             IconButton(onClick = menu::onCreateHabit, modifier = Modifier.testTag("actionCreateHabit")) {
-                Icon(painterResource(R.drawable.ic_action_add_dark), stringResource(R.string.add_habit))
+                Icon(rememberVectorPainter(ListIcons.Add), stringResource(Res.string.add_habit))
             }
             FilterMenu(menu)
             OverflowMenu(menu)
@@ -136,21 +155,21 @@ private fun FilterMenu(menu: ListHabitsMenu) {
             },
             modifier = Modifier.testTag("action_filter")
         ) {
-            Icon(painterResource(R.drawable.ic_action_filter_dark), stringResource(R.string.filter))
+            Icon(rememberVectorPainter(ListIcons.Filter), stringResource(Res.string.filter))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            CheckItem(R.string.hide_archived, snapshot.hideArchived) {
+            CheckItem(Res.string.hide_archived, snapshot.hideArchived) {
                 menu.onToggleHideArchived()
                 expanded = false
             }
             CheckItem(
-                if (snapshot.hideCompletedIsEntered) R.string.hide_entered else R.string.hide_completed,
+                if (snapshot.hideCompletedIsEntered) Res.string.hide_entered else Res.string.hide_completed,
                 snapshot.hideCompleted
             ) {
                 menu.onToggleHideCompleted()
                 expanded = false
             }
-            DropdownMenuItem(text = { Text(stringResource(R.string.sort)) }, onClick = { sortOpen = !sortOpen })
+            DropdownMenuItem(text = { Text(stringResource(Res.string.sort)) }, onClick = { sortOpen = !sortOpen })
             if (sortOpen) {
                 SortItems.forEach { (item, label) ->
                     DropdownMenuItem(
@@ -164,7 +183,7 @@ private fun FilterMenu(menu: ListHabitsMenu) {
                 }
             }
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.search)) },
+                text = { Text(stringResource(Res.string.search)) },
                 onClick = {
                     menu.startSearch()
                     expanded = false
@@ -175,11 +194,11 @@ private fun FilterMenu(menu: ListHabitsMenu) {
 }
 
 private val SortItems = listOf(
-    SortItem.MANUAL to R.string.manually,
-    SortItem.NAME to R.string.by_name,
-    SortItem.COLOR to R.string.by_color,
-    SortItem.SCORE to R.string.by_score,
-    SortItem.STATUS to R.string.by_status
+    SortItem.MANUAL to Res.string.manually,
+    SortItem.NAME to Res.string.by_name,
+    SortItem.COLOR to Res.string.by_color,
+    SortItem.SCORE to Res.string.by_score,
+    SortItem.STATUS to Res.string.by_status
 )
 
 @Composable
@@ -192,7 +211,7 @@ private fun SortIcon(mark: SortMark) {
 }
 
 @Composable
-private fun CheckItem(label: Int, checked: Boolean, onClick: () -> Unit) {
+private fun CheckItem(label: StringResource, checked: Boolean, onClick: () -> Unit) {
     DropdownMenuItem(
         text = { Text(stringResource(label)) },
         trailingIcon = { if (checked) Icon(Icons.Filled.Check, contentDescription = null) },
@@ -206,22 +225,22 @@ private fun OverflowMenu(menu: ListHabitsMenu) {
     val snapshot = remember(expanded) { menu.snapshot() }
     Box {
         IconButton(onClick = { expanded = true }, modifier = Modifier.testTag("overflowMenu")) {
-            Icon(Icons.Filled.MoreVert, stringResource(R.string.more_options))
+            Icon(Icons.Filled.MoreVert, stringResource(Res.string.more_options))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            CheckItem(R.string.night_mode, snapshot.nightMode) {
+            CheckItem(Res.string.night_mode, snapshot.nightMode) {
                 menu.onToggleNightMode()
                 expanded = false
             }
-            MenuItem(R.string.action_settings) {
+            MenuItem(Res.string.action_settings) {
                 menu.onSettings()
                 expanded = false
             }
-            MenuItem(R.string.help) {
+            MenuItem(Res.string.help) {
                 menu.onHelp()
                 expanded = false
             }
-            MenuItem(R.string.about) {
+            MenuItem(Res.string.about) {
                 menu.onAbout()
                 expanded = false
             }
@@ -230,7 +249,7 @@ private fun OverflowMenu(menu: ListHabitsMenu) {
 }
 
 @Composable
-private fun MenuItem(label: Int, onClick: () -> Unit) {
+private fun MenuItem(label: StringResource, onClick: () -> Unit) {
     DropdownMenuItem(text = { Text(stringResource(label)) }, onClick = onClick)
 }
 
@@ -244,7 +263,7 @@ private fun SearchBar(menu: ListHabitsMenu, colors: androidx.compose.material3.T
             TextField(
                 value = menu.searchQuery,
                 onValueChange = menu::onSearchChange,
-                placeholder = { Text(stringResource(R.string.search)) },
+                placeholder = { Text(stringResource(Res.string.search)) },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
@@ -257,7 +276,7 @@ private fun SearchBar(menu: ListHabitsMenu, colors: androidx.compose.material3.T
         },
         actions = {
             IconButton(onClick = menu::closeSearch, modifier = Modifier.testTag("searchClose")) {
-                Icon(Icons.Filled.Close, stringResource(R.string.close))
+                Icon(Icons.Filled.Close, stringResource(Res.string.close))
             }
         },
         colors = colors,
@@ -274,41 +293,41 @@ private fun SelectionBar(selection: ListHabitsSelectionMenu, colors: androidx.co
         title = { Text(selection.selectedCount.toString(), modifier = Modifier.testTag("selectionCount")) },
         navigationIcon = {
             IconButton(onClick = selection::cancel, modifier = Modifier.testTag("selectionClose")) {
-                Icon(Icons.Filled.Close, stringResource(R.string.close))
+                Icon(Icons.Filled.Close, stringResource(Res.string.close))
             }
         },
         actions = {
             if (actions.canEdit) {
                 IconButton(onClick = selection::onEdit, modifier = Modifier.testTag("action_edit_habit")) {
-                    Icon(painterResource(R.drawable.ic_action_edit_dark), stringResource(R.string.edit))
+                    Icon(rememberVectorPainter(ListIcons.Edit), stringResource(Res.string.edit))
                 }
             }
             IconButton(onClick = selection::onColor, modifier = Modifier.testTag("action_color")) {
-                Icon(painterResource(R.drawable.ic_action_color_dark), stringResource(R.string.color_picker_default_title))
+                Icon(rememberVectorPainter(ListIcons.Palette), stringResource(Res.string.color_picker_default_title))
             }
             Box {
                 IconButton(onClick = { overflow = true }, modifier = Modifier.testTag("selectionOverflow")) {
-                    Icon(Icons.Filled.MoreVert, stringResource(R.string.more_options))
+                    Icon(Icons.Filled.MoreVert, stringResource(Res.string.more_options))
                 }
                 DropdownMenu(expanded = overflow, onDismissRequest = { overflow = false }) {
                     if (actions.canArchive) {
-                        MenuItem(R.string.archive) {
+                        MenuItem(Res.string.archive) {
                             selection.onArchive()
                             overflow = false
                         }
                     }
                     if (actions.canUnarchive) {
-                        MenuItem(R.string.unarchive) {
+                        MenuItem(Res.string.unarchive) {
                             selection.onUnarchive()
                             overflow = false
                         }
                     }
-                    MenuItem(R.string.delete) {
+                    MenuItem(Res.string.delete) {
                         selection.onDelete()
                         overflow = false
                     }
                     if (actions.showNotify) {
-                        MenuItem(R.string.reminder) {
+                        MenuItem(Res.string.reminder) {
                             selection.onNotify()
                             overflow = false
                         }

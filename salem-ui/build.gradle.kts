@@ -66,6 +66,7 @@ kotlin {
                 implementation(libs.compose.mp.resources)
                 implementation(libs.compose.mp.material3)
                 implementation(libs.compose.mp.icons.core)
+                implementation(libs.compose.mp.backhandler)
             }
         }
     }

@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import io.github.crisacm.salem.R
-import io.github.crisacm.salem.activities.common.views.TaskProgressBar
 import io.github.crisacm.salem.core.models.ModelObservable
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
@@ -50,6 +49,8 @@ import io.github.crisacm.salem.ui.list.ListColors
 import io.github.crisacm.salem.ui.list.ListHabitsMenu
 import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
 import io.github.crisacm.salem.ui.list.ListRowCallbacks
+import io.github.crisacm.salem.ui.list.ListScreenColors
+import io.github.crisacm.salem.ui.list.ListScreenModel
 import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
 import io.github.crisacm.salem.ui.list.emptyListState
 import io.github.crisacm.salem.utils.StyledResources
@@ -79,26 +80,25 @@ fun checkmarkColumns(width: Float, nameWidth: Float, buttonWidth: Float): Int {
 class ListHabitsHost(
     @ActivityContext private val context: Context,
     hintListFactory: HintListFactory,
-    val menu: ListHabitsMenu,
-    val selectionMenu: ListHabitsSelectionMenu,
-    val preferences: Preferences,
+    override val menu: ListHabitsMenu,
+    override val selectionMenu: ListHabitsSelectionMenu,
+    override val preferences: Preferences,
     private val midnightTimer: MidnightTimer,
-    runner: TaskRunner,
-    val listState: HabitListState,
+    override val taskRunner: TaskRunner,
+    override val listState: HabitListState,
     controller: HabitListController,
     behavior: ListHabitsBehavior,
     private val themeSwitcher: ThemeSwitcher
-) : ModelObservable.Listener {
+) : ModelObservable.Listener, ListScreenModel {
 
-    val emptyState = mutableStateOf(EmptyListState.HIDDEN)
+    override val emptyState = mutableStateOf(EmptyListState.HIDDEN)
     val konfettiView = KonfettiView(context)
-    val progressBar = TaskProgressBar(context, runner)
-    val hintList = hintListFactory.create(context.resources.getStringArray(R.array.hints))
+    override val hintList = hintListFactory.create(context.resources.getStringArray(R.array.hints))
 
     // The rows read the offset from the header state, so nobody needs to be told when it changes.
-    val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {}
+    override val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {}
 
-    val rowCallbacks = ListRowCallbacks(
+    override val rowCallbacks = ListRowCallbacks(
         onClick = controller::onClick,
         onLongClick = controller::onLongClick,
         onToggle = behavior::onToggle,
@@ -123,7 +123,7 @@ class ListHabitsHost(
     )
 
     /** The names of the weekdays in the header. */
-    val dateFormatter = JavaLocalDateFormatter(Locale.getDefault())
+    override val dateFormatter = JavaLocalDateFormatter(Locale.getDefault())
 
     /** The condensed font of the number cells, which only Android has by name. */
     val condensedFonts = CondensedFonts(
@@ -138,6 +138,18 @@ class ListHabitsHost(
         } else {
             Color(styled.getColor(R.attr.colorPrimary))
         }
+    }
+
+    /** The colours of the screen, from the theme of the activity. */
+    override val colors: ListScreenColors by lazy {
+        ListScreenColors(
+            windowBackground = windowBackground,
+            barColor = barColor,
+            onBarColor = Color.White,
+            headerBackground = headerBackground,
+            headerText = headerText,
+            list = listColors
+        )
     }
 
     // Compose state can be written from any thread, so the listeners need no handler.
@@ -165,7 +177,7 @@ class ListHabitsHost(
     }
 
     /** Called when the screen enters the composition, which happens when its window is attached. */
-    fun onAttached() {
+    override fun onAttached() {
         headerState.reversed = preferences.isCheckmarkSequenceReversed
         headerState.today = getToday()
         preferences.addListener(preferencesListener)
@@ -174,7 +186,7 @@ class ListHabitsHost(
         listState.onAttached()
     }
 
-    fun onDetached() {
+    override fun onDetached() {
         listState.onDetached()
         listState.observable.removeListener(this)
         midnightTimer.removeListener(midnightListener)
@@ -189,7 +201,7 @@ class ListHabitsHost(
     }
 
     /** Called with the width in pixels of the screen, so the header and the rows know how many days to show. */
-    fun onWidthChanged(width: Int) {
+    override fun onWidthChanged(width: Int) {
         val resources = context.resources
         val count = checkmarkColumns(
             width = width.toFloat(),

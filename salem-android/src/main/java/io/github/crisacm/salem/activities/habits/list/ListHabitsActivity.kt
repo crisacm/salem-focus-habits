@@ -103,7 +103,7 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         Thread.setDefaultUncaughtExceptionHandler(BaseExceptionHandler(this))
         component.listHabitsBehavior.onStartup()
         host.paintStatusBar(this)
-        setContent { SalemTheme { ListHabitsContent(host) } }
+        setContent { SalemTheme { ListHabitsRoot(host) } }
         addContentView(confettiOverlay(), ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT))
     }
 
