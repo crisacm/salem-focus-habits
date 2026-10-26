@@ -18,6 +18,7 @@ attribution.
 
 ### Added
 
+- Add a widget to iOS with the habits of today (small, medium and large): each habit has a button to check it from the home screen, a numerical habit has a plus button, and it shows the score; it uses the database of the app through the App Group and the app tells it to draw again when the habits change. It needs iOS 17 (the minimum of the app is now 17.0). Not seen on a device or the simulator yet.
 - Export and share data on iOS with the share sheet of the system (AirDrop, Messages, Save to Files): Settings has "Export full backup" (a copy of the database that can be imported again), "Export as CSV", "Generate bug report" (version and device, as text) and "Repair database"; the Export item of the habit detail now shares the CSV of that habit instead of saying it is not available, and the messages of the app (exported, repaired, imported) show as a banner.
 - Import data on iOS: Settings has a "Database" section with "Import data", which opens the Files app and imports a Loop database (or the files of Rewire, Tickmate and HabitBull), merging the habits by their identifier. The list and the reminders are updated when it ends and a message tells the result. A failed import is undone, so the habits stay as they were.
 - Ask for the permission to show notifications on iOS when a habit with a reminder is saved, and when the app starts with reminders already set, and add "Customize notifications" to the iOS Settings, which opens the notification settings of the app. With the previous change the reminders now work on iOS.

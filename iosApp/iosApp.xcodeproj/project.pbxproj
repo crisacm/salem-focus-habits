@@ -9,16 +9,60 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000001 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* iOSApp.swift */; };
 		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ContentView.swift */; };
+		B10000000000000000000001 /* SalemWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SalemWidgets.swift */; };
+		B10000000000000000000002 /* TodayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* TodayWidget.swift */; };
+		B10000000000000000000003 /* HabitIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000003 /* HabitIntents.swift */; };
+		B10000000000000000000004 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* Localizable.xcstrings */; };
+		B10000000000000000000005 /* SalemWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B20000000000000000000007 /* SalemWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B70000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A70000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B50000000000000000000001;
+			remoteInfo = SalemWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B60000000000000000000004 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B10000000000000000000005 /* SalemWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A20000000000000000000001 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* Salem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salem.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000001 /* SalemWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalemWidgets.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* TodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayWidget.swift; sourceTree = "<group>"; };
+		B20000000000000000000003 /* HabitIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitIntents.swift; sourceTree = "<group>"; };
+		B20000000000000000000004 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		B20000000000000000000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B20000000000000000000006 /* SalemWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SalemWidgets.entitlements; sourceTree = "<group>"; };
+		B20000000000000000000007 /* SalemWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SalemWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000008 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B30000000000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -32,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				A40000000000000000000002 /* iosApp */,
+				B40000000000000000000001 /* SalemWidgets */,
 				A40000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +86,7 @@
 			children = (
 				A20000000000000000000001 /* iOSApp.swift */,
 				A20000000000000000000002 /* ContentView.swift */,
+				B20000000000000000000008 /* iosApp.entitlements */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -49,8 +95,22 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000003 /* Salem.app */,
+				B20000000000000000000007 /* SalemWidgets.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B40000000000000000000001 /* SalemWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000001 /* SalemWidgets.swift */,
+				B20000000000000000000002 /* TodayWidget.swift */,
+				B20000000000000000000003 /* HabitIntents.swift */,
+				B20000000000000000000004 /* Localizable.xcstrings */,
+				B20000000000000000000005 /* Info.plist */,
+				B20000000000000000000006 /* SalemWidgets.entitlements */,
+			);
+			path = SalemWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -65,15 +125,35 @@
 				A30000000000000000000001 /* Frameworks */,
 				A60000000000000000000003 /* Resources */,
 				A60000000000000000000004 /* Copy the core assets */,
+				B60000000000000000000004 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B70000000000000000000001 /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			productName = iosApp;
 			productReference = A20000000000000000000003 /* Salem.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B50000000000000000000001 /* SalemWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B80000000000000000000003 /* Build configuration list for PBXNativeTarget "SalemWidgets" */;
+			buildPhases = (
+				B60000000000000000000005 /* Build the Kotlin framework */,
+				B60000000000000000000006 /* Sources */,
+				B30000000000000000000001 /* Frameworks */,
+				B60000000000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SalemWidgets;
+			productName = SalemWidgets;
+			productReference = B20000000000000000000007 /* SalemWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -99,6 +179,7 @@
 			projectRoot = "";
 			targets = (
 				A50000000000000000000001 /* iosApp */,
+				B50000000000000000000001 /* SalemWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -108,6 +189,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B60000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000004 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +241,25 @@
 			shellPath = /bin/sh;
 			shellScript = "# AppleFileOpener.createDefault() looks for the core assets (fonts, SQL migrations) in the assets folder of the bundle\nASSETS=\"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/assets\"\nmkdir -p \"$ASSETS\"\nrsync -a --delete \"$SRCROOT/../salem-core/assets/main/\" \"$ASSETS/\"\n";
 		};
+		B60000000000000000000005 /* Build the Kotlin framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build the Kotlin framework";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping the Gradle build: the IDE builds the Kotlin framework\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n# Xcode does not read the shell profile: use JDK 17 or 21 (what Gradle and the Android plugin of the project support)\nif [ -z \"$JAVA_HOME\" ]; then\n  export JAVA_HOME=\"$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 21 2>/dev/null)\"\nfi\nif [ -z \"$JAVA_HOME\" ]; then\n  echo \"error: JDK 17 or 21 not found; install one or set JAVA_HOME\" >&2\n  exit 1\nfi\n./gradlew :salem-extras:embedAndSignAppleFrameworkForXcode\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -164,7 +272,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B60000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* SalemWidgets.swift in Sources */,
+				B10000000000000000000002 /* TodayWidget.swift in Sources */,
+				B10000000000000000000003 /* HabitIntents.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B70000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B50000000000000000000001 /* SalemWidgets */;
+			targetProxy = B70000000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A90000000000000000000001 /* Debug */ = {
@@ -214,6 +340,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -247,6 +374,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -276,6 +404,76 @@
 			};
 			name = Release;
 		};
+		B90000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = SalemWidgets/SalemWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				EXCLUDED_ARCHS = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../salem-extras/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalemWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Salem;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					SalemExtras,
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.crisacm.salem.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B90000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = SalemWidgets/SalemWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				EXCLUDED_ARCHS = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../salem-extras/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalemWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Salem;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					SalemExtras,
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.crisacm.salem.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -293,6 +491,15 @@
 			buildConfigurations = (
 				A90000000000000000000001 /* Debug */,
 				A90000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B80000000000000000000003 /* Build configuration list for PBXNativeTarget "SalemWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B90000000000000000000001 /* Debug */,
+				B90000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

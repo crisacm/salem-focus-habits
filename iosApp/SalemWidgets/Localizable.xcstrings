@@ -1,0 +1,106 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Today": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy"
+          }
+        }
+      }
+    },
+    "Check off your habits for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marca tus hábitos de hoy."
+          }
+        }
+      }
+    },
+    "Open Salem to get started.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre Salem para empezar."
+          }
+        }
+      }
+    },
+    "No habits for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay hábitos para hoy."
+          }
+        }
+      }
+    },
+    "Toggle habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar o desmarcar hábito"
+          }
+        }
+      }
+    },
+    "Add one to habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumar uno al hábito"
+          }
+        }
+      }
+    },
+    "Habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hábito"
+          }
+        }
+      }
+    },
+    "Add one to %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumar uno a %@"
+          }
+        }
+      }
+    },
+    "%@, done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, hecho"
+          }
+        }
+      }
+    },
+    "%@, not done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, pendiente"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
