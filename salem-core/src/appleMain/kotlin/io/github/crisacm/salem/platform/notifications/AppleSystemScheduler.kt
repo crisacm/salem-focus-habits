@@ -27,7 +27,6 @@ import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.currentTimeMillis
 import io.github.crisacm.salem.platform.time.getToday
-import platform.Foundation.NSLog
 
 /**
  * [SystemScheduler] over local notifications. iOS cannot run code when a notification fires, so
@@ -43,7 +42,7 @@ class AppleSystemScheduler(
     private val center: PendingNotificationCenter,
     private val defaultBody: String,
     private val clock: () -> Long = ::currentTimeMillis,
-    private val logger: (String) -> Unit = { NSLog("%@", it) },
+    private val logger: (String) -> Unit = ::logToSystem,
     private val limit: Int = MAX_PENDING_NOTIFICATIONS,
     private val horizonDays: Int = DEFAULT_HORIZON_DAYS
 ) : SystemScheduler {

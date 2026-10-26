@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2016-2025 Álinson Santos Xavier <git@axavier.org>
+ *
+ * This file is part of Loop Habit Tracker.
+ *
+ * Loop Habit Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * Loop Habit Tracker is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package io.github.crisacm.salem.platform.notifications
+
+import platform.Foundation.NSLog
+import platform.Foundation.NSString
+import platform.Foundation.create
+
+/**
+ * Writes [message] to the system log. A Kotlin `String` given straight to the variadic `NSLog` is not
+ * bridged to an object, and `%@` then reads it as a pointer and crashes, so the text is an `NSString`.
+ */
+internal fun logToSystem(message: String) {
+    NSLog("%@", NSString.create(string = message))
+}
