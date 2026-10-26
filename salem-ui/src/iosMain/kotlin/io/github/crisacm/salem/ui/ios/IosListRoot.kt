@@ -90,11 +90,11 @@ private sealed interface Loading {
 
 /** The root of the iOS app: opens the database off the main thread and then shows the habit list. */
 @Composable
-fun IosListRoot() {
+fun IosListRoot(onHabitsChanged: () -> Unit = {}) {
     var loading by remember { mutableStateOf<Loading>(Loading.InProgress) }
     LaunchedEffect(Unit) {
         loading = try {
-            Loading.Ready(withContext(Dispatchers.Default) { IosHabitsGraph.create() })
+            Loading.Ready(withContext(Dispatchers.Default) { IosHabitsGraph.create(onHabitsChanged) })
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -135,6 +135,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
         val observer = AppLifecycleObserver(
             onForeground = {
                 graph.reminders.refresher.onForeground()
+                graph.reloadIfChangedElsewhere()
                 model.headerState.today = getToday()
                 graph.listState.refresh()
             },

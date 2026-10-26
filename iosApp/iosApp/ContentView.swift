@@ -21,7 +21,8 @@ import SalemUi
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        // The widget will be told to draw again here (the widget arrives in its own change)
+        MainViewControllerKt.MainViewController(onHabitsChanged: {})
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

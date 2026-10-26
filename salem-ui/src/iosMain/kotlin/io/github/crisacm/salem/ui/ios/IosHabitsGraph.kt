@@ -19,13 +19,18 @@
 
 package io.github.crisacm.salem.ui.ios
 
+import io.github.crisacm.salem.core.APP_GROUP_ID
 import io.github.crisacm.salem.core.DATABASE_FILENAME
+import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.database.initializeHabitsSchema
+import io.github.crisacm.salem.core.io.ExternalChanges
 import io.github.crisacm.salem.core.io.Logging
 import io.github.crisacm.salem.core.io.StandardLogging
+import io.github.crisacm.salem.core.io.moveDatabase
 import io.github.crisacm.salem.core.models.HabitList
 import io.github.crisacm.salem.core.models.sqlite.SQLModelFactory
+import io.github.crisacm.salem.core.models.sqlite.SQLiteHabitList
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.preferences.UserDefaultsStorage
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
@@ -38,6 +43,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
 import io.github.crisacm.salem.core.utils.MidnightTimer
+import io.github.crisacm.salem.platform.io.AppGroup
 import io.github.crisacm.salem.platform.io.AppleFileOpener
 import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.time.computeToday
@@ -90,12 +96,37 @@ class IosHabitsGraph private constructor(
     val menu: ListHabitsMenu,
     val selectionMenu: ListHabitsSelectionMenu,
     val controller: HabitListController,
-    val behavior: ListHabitsBehavior
+    val behavior: ListHabitsBehavior,
+    private val sqlHabitList: SQLiteHabitList,
+    private val externalChanges: ExternalChanges
 ) {
+    /**
+     * Reads the habits again if the widget or a shortcut changed the database since the last time (the app does not
+     * hear about those changes). The habits are new objects, so the screens that hold one are closed or opened again
+     * with the new one. Call it when the app comes back to the foreground.
+     */
+    fun reloadIfChangedElsewhere() {
+        if (!externalChanges.hasChanged()) return
+        val openHabitId = navigation.habit?.id
+        sqlHabitList.reload()
+        for (habit in habitList) habit.recompute()
+        overlays.current?.let { overlays.dismiss(it) }
+        navigation.close()
+        openHabitId?.let { habitList.getById(it) }?.let { navigation.open(it) }
+        listState.refresh()
+        reminders.rescheduleAll()
+    }
+
     companion object {
-        suspend fun create(): IosHabitsGraph {
-            val fileOpener = AppleFileOpener.createDefault()
-            val preferences = Preferences(UserDefaultsStorage())
+        suspend fun create(onHabitsChanged: () -> Unit = {}): IosHabitsGraph {
+            // The database and the preferences live in the folder shared with the widget and the shortcuts when this build
+            // can use the App Group; otherwise, as before, in Application Support and the standard defaults
+            val legacyFiles = AppleFileOpener.createDefault()
+            val fileOpener = AppleFileOpener.createDefault(APP_GROUP_ID)
+            if (fileOpener.userDir != legacyFiles.userDir) {
+                moveDatabase(legacyFiles.openUserFile(DATABASE_FILENAME), fileOpener.openUserFile(DATABASE_FILENAME))
+            }
+            val preferences = Preferences(UserDefaultsStorage(AppGroup.userDefaults(APP_GROUP_ID)))
             setToday(computeToday(preferences.midnightDelayHours, 0))
             setFirstWeekday(preferences.firstWeekday)
 
@@ -112,6 +143,10 @@ class IosHabitsGraph private constructor(
             val logging = StandardLogging()
             val taskRunner = CoroutineTaskRunner(Dispatchers.Main, Dispatchers.IO)
             val commandRunner = CommandRunner(taskRunner)
+            // The widget draws the habits of the database: it has to hear about every change
+            commandRunner.addListener(object : CommandRunner.Listener {
+                override fun onCommandFinished(command: Command) = onHabitsChanged()
+            })
             val cache = HabitCardListCache(habitList, commandRunner, taskRunner, logging)
             // The listeners of the timer write the state of the screen, so they run on the main thread
             val midnightTimer = MidnightTimer(logging, preferences, Dispatchers.Main)
@@ -170,6 +205,7 @@ class IosHabitsGraph private constructor(
                     listState.refresh()
                     reminders.rescheduleAll()
                     reminders.permission.onLaunch(reminders.reminderScheduler.hasHabitsWithReminders())
+                    onHabitsChanged()
                 },
                 message = message
             )
@@ -190,7 +226,7 @@ class IosHabitsGraph private constructor(
                 preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders, importFlow, backupExport, message,
                 themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
-                listState, menu, selectionMenu, controller, behavior
+                listState, menu, selectionMenu, controller, behavior, habitList, ExternalChanges(database)
             )
         }
     }

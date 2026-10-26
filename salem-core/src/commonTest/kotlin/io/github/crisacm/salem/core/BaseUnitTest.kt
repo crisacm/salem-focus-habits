@@ -35,6 +35,7 @@ import io.github.crisacm.salem.platform.io.createTestFileOpener
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.setToday
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlin.random.Random
 import kotlin.test.BeforeTest
 
 open class BaseUnitTest {
@@ -67,14 +68,14 @@ open class BaseUnitTest {
     }
 
     protected suspend fun createTempDir(): UserFile {
-        val dir = fileOpener.openUserFile("test-temp-dir-${tempFileCounter++}")
+        val dir = fileOpener.openUserFile("test-temp-dir-${uniqueSuffix()}")
         dir.mkdirs()
         return dir
     }
 
     protected suspend fun copyResourceToTempFile(resourcePath: String): UserFile {
         val cleanPath = resourcePath.removePrefix("/")
-        val tempFile = fileOpener.openUserFile("test-temp-${tempFileCounter++}")
+        val tempFile = fileOpener.openUserFile("test-temp-${uniqueSuffix()}")
         fileOpener.openResourceFile(cleanPath).copyTo(tempFile)
         return tempFile
     }
@@ -86,6 +87,10 @@ open class BaseUnitTest {
 
     companion object {
         private var tempFileCounter = 0
+
+        // The counter restarts at every run and the temporary folder of the JVM keeps what earlier runs left in it, so
+        // a random part keeps a test from finding the files of another run
+        private fun uniqueSuffix() = "${tempFileCounter++}-${Random.nextInt(Int.MAX_VALUE)}"
 
         suspend fun buildMemoryDatabase(): Database {
             return TestDatabaseHelper.createEmptyDatabase()

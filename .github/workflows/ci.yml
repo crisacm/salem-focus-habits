@@ -35,6 +35,10 @@ jobs:
       - name: Core JVM tests
         run: ./gradlew :salem-core:jvmTest
 
+      # The board that the iOS widget and shortcuts use, tested on the JVM over the same database code
+      - name: iOS extras tests
+        run: ./gradlew :salem-extras:jvmTest
+
       - name: Android JVM unit tests
         run: ./gradlew :salem-android:testDebugUnitTest
 
@@ -82,6 +86,9 @@ jobs:
 
       - name: Compile the shared UI for iOS
         run: ./gradlew :salem-ui:compileKotlinIosSimulatorArm64 :salem-ui:compileKotlinIosArm64
+
+      - name: Compile the iOS extras
+        run: ./gradlew :salem-extras:compileKotlinIosSimulatorArm64 :salem-extras:compileKotlinIosArm64
 
       # Builds the Kotlin framework through Gradle and the app with it, for the simulator, without signing
       - name: Build the iOS app

@@ -21,3 +21,6 @@ package io.github.crisacm.salem.core
 const val DATABASE_FILENAME = "uhabits.db"
 
 const val DATABASE_VERSION = 25
+
+/** The App Group that the iOS app shares with its widget and shortcuts; the entitlements of the targets name the same one. */
+const val APP_GROUP_ID = "group.io.github.crisacm.salem"
