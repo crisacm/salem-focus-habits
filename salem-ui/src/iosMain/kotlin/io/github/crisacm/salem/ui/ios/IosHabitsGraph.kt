@@ -30,7 +30,6 @@ import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.preferences.UserDefaultsStorage
 import io.github.crisacm.salem.core.tasks.CoroutineTaskRunner
 import io.github.crisacm.salem.core.tasks.TaskRunner
-import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.list.HabitCardListCache
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintList
@@ -58,20 +57,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.jetbrains.compose.resources.getString
 
-/** Nothing is shown in the notification tray yet: the reminders of iOS are wired in their own change. */
-private class NoSystemTray : NotificationTray.SystemTray {
-    override fun removeNotification(notificationId: Int) {}
-
-    override fun showNotification(
-        habit: io.github.crisacm.salem.core.models.Habit,
-        notificationId: Int,
-        date: io.github.crisacm.salem.platform.time.LocalDate,
-        reminderTime: Long
-    ) {}
-
-    override fun log(msg: String) {}
-}
-
 /**
  * Everything the iOS app needs to show the habit list, built by hand (kotlin-inject only runs for Android): the
  * database in the files of the app with the schema of the core, the habits, the commands, and the state holders
@@ -87,6 +72,7 @@ class IosHabitsGraph private constructor(
     val navigation: DetailNavigation,
     val screens: ScreenNavigation,
     val midnightTimer: MidnightTimer,
+    val reminders: IosReminders,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
     val overlays: ListOverlays,
@@ -143,15 +129,22 @@ class IosHabitsGraph private constructor(
             val selectionBehavior = ListHabitsSelectionMenuBehavior(habitList, screen, listState, commandRunner)
             lateinit var selectionMenu: ListHabitsSelectionMenu
             val controller = HabitListController(listState, behavior, lazy { selectionMenu })
-            val tray = NotificationTray(taskRunner, commandRunner, preferences, NoSystemTray())
-            selectionMenu = ListHabitsSelectionMenu(listState, commandRunner, preferences, selectionBehavior, lazy { controller }, tray)
+            val reminders = IosReminders.create(habitList, commandRunner, taskRunner, preferences, midnightTimer, navigation)
+            selectionMenu = ListHabitsSelectionMenu(
+                listState,
+                commandRunner,
+                preferences,
+                selectionBehavior,
+                lazy { controller },
+                reminders.notificationTray
+            )
 
             // The string-array of Android refers to other strings, which Compose resources do not resolve
             val hints = arrayOf(getString(Res.string.hint_drag), getString(Res.string.hint_landscape))
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer,
+                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders,
                 themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior

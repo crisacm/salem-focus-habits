@@ -108,18 +108,17 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     LaunchedEffect(graph) { graph.behavior.onStartup() }
 
     DisposableEffect(graph) {
-        graph.midnightTimer.onResume()
-        // Back from the background the day may have changed
+        // The day, the first weekday, the timer and the reminders; the habits are already recomputed
+        graph.reminders.refresher.onLaunch()
+        // Back from the background the day may have changed and the reminders are scheduled again
         val observer = AppLifecycleObserver(
             onForeground = {
-                setToday(computeToday(graph.preferences.midnightDelayHours, 0))
-                setFirstWeekday(graph.preferences.firstWeekday)
+                graph.reminders.refresher.onForeground()
                 model.headerState.today = getToday()
-                graph.midnightTimer.onResume()
                 graph.listState.refresh()
             },
             onBackground = {
-                graph.midnightTimer.onPause()
+                graph.reminders.refresher.onBackground()
                 graph.listState.cancelRefresh()
             }
         )
@@ -128,6 +127,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
             graph.midnightTimer.onPause()
         }
     }
+
     // What a change in Settings needs to show on the list: the theme, the day and the first weekday, the header and the rows
     val onSettingsChanged = {
         graph.screen.applyTheme()

@@ -21,7 +21,14 @@ package io.github.crisacm.salem.ui
 
 import androidx.compose.ui.window.ComposeUIViewController
 import io.github.crisacm.salem.ui.ios.IosListRoot
+import io.github.crisacm.salem.ui.ios.IosNotificationRouter
 import platform.UIKit.UIViewController
 
-/** The root view controller that the iOS app shows. */
-fun MainViewController(): UIViewController = ComposeUIViewController { IosListRoot() }
+/**
+ * The root view controller that the iOS app shows. It also takes the notification center's delegate right away, so a
+ * tap on a reminder that launches the app is not lost.
+ */
+fun MainViewController(): UIViewController {
+    IosNotificationRouter.install()
+    return ComposeUIViewController { IosListRoot() }
+}
