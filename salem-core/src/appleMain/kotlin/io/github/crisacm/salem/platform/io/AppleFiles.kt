@@ -50,7 +50,7 @@ import platform.posix.read
  * root is opened on the last one, so [ResourceFile.exists] is false instead of failing.
  */
 class AppleFileOpener(
-    private val userDir: String,
+    val userDir: String,
     private val resourceRoots: List<String>
 ) : FileOpener {
     init {
@@ -71,10 +71,18 @@ class AppleFileOpener(
          * the "assets" folder of the app bundle. The app target must copy `salem-core/assets/main`
          * there (migration step 7).
          */
-        fun createDefault(): AppleFileOpener {
+        fun createDefault(): AppleFileOpener = createDefault(groupId = null)
+
+        /**
+         * Like [createDefault], but with the user files in the folder shared with the extensions of the app when
+         * [groupId] names an App Group this build can use. The caller moves what was in Application Support (see
+         * `moveDatabase`).
+         */
+        fun createDefault(groupId: String?): AppleFileOpener {
             val fm = NSFileManager.defaultManager
             val url = fm.URLsForDirectory(NSApplicationSupportDirectory, NSUserDomainMask).first() as NSURL
-            val userDir = checkNotNull(url.path) { "No Application Support directory" }
+            val userDir = groupId?.let { AppGroup.containerPath(it) }
+                ?: checkNotNull(url.path) { "No Application Support directory" }
             check(fm.createDirectoryAtPath(userDir, withIntermediateDirectories = true, attributes = null, error = null)) {
                 "Cannot create $userDir"
             }

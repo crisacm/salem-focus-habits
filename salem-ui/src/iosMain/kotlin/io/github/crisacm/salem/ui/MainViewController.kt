@@ -26,9 +26,10 @@ import platform.UIKit.UIViewController
 
 /**
  * The root view controller that the iOS app shows. It also takes the notification center's delegate right away, so a
- * tap on a reminder that launches the app is not lost.
+ * tap on a reminder that launches the app is not lost. [onHabitsChanged] is called whenever the habits change (a
+ * command, an import), so the shell can tell the widget to draw again.
  */
-fun MainViewController(): UIViewController {
+fun MainViewController(onHabitsChanged: () -> Unit): UIViewController {
     IosNotificationRouter.install()
-    return ComposeUIViewController { IosListRoot() }
+    return ComposeUIViewController { IosListRoot(onHabitsChanged) }
 }
