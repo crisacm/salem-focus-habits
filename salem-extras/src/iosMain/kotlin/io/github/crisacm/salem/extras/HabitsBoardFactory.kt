@@ -26,7 +26,10 @@ import io.github.crisacm.salem.platform.io.AppGroup
 import io.github.crisacm.salem.platform.io.AppleFileOpener
 import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.notifications.UNDeliveredNotificationCenter
+import io.github.crisacm.salem.platform.notifications.UNPendingNotificationCenter
+import io.github.crisacm.salem.platform.notifications.updateTodayReminder
 import io.github.crisacm.salem.platform.time.computeToday
+import io.github.crisacm.salem.platform.time.currentTimeMillis
 import platform.Foundation.NSFileManager
 
 /**
@@ -34,8 +37,8 @@ import platform.Foundation.NSFileManager
  * app creates and migrates the database; an extension only uses it. Called from Swift as `HabitsBoardFactory.shared`.
  */
 object HabitsBoardFactory {
-    /** The board of the habits of the app, or null when the app has not created its database (or this build cannot reach the App Group). */
-    fun create(): HabitsBoard? {
+    /** The board of the habits of the app, or null when the app has not created its database (or this build cannot reach the App Group). [defaultReminderBody] is the text of a reminder for a habit without a question. */
+    fun create(defaultReminderBody: String): HabitsBoard? {
         val path = AppleFileOpener.createDefault(APP_GROUP_ID).openUserFile(DATABASE_FILENAME).pathString
         if (!NSFileManager.defaultManager.fileExistsAtPath(path)) return null
         val preferences = Preferences(UserDefaultsStorage(AppGroup.userDefaults(APP_GROUP_ID)))
@@ -45,8 +48,12 @@ object HabitsBoardFactory {
             firstWeekday = preferences.firstWeekday,
             isSkipEnabled = preferences.isSkipEnabled,
             areQuestionMarksEnabled = preferences.areQuestionMarksEnabled,
-            // A delivered reminder of a habit that was just changed is no longer news
-            onChanged = { habitId -> UNDeliveredNotificationCenter().removeDeliveredOfHabit(habitId) }
+            onChanged = { habit ->
+                // A delivered reminder of a habit that was just changed is no longer news
+                habit.id?.let { UNDeliveredNotificationCenter().removeDeliveredOfHabit(it) }
+                // Nothing listens to the commands here, so today's pending reminder is moved by hand
+                updateTodayReminder(UNPendingNotificationCenter(), habit, currentTimeMillis(), defaultReminderBody)
+            }
         )
     }
 }

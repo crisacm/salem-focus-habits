@@ -103,7 +103,7 @@ struct TodayProvider: TimelineProvider {
     }
 
     private func load() -> TodayEntry {
-        guard let board = HabitsBoardFactory.shared.create() else {
+        guard let board = HabitsBoardFactory.shared.create(defaultReminderBody: String(localized: "Have you completed this habit today?")) else {
             return TodayEntry(date: Date(), lines: [], needsApp: true)
         }
         defer { board.close() }

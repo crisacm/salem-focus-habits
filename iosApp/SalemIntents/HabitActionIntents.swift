@@ -24,10 +24,11 @@ import WidgetKit
 /// Runs one change of the board on a habit and tells the widget to draw again. Throws when the database is not ready or
 /// the habit is gone (the board returns nil for both, so `loadHabits` is asked first).
 private func change(_ habit: HabitEntity, _ action: (HabitsBoard, Int64) throws -> BoardHabit?) throws -> BoardHabit {
-    guard let board = HabitsBoardFactory.shared.create() else { throw HabitShortcutError.openApp }
+    guard let board = HabitsBoardFactory.shared.create(defaultReminderBody: String(localized: "Have you completed this habit today?")) else { throw HabitShortcutError.openApp }
     defer { board.close() }
-    guard let state = try? board.today() else { throw HabitShortcutError.unavailable }
-    if state.needsApp { throw HabitShortcutError.openApp }
+    // One query, where today() computes every habit
+    guard let ready = try? board.isReady() else { throw HabitShortcutError.unavailable }
+    if !ready { throw HabitShortcutError.openApp }
     guard let result = try action(board, Int64(habit.id)) else { throw HabitShortcutError.unknownHabit }
     WidgetCenter.shared.reloadAllTimelines()
     return result

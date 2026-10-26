@@ -55,6 +55,8 @@ class HabitsBoardTest {
     private lateinit var habits: HabitList
     private lateinit var fixtures: HabitFixtures
     private val changed = mutableListOf<Long>()
+    private val reminderDone = mutableListOf<Boolean>()
+    private var dateReads = 0
 
     @Before
     fun setUp() {
@@ -76,10 +78,16 @@ class HabitsBoardTest {
 
     private fun board(skip: Boolean = false, questionMarks: Boolean = false) = HabitsBoard(
         database = database,
-        date = { today },
+        date = {
+            dateReads++
+            today
+        },
         isSkipEnabled = skip,
         areQuestionMarksEnabled = questionMarks,
-        onChanged = { changed += it }
+        onChanged = {
+            changed += it.id!!
+            reminderDone += it.reminderDoneToday()
+        }
     )
 
     // The fixtures of an SQL list save the habit, which gives it its id
@@ -255,5 +263,49 @@ class HabitsBoardTest {
         assertEquals(1, board.today().habits.size)
         board.close()
         assertFailsWith<Exception> { board.today() }
+    }
+
+    @Test
+    fun theBoardIsReadyOnlyWithTheDatabaseOfThisBuild() {
+        assertTrue(board().isReady())
+        runBlocking { database.setVersion(DATABASE_VERSION - 1) }
+        assertFalse(board().isReady())
+    }
+
+    @Test
+    fun theDayIsReadOncePerCall() {
+        val run = numerical()
+        yesNo()
+        val board = board()
+        for (call in listOf<() -> Any?>(
+            { board.today() },
+            { board.check(run.id!!) },
+            { board.uncheck(run.id!!) },
+            { board.toggle(run.id!!) },
+            { board.increment(run.id!!) },
+            { board.decrement(run.id!!) }
+        )) {
+            dateReads = 0
+            call()
+            assertEquals(1, dateReads)
+        }
+    }
+
+    @Test
+    fun theChangeTellsIfTheReminderOfTodayIsDone() {
+        val meditate = yesNo()
+        val board = board()
+        board.check(meditate.id!!)
+        board.uncheck(meditate.id!!)
+        assertEquals(listOf(true, false), reminderDone)
+    }
+
+    @Test
+    fun aNumericalHabitIsDoneForTheReminderOnlyAtItsTarget() {
+        val run = numerical(target = 2.0)
+        val board = board()
+        board.increment(run.id!!)
+        board.increment(run.id!!)
+        assertEquals(listOf(false, true), reminderDone)
     }
 }

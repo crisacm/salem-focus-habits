@@ -20,13 +20,13 @@
 package io.github.crisacm.salem.platform.notifications
 
 import io.github.crisacm.salem.core.models.Habit
-import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SchedulerResult
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SystemScheduler
 import io.github.crisacm.salem.platform.Synchronized
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.currentTimeMillis
+import io.github.crisacm.salem.platform.time.getToday
 import platform.Foundation.NSLog
 
 /**
@@ -57,20 +57,16 @@ class AppleSystemScheduler(
         // A snoozed time is a one-off: only the regular time of the reminder repeats every day
         val days = if (isRegularTime(reminderTime, reminder.hour, reminder.minute)) horizonDays else 1
         val now = clock()
-        val times = upcomingReminderTimes(reminderTime, reminder.days, days).filter { it > now }
+        // A habit already done today would still show today's notification, because iOS cannot check when it fires
+        val skipToday = habit.reminderDoneToday()
+        val today = getToday()
+        val times = upcomingReminderTimes(reminderTime, reminder.days, days)
+            .filter { it > now && !(skipToday && localDateOf(it) == today) }
         if (times.isEmpty()) return SchedulerResult.IGNORED
         val pending = scheduled.getOrPut(habitId) { mutableListOf() }
         for (time in times) {
             val dayStart = if (time == reminderTime) timestamp else startOfLocalDay(time)
-            val request = ReminderRequest(
-                identifierOf(habitId, localDateOf(time)),
-                habit.name,
-                habit.question.ifBlank { defaultBody },
-                time,
-                habitId,
-                dayStart,
-                habit.type == HabitType.YES_NO
-            )
+            val request = reminderRequestFor(habit, habitId, time, dayStart, defaultBody)
             center.add(request)
             pending.add(PendingReminder(request.identifier, time))
         }
@@ -116,14 +112,11 @@ class AppleSystemScheduler(
 
     private fun startOfLocalDay(time: Long) = DateUtils.getStartOfDay(DateUtils.removeTimezone(time))
 
-    private fun localDateOf(time: Long) = LocalDate((startOfLocalDay(time) / DateUtils.DAY_LENGTH - DAYS_FROM_1970_TO_2000).toInt())
-
     private fun log(msg: String) = logger("AppleSystemScheduler: $msg")
 
     companion object {
         const val MAX_PENDING_NOTIFICATIONS = 64
         const val DEFAULT_HORIZON_DAYS = 7
-        private const val DAYS_FROM_1970_TO_2000 = 10_957L
 
         fun identifierOf(habitId: Long, day: LocalDate) = "reminder-$habitId-${day.daysSince2000}"
     }
