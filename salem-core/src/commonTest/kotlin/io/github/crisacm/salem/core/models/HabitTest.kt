@@ -119,4 +119,37 @@ class HabitTest : BaseUnitTest() {
         assertEquals(0L, h.id)
         assertEquals("content://org.isoron.uhabits/habit/0", h.uriString)
     }
+
+    @Test
+    fun testReminderDoneTodayFollowsTheCompletionOfToday() {
+        val habit = fixtures.createEmptyHabit()
+        assertFalse(habit.reminderDoneToday())
+        habit.originalEntries.add(Entry(getToday(), Entry.YES_MANUAL))
+        habit.recompute()
+        assertTrue(habit.reminderDoneToday())
+        habit.originalEntries.add(Entry(getToday(), Entry.NO))
+        habit.recompute()
+        assertFalse(habit.reminderDoneToday())
+    }
+
+    @Test
+    fun testReminderDoneTodayUsesTheTargetOfANumericalHabit() {
+        val habit = fixtures.createEmptyNumericalHabit(NumericalHabitType.AT_LEAST)
+        habit.originalEntries.add(Entry(getToday(), 1000))
+        habit.recompute()
+        assertFalse(habit.reminderDoneToday())
+        habit.originalEntries.add(Entry(getToday(), 2000))
+        habit.recompute()
+        assertTrue(habit.reminderDoneToday())
+    }
+
+    @Test
+    fun testReminderIsNeverDoneForAHabitWithAMaximum() {
+        // A habit that stays under a maximum counts as completed with no entry at all: its reminder must still fire
+        val habit = fixtures.createEmptyNumericalHabit(NumericalHabitType.AT_MOST)
+        habit.originalEntries.add(Entry(getToday(), 1000))
+        habit.recompute()
+        assertTrue(habit.isCompletedToday())
+        assertFalse(habit.reminderDoneToday())
+    }
 }

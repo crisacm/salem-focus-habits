@@ -19,6 +19,8 @@
 
 package io.github.crisacm.salem.platform.notifications
 
+import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.LocalDate
@@ -64,4 +66,57 @@ internal fun reminderIdsToDrop(pending: List<PendingReminder>, limit: Int): List
     if (pending.size <= limit) return emptyList()
     val ordered = pending.sortedWith(compareBy({ it.fireTimeMillis }, { it.identifier }))
     return ordered.drop(limit).map { it.identifier }
+}
+
+/** The calendar day (device zone) of a reminder time in milliseconds since the Unix epoch. */
+internal fun localDateOf(time: Long): LocalDate =
+    LocalDate((DateUtils.removeTimezone(time).floorDiv(DateUtils.DAY_LENGTH) - DAYS_FROM_1970_TO_2000).toInt())
+
+/** The notification of [habit] for [time]; [timestamp] is the start of the day it is about. */
+internal fun reminderRequestFor(habit: Habit, habitId: Long, time: Long, timestamp: Long, defaultBody: String) = ReminderRequest(
+    AppleSystemScheduler.identifierOf(habitId, localDateOf(time)),
+    habit.name,
+    habit.question.ifBlank { defaultBody },
+    time,
+    habitId,
+    timestamp,
+    habit.type == HabitType.YES_NO
+)
+
+/** What an app that is not running has to do with today's pending reminder after a habit changed. */
+internal sealed interface TodayReminderChange {
+    data object Nothing : TodayReminderChange
+
+    data class Remove(val identifier: String) : TodayReminderChange
+
+    data class Add(val request: ReminderRequest) : TodayReminderChange
+}
+
+/**
+ * The shortcuts and the widget change habits in a process that has no `CommandRunner` listeners, so nothing moves the
+ * reminder of today as `HabitCompletionRearmer` does in the app. A habit that is done loses its pending request of
+ * today; one that is not done gets it back as long as its time has not passed and the weekday is enabled. The
+ * identifier only depends on the habit and the day, so the request can be removed without knowing what the app scheduled.
+ */
+internal fun todayReminderChange(habit: Habit, now: Long, defaultBody: String): TodayReminderChange {
+    val habitId = habit.id ?: return TodayReminderChange.Nothing
+    val reminder = habit.reminder ?: return TodayReminderChange.Nothing
+    val dayStart = DateUtils.getStartOfDay(DateUtils.removeTimezone(now))
+    val time = DateUtils.applyTimezone(dayStart + reminder.hour * DateUtils.HOUR_LENGTH + reminder.minute * DateUtils.MINUTE_LENGTH)
+    if (upcomingReminderTimes(time, reminder.days, 1).isEmpty()) return TodayReminderChange.Nothing
+    if (habit.reminderDoneToday()) return TodayReminderChange.Remove(AppleSystemScheduler.identifierOf(habitId, localDateOf(time)))
+    if (time <= now) return TodayReminderChange.Nothing
+    return TodayReminderChange.Add(reminderRequestFor(habit, habitId, time, dayStart, defaultBody))
+}
+
+/**
+ * Applies [todayReminderChange] to the pending notifications. Called by the extensions after they changed [habit];
+ * [now] is in milliseconds since the Unix epoch and [defaultBody] is the text for habits without a question.
+ */
+fun updateTodayReminder(center: PendingNotificationCenter, habit: Habit, now: Long, defaultBody: String) {
+    when (val change = todayReminderChange(habit, now, defaultBody)) {
+        is TodayReminderChange.Remove -> center.remove(change.identifier)
+        is TodayReminderChange.Add -> center.add(change.request)
+        TodayReminderChange.Nothing -> Unit
+    }
 }

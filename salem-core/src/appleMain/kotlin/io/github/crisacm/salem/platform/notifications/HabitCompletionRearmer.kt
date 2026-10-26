@@ -22,7 +22,6 @@ package io.github.crisacm.salem.platform.notifications
 import io.github.crisacm.salem.core.commands.Command
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.commands.CreateRepetitionCommand
-import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.reminders.ReminderScheduler
 import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.getToday
@@ -44,7 +43,7 @@ class HabitCompletionRearmer(
         val habit = command.habit
         val reminder = habit.reminder ?: return
         if (command.date != getToday()) return
-        val completed = habit.isCompletedToday() && habit.targetType != NumericalHabitType.AT_MOST
+        val completed = habit.reminderDoneToday()
         val upcoming = DateUtils.getUpcomingTimeInMillis(reminder.hour, reminder.minute)
         if (completed && isToday(upcoming)) {
             val tomorrow = DateUtils.applyTimezone(DateUtils.removeTimezone(upcoming) + DateUtils.DAY_LENGTH)

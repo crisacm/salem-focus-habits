@@ -66,6 +66,12 @@ data class Habit(
         return isCompletedOn(getToday())
     }
 
+    /**
+     * Whether today's reminder is no longer needed: the habit is completed today. A habit with a maximum is completed
+     * with no entry at all (staying under it is the goal), so its reminder is never skipped.
+     */
+    fun reminderDoneToday(): Boolean = isCompletedToday() && targetType != NumericalHabitType.AT_MOST
+
     fun isEnteredToday(): Boolean {
         val today = getToday()
         val value = computedEntries.get(today).value

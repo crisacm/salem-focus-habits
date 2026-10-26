@@ -36,7 +36,7 @@ struct ToggleHabitIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        if let board = HabitsBoardFactory.shared.create() {
+        if let board = HabitsBoardFactory.shared.create(defaultReminderBody: String(localized: "Have you completed this habit today?")) {
             defer { board.close() }
             _ = try? board.toggle(id: Int64(habitId))
         }
@@ -58,7 +58,7 @@ struct IncrementHabitIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        if let board = HabitsBoardFactory.shared.create() {
+        if let board = HabitsBoardFactory.shared.create(defaultReminderBody: String(localized: "Have you completed this habit today?")) {
             defer { board.close() }
             _ = try? board.increment(id: Int64(habitId))
         }

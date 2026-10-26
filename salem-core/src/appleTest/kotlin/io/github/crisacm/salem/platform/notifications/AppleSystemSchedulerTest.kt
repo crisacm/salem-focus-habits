@@ -20,7 +20,9 @@
 package io.github.crisacm.salem.platform.notifications
 
 import io.github.crisacm.salem.core.BaseUnitTest
+import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Habit
+import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.Reminder
 import io.github.crisacm.salem.core.models.WeekdayList
 import io.github.crisacm.salem.core.reminders.ReminderScheduler.SchedulerResult
@@ -28,6 +30,7 @@ import io.github.crisacm.salem.platform.time.DateUtils
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.fixedOffsetZone
+import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.platform.time.utcTime
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -248,5 +251,39 @@ class AppleSystemSchedulerTest : BaseUnitTest() {
         val flags = BooleanArray(7)
         for (day in enabled) flags[(day.daysSinceSunday + 1) % 7] = true
         return WeekdayList(flags)
+    }
+
+    private fun completeToday(habit: Habit, value: Int = Entry.YES_MANUAL) {
+        setToday(LocalDate(2015, 1, 26))
+        habit.originalEntries.add(Entry(LocalDate(2015, 1, 26), value))
+        habit.recompute()
+    }
+
+    @Test
+    fun testACompletedHabitHasNoRequestForToday() {
+        val done = habit(7)
+        completeToday(done)
+        scheduler.scheduleShowReminder(monday830, done, monday0)
+        assertEquals(6, center.requests.size)
+        assertEquals(false, idOf(7, 2015, 1, 26) in center.requests)
+        assertEquals(true, idOf(7, 2015, 1, 27) in center.requests)
+    }
+
+    @Test
+    fun testAHabitThatIsNotCompletedKeepsTodaysRequest() {
+        setToday(LocalDate(2015, 1, 26))
+        scheduler.scheduleShowReminder(monday830, habit(7), monday0)
+        assertEquals(7, center.requests.size)
+        assertEquals(true, idOf(7, 2015, 1, 26) in center.requests)
+    }
+
+    @Test
+    fun testAHabitWithAMaximumKeepsTodaysRequestEvenWhenCompleted() {
+        val limited = fixtures.createEmptyNumericalHabit(NumericalHabitType.AT_MOST)
+        limited.id = 8
+        limited.reminder = Reminder(8, 30, WeekdayList.EVERY_DAY)
+        completeToday(limited, 1000)
+        scheduler.scheduleShowReminder(monday830, limited, monday0)
+        assertEquals(true, idOf(8, 2015, 1, 26) in center.requests)
     }
 }

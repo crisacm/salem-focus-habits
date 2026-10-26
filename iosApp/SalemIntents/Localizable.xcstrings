@@ -220,6 +220,16 @@
           }
         }
       }
+    },
+    "Have you completed this habit today?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Has completado este hábito hoy?"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

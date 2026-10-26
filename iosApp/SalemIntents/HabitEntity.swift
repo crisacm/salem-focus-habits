@@ -66,7 +66,7 @@ enum HabitShortcutError: Error, CustomLocalizedStringResourceConvertible {
 /// The habits of today in the order of the app. The board tells apart a database that is not ready (the app has to run
 /// first) from a list that is just empty.
 func loadHabits() throws -> [HabitEntity] {
-    guard let board = HabitsBoardFactory.shared.create() else { throw HabitShortcutError.openApp }
+    guard let board = HabitsBoardFactory.shared.create(defaultReminderBody: String(localized: "Have you completed this habit today?")) else { throw HabitShortcutError.openApp }
     defer { board.close() }
     // The board throws what SQLite reports (a locked or unreadable database); the extension must not end with it
     guard let state = try? board.today() else { throw HabitShortcutError.unavailable }
