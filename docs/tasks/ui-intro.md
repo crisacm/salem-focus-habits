@@ -20,7 +20,7 @@ The brief of the Haiku `explorer` (5a) covered the intro: pure Compose except `R
 
 ## Checklist
 - [x] TASK-1: move model and content, tests ported (`IntroModelTest` 5) — the logic was moved, not new
-- [x] TASK-2: `IntroContentTest` (4: first page, next to Done, Skip and Done finish, back) and `ScreenNavigationTest` (3)
+- [x] TASK-2: `IntroContentTest` (4: first page, next to Done, Skip and Done finish, back) and `ScreenNavigationTest` (6 today, after 5c made the screens a stack)
 - [x] TASK-3: iOS layer (`IosListScreen.showIntroScreen`, `IosListRoot`)
 - [x] TASK-4: docs and changelog
 

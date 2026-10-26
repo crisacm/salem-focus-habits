@@ -230,20 +230,20 @@ open class Preferences(private val storage: Storage) {
             val weekday = storage.getString("pref_first_weekday", "")
             return if (weekday.isEmpty()) getFirstWeekdayNumberAccordingToLocale() else weekday.toInt()
         }
-    open val firstWeekday: DayOfWeek
+
+    /**
+     * The first day of the week. It is stored as the Sunday-based number ("1" is Sunday, "7" is Saturday), the way the
+     * old settings screen wrote it. When nothing sensible is stored (nothing, "-1" or anything that is not 1 to 7) it
+     * follows the system locale.
+     */
+    open var firstWeekday: DayOfWeek
         get() {
-            var weekday = storage.getString("pref_first_weekday", "-1").toInt()
-            if (weekday < 0) weekday = getFirstWeekdayNumberAccordingToLocale()
-            return when (weekday) {
-                1 -> DayOfWeek.SUNDAY
-                2 -> DayOfWeek.MONDAY
-                3 -> DayOfWeek.TUESDAY
-                4 -> DayOfWeek.WEDNESDAY
-                5 -> DayOfWeek.THURSDAY
-                6 -> DayOfWeek.FRIDAY
-                7 -> DayOfWeek.SATURDAY
-                else -> throw IllegalArgumentException()
-            }
+            val stored = storage.getString("pref_first_weekday", "").toIntOrNull()
+            val weekday = stored?.takeIf { it in 1..7 } ?: getFirstWeekdayNumberAccordingToLocale()
+            return DayOfWeek.entries.first { it.daysSinceSunday + 1 == weekday }
+        }
+        set(day) {
+            storage.putString("pref_first_weekday", (day.daysSinceSunday + 1).toString())
         }
 
     interface Listener {

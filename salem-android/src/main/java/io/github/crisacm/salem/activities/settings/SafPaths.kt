@@ -19,17 +19,6 @@
 
 package io.github.crisacm.salem.activities.settings
 
-class WeekdayOption(val value: String, val name: String)
-
-private val WEEKDAY_VALUES = listOf("7", "1", "2", "3", "4", "5", "6")
-
-/** [dayNames] must start at Saturday, as the stored values are Sunday-based (Sunday = 1). */
-fun firstWeekdayOptions(dayNames: List<String>) =
-    WEEKDAY_VALUES.zip(dayNames) { value, name -> WeekdayOption(value, name) }
-
-fun firstWeekdaySummary(dayNames: List<String>, sundayBasedWeekday: Int) =
-    dayNames[sundayBasedWeekday % 7]
-
 /** Path of a SAF tree document id such as `primary:Backups` or `1234-ABCD:Docs`. */
 fun treeDocumentPath(documentId: String, primaryStorage: String): String {
     val parts = documentId.split(":", limit = 2)

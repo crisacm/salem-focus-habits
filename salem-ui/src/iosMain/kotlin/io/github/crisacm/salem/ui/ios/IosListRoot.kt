@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +43,7 @@ import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.AppScreen
 import io.github.crisacm.salem.ui.about.AboutRoute
+import io.github.crisacm.salem.ui.about.SalemLinks
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.detail.HabitDetailRoute
@@ -49,6 +51,9 @@ import io.github.crisacm.salem.ui.intro.IntroContent
 import io.github.crisacm.salem.ui.list.ListHabitsContent
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
+import io.github.crisacm.salem.ui.settings.SettingsContent
+import io.github.crisacm.salem.ui.settings.SettingsState
+import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -123,10 +128,18 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
             graph.midnightTimer.onPause()
         }
     }
+    // What a change in Settings needs to show on the list: the theme, the day and the first weekday, the header and the rows
+    val onSettingsChanged = {
+        graph.screen.applyTheme()
+        setToday(computeToday(graph.preferences.midnightDelayHours, 0))
+        setFirstWeekday(graph.preferences.firstWeekday)
+        model.headerState.today = getToday()
+        graph.listState.refresh()
+    }
     SalemTheme(theme) {
         Box(Modifier.fillMaxSize()) {
             val detailOpen = graph.navigation.habit != null
-            val screenOpen = graph.screens.current != null
+            val screenOpen = graph.screens.openScreens.isNotEmpty()
             ListHabitsContent(
                 model,
                 theme,
@@ -158,16 +171,39 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     developer = Platform.isDebugBinary
                 )
             }
-            if (graph.screens.current == AppScreen.ABOUT) {
-                AboutRoute(
-                    versionName = remember { iosVersionName() },
-                    preferences = graph.preferences,
-                    openUrl = ::openUrl,
-                    onBack = { graph.screens.close(AppScreen.ABOUT) }
-                )
-            }
-            if (graph.screens.current == AppScreen.INTRO) {
-                IntroContent(onFinish = { graph.screens.close(AppScreen.INTRO) })
+            val openScreens = graph.screens.openScreens
+            openScreens.forEachIndexed { index, screen ->
+                key(screen) {
+                    // Only the screen on top is read by VoiceOver; the ones below it stay composed to keep their state
+                    Box(Modifier.fillMaxSize().then(if (index < openScreens.lastIndex) Modifier.clearAndSetSemantics { } else Modifier)) {
+                        when (screen) {
+                            AppScreen.ABOUT -> AboutRoute(
+                                versionName = remember { iosVersionName() },
+                                preferences = graph.preferences,
+                                openUrl = ::openUrl,
+                                onBack = { graph.screens.close(AppScreen.ABOUT) }
+                            )
+                            AppScreen.INTRO -> IntroContent(onFinish = { graph.screens.close(AppScreen.INTRO) })
+                            AppScreen.SETTINGS -> {
+                                val dateFormatter = remember { AppleLocalDateFormatter() }
+                                val weekdayNames = remember { weekdayNamesFromSaturday(dateFormatter::longWeekdayName) }
+                                val state = remember(model) { SettingsState(graph.preferences, onSettingsChanged) }
+                                // About may have turned the developer mode on while this screen was below it
+                                LaunchedEffect(openScreens.size) { state.refresh() }
+                                SettingsContent(
+                                    state = state,
+                                    weekdayNames = weekdayNames,
+                                    // There is no confetti on iOS yet
+                                    showAnimationsSwitch = false,
+                                    onBack = { graph.screens.close(AppScreen.SETTINGS) },
+                                    onHelp = { openUrl(SalemLinks.HELP) },
+                                    onRate = { openUrl(SalemLinks.RATE) },
+                                    onAbout = { graph.screens.open(AppScreen.ABOUT) }
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

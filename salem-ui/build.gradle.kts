@@ -120,7 +120,8 @@ tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().config
 // - Android keeps legacy language codes in its folders, Compose resources match the codes of java.util.Locale and
 //   NSLocale: in -> id, iw -> he, and Norwegian is both nb and no (the JVM reports no, iOS reports nb).
 // Items of a string-array that reference other strings (@string/...) are not resolved by Compose resources.
-// The fonts of the core are copied too (one copy): fontawesome, notosans_regular and notosans_bold, and the intro icons
+// The fonts of the core are copied too (one copy): fontawesome, notosans_regular and notosans_bold. The images of the
+// intro and the About screen (intro_icon_*.png) come from the drawables of salem-android
 val sharedStringsDir = layout.buildDirectory.dir("generated/sharedStrings")
 val syncSharedStrings by tasks.registering(Sync::class) {
     filteringCharset = "UTF-8"

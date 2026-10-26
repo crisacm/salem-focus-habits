@@ -62,8 +62,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The About screen: the app, its links, the developers and the translators. [onVersionTap] counts the taps on the
- * version, [openUrl] opens a page of [SalemLinks] and [snackbar] shows the messages.
+ * The About screen: the app, its links, the developers and the translators. [onVersionTap] is called on each tap on
+ * the version (`AboutRoute` counts them), [openUrl] opens a page of [SalemLinks] and [snackbar] shows the messages.
  */
 @Composable
 fun AboutContent(

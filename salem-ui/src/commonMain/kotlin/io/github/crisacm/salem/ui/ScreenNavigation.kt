@@ -19,24 +19,29 @@
 
 package io.github.crisacm.salem.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
 
 /** The screens that open above the habit list, besides the habit detail. */
-enum class AppScreen { ABOUT, INTRO }
+enum class AppScreen { ABOUT, INTRO, SETTINGS }
 
-/** The screen shown above the habit list, if any. Opening one replaces the one that was open. */
+/** The screens shown above the habit list, the last one opened on top. Back from one shows the one below. */
 class ScreenNavigation {
-    var current by mutableStateOf<AppScreen?>(null)
-        private set
+    private val stack = mutableStateListOf<AppScreen>()
 
+    /** Every screen open, the one on top last. */
+    val openScreens: List<AppScreen> get() = stack.toList()
+
+    /** The screen on top, if any. */
+    val current: AppScreen? get() = stack.lastOrNull()
+
+    /** Shows [screen] on top; one that is already open moves to the top instead of being repeated. */
     fun open(screen: AppScreen) {
-        current = screen
+        stack.remove(screen)
+        stack.add(screen)
     }
 
-    /** Closes [screen] when it is the one shown; a screen that was already replaced stays closed. */
+    /** Closes [screen] wherever it is in the stack. */
     fun close(screen: AppScreen) {
-        if (current == screen) current = null
+        stack.remove(screen)
     }
 }

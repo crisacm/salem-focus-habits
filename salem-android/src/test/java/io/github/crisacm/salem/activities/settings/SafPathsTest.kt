@@ -22,23 +22,7 @@ package io.github.crisacm.salem.activities.settings
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class SettingsModelTest {
-    private val names = listOf("Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
-
-    @Test
-    fun weekdayOptionsStartAtSaturdayWithSundayBasedValues() {
-        val options = firstWeekdayOptions(names)
-        assertEquals(listOf("7", "1", "2", "3", "4", "5", "6"), options.map { it.value })
-        assertEquals(names, options.map { it.name })
-    }
-
-    @Test
-    fun weekdaySummaryUsesTheSundayBasedNumber() {
-        assertEquals("Sunday", firstWeekdaySummary(names, 1))
-        assertEquals("Monday", firstWeekdaySummary(names, 2))
-        assertEquals("Saturday", firstWeekdaySummary(names, 7))
-    }
-
+class SafPathsTest {
     @Test
     fun treeDocumentPathOnPrimaryStorage() {
         assertEquals("/sdcard/Backups/Salem", treeDocumentPath("primary:Backups/Salem", "/sdcard"))
@@ -61,10 +45,5 @@ class SettingsModelTest {
     @Test
     fun treeDocumentPathKeepsColonsInTheRelativePart() {
         assertEquals("/sdcard/a:b", treeDocumentPath("primary:a:b", "/sdcard"))
-    }
-
-    @Test
-    fun weekdayOptionsAreTruncatedWhenNamesAreMissing() {
-        assertEquals(2, firstWeekdayOptions(names.take(2)).size)
     }
 }

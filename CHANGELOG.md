@@ -18,6 +18,7 @@ attribution.
 
 ### Added
 
+- Show Settings on iOS (menu Settings): the short press toggle, the midnight delay, skip days, question marks, reversed days, pure black, the first day of the week, Help, Rate, About and the developer switch. The rows move to `salem-ui` and are shared with Android, which keeps its own sections (widgets, reminders, backups, import and export, troubleshooting). The first day of the week can be set from the shared code (`Preferences.firstWeekday` has a setter), and About opened from Settings goes back to Settings.
 - Show the intro on the first launch of the iOS app: the intro (three slides with Skip, Next and Done) moves to `salem-ui` and is shared with Android; before, iOS marked the first run as done and showed nothing.
 - Show the About screen on iOS (menu About, and Help opens the project page): the screen moves to `salem-ui` and is shared with Android, with the app version, the links, the developers and the translators (the list is generated as Kotlin by `updateTranslators` and drawn with Compose instead of an XML layout); five taps on the version turn on the developer mode and a message says so (a snackbar instead of a toast).
 - Open the habit detail from the iOS habit list: tapping a habit shows its screen with the cards, the six charts, the history editor and the popups of each day, and the menu with Edit, Archive/Unarchive and Delete (Export says that it is not available on iOS yet). Back closes the topmost layer first.

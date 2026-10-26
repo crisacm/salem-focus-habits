@@ -38,13 +38,17 @@ class SharedPreferencesStorage(
         PreferenceManager.getDefaultSharedPreferences(context)
 
     private var preferences: Preferences? = null
+    private val echo = EchoFilter()
 
     init {
         sharedPrefs.registerOnSharedPreferenceChangeListener(this)
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
     }
 
-    override fun clear() = sharedPrefs.edit().clear().apply()
+    override fun clear() {
+        echo.forgetAll()
+        sharedPrefs.edit().clear().apply()
+    }
 
     override fun getBoolean(key: String, defValue: Boolean) =
         sharedPrefs.getBoolean(key, defValue)
@@ -62,8 +66,10 @@ class SharedPreferencesStorage(
         this.preferences = preferences
     }
 
-    override fun putBoolean(key: String, value: Boolean) =
+    override fun putBoolean(key: String, value: Boolean) {
+        echo.written(key, value)
         sharedPrefs.edit().putBoolean(key, value).apply()
+    }
 
     override fun putInt(key: String, value: Int) =
         sharedPrefs.edit().putInt(key, value).apply()
@@ -74,8 +80,10 @@ class SharedPreferencesStorage(
     override fun putString(key: String, value: String) =
         sharedPrefs.edit().putString(key, value).apply()
 
-    override fun remove(key: String) =
+    override fun remove(key: String) {
+        echo.forget(key)
         sharedPrefs.edit().remove(key).apply()
+    }
 
     override fun onSharedPreferenceChanged(
         sharedPreferences: SharedPreferences,
@@ -83,16 +91,24 @@ class SharedPreferencesStorage(
     ) {
         val preferences = this.preferences ?: return
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        // The setters of Preferences write through putBoolean and have already told their listeners
         when (key) {
             "pref_checkmark_reverse_order" ->
-                preferences.isCheckmarkSequenceReversed = getBoolean(key, false)
+                if (echo.isNew(key, getBoolean(key, false))) {
+                    preferences.isCheckmarkSequenceReversed = getBoolean(key, false)
+                }
             "pref_midnight_delay" ->
-                preferences.isMidnightDelayEnabled = getBoolean(key, false)
+                if (echo.isNew(key, getBoolean(key, false))) {
+                    preferences.isMidnightDelayEnabled = getBoolean(key, false)
+                }
             "pref_sticky_notifications" ->
-                preferences.setNotificationsSticky(getBoolean(key, false))
-            "pref_unknown_enabled" -> {
-                preferences.areQuestionMarksEnabled = getBoolean(key, false)
-            }
+                if (echo.isNew(key, getBoolean(key, false))) {
+                    preferences.setNotificationsSticky(getBoolean(key, false))
+                }
+            "pref_unknown_enabled" ->
+                if (echo.isNew(key, getBoolean(key, false))) {
+                    preferences.areQuestionMarksEnabled = getBoolean(key, false)
+                }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }

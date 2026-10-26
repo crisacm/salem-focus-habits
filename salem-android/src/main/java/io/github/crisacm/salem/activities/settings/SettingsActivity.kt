@@ -28,9 +28,6 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.preference.PreferenceManager
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
@@ -38,9 +35,11 @@ import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.NotificationTray
 import io.github.crisacm.salem.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
-import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.settings.SettingsContent
+import io.github.crisacm.salem.ui.settings.SettingsState
+import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
 import io.github.crisacm.salem.utils.startActivitySafely
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import java.util.Locale
@@ -49,7 +48,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var prefs: Preferences
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var widgetUpdater: WidgetUpdater
-    private var showDeveloper by mutableStateOf(false)
+    private lateinit var state: SettingsState
 
     private val changeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == PREF_WIDGET_OPACITY) widgetUpdater.updateWidgets()
@@ -73,27 +72,28 @@ class SettingsActivity : AppCompatActivity() {
         val themeSwitcher = AndroidThemeSwitcher(this, prefs)
         themeSwitcher.apply()
 
-        val weekdayNames = JavaLocalDateFormatter(Locale.getDefault())
-            .longWeekdayNames(DayOfWeek.SATURDAY).toList()
-        val actions = SettingsActions(
-            onBack = { finish() },
+        val weekdayNames = weekdayNamesFromSaturday(JavaLocalDateFormatter(Locale.getDefault())::longWeekdayName)
+        state = SettingsState(prefs)
+        val androidActions = AndroidSettingsActions(
             onResult = {
                 setResult(it)
                 finish()
             },
             onCustomizeNotification = ::showNotificationSettings,
-            onPickBackupFolder = ::pickBackupFolder,
-            onHelp = { openUrl(R.string.helpURL) },
-            onRate = { openUrl(R.string.playStoreURL) },
-            onAbout = { startActivity(component.intentFactory.startAboutActivity(this)) }
+            onPickBackupFolder = ::pickBackupFolder
         )
         setContent {
             SalemTheme(themeSwitcher.currentTheme) {
                 SettingsContent(
+                    state = state,
                     weekdayNames = weekdayNames,
-                    defaultFirstWeekday = prefs.firstWeekday.daysSinceSunday + 1,
-                    showDeveloper = showDeveloper,
-                    actions = actions
+                    showAnimationsSwitch = true,
+                    onBack = { finish() },
+                    onHelp = { openUrl(R.string.helpURL) },
+                    onRate = { openUrl(R.string.playStoreURL) },
+                    onAbout = { startActivity(component.intentFactory.startAboutActivity(this)) },
+                    interfaceExtras = { WidgetOpacityRow(sharedPrefs) },
+                    middleSections = { AndroidSettingsSections(state, sharedPrefs, androidActions) }
                 )
             }
         }
@@ -102,7 +102,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         sharedPrefs.registerOnSharedPreferenceChangeListener(changeListener)
-        showDeveloper = prefs.isDeveloper
+        // The developer mode may have been turned on in About
+        state.refresh()
     }
 
     override fun onPause() {
