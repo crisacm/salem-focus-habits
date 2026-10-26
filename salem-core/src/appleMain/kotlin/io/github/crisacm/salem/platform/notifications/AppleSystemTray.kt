@@ -39,7 +39,7 @@ private const val MILLIS_PER_DAY = 86_400_000L
 class AppleSystemTray(
     private val center: DeliveredNotificationCenter,
     private val defaultBody: String,
-    private val logger: (String) -> Unit = { platform.Foundation.NSLog("%@", it) }
+    private val logger: (String) -> Unit = ::logToSystem
 ) : NotificationTray.SystemTray {
     private val shown = HashMap<Int, Long>()
 
