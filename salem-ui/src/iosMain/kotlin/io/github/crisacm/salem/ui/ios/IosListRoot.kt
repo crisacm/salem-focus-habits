@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import io.github.crisacm.salem.ui.about.AboutRoute
 import io.github.crisacm.salem.ui.about.SalemLinks
 import io.github.crisacm.salem.ui.compose.CategoryHeader
 import io.github.crisacm.salem.ui.compose.ClickRow
+import io.github.crisacm.salem.ui.compose.MessageBanner
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.detail.HabitDetailRoute
@@ -56,12 +58,16 @@ import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.customize_notification
 import io.github.crisacm.salem.ui.resources.customize_notification_summary
+import io.github.crisacm.salem.ui.resources.database
+import io.github.crisacm.salem.ui.resources.import_data
+import io.github.crisacm.salem.ui.resources.import_data_summary
 import io.github.crisacm.salem.ui.resources.reminder
 import io.github.crisacm.salem.ui.settings.SettingsContent
 import io.github.crisacm.salem.ui.settings.SettingsState
 import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import kotlin.experimental.ExperimentalNativeApi
@@ -136,6 +142,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
         }
     }
 
+    val importScope = rememberCoroutineScope()
     // What a change in Settings needs to show on the list: the theme, the day and the first weekday, the header and the rows
     val onSettingsChanged = {
         graph.screen.applyTheme()
@@ -208,6 +215,11 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                                     onRate = { openUrl(SalemLinks.RATE) },
                                     onAbout = { graph.screens.open(AppScreen.ABOUT) },
                                     middleSections = {
+                                        CategoryHeader(stringResource(Res.string.database))
+                                        ClickRow(
+                                            stringResource(Res.string.import_data),
+                                            stringResource(Res.string.import_data_summary)
+                                        ) { importScope.launch { graph.importFlow.start() } }
                                         CategoryHeader(stringResource(Res.string.reminder))
                                         ClickRow(
                                             stringResource(Res.string.customize_notification),
@@ -221,6 +233,8 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     }
                 }
             }
+            // Above every screen, the Settings one included: the result of an import shows over it
+            MessageBanner(graph.message)
         }
     }
 }

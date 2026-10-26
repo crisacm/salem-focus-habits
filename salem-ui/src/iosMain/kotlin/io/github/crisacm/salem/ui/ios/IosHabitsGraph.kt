@@ -44,7 +44,9 @@ import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.ScreenNavigation
+import io.github.crisacm.salem.ui.compose.TransientMessage
 import io.github.crisacm.salem.ui.detail.DetailNavigation
+import io.github.crisacm.salem.ui.importing.ImportFlow
 import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
 import io.github.crisacm.salem.ui.list.ListHabitsMenu
@@ -73,6 +75,8 @@ class IosHabitsGraph private constructor(
     val screens: ScreenNavigation,
     val midnightTimer: MidnightTimer,
     val reminders: IosReminders,
+    val importFlow: ImportFlow,
+    val message: TransientMessage,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
     val overlays: ListOverlays,
@@ -139,12 +143,28 @@ class IosHabitsGraph private constructor(
                 reminders.notificationTray
             )
 
+            val message = TransientMessage()
+            val importFlow = IosImport.create(
+                modelFactory,
+                habitList,
+                fileOpener,
+                commandRunner,
+                logging,
+                refresh = {
+                    // The importers write without a command: the list, the reminders and the permission follow by hand
+                    listState.refresh()
+                    reminders.rescheduleAll()
+                    reminders.permission.onLaunch(reminders.reminderScheduler.hasHabitsWithReminders())
+                },
+                message = message
+            )
+
             // The string-array of Android refers to other strings, which Compose resources do not resolve
             val hints = arrayOf(getString(Res.string.hint_drag), getString(Res.string.hint_landscape))
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders,
+                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders, importFlow, message,
                 themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior

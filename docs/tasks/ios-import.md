@@ -23,11 +23,13 @@ Haiku `explorer` brief: the importers are in `commonMain`; `LoopDBImporter` migr
 ## Checklist
 - [x] TASK-1 (7a): `ImportRunnerTest` (4: success kept, unknown file untouched, failure half way undone, import again after a failure) — RED observed (unresolved reference), then `ImportRunner`
 - [x] TASK-2 (7a): `ImportFlowTest` (7) and `TransientMessageTest` (3) — RED observed, then the classes
-- [ ] TASK-3 (7b): picker, wiring and Settings row
-- [ ] TASK-4 (7b): docs and changelog
+- [x] TASK-3 (7b): picker (`IosFilePicker`), the importers by hand (`IosImport`), `IosReminders.rescheduleAll()`, the "Database" section of Settings and the banner in `IosListRoot` — only compiled: nothing of the iOS side has a test (the logic is in `ImportRunner` and `ImportFlow`, tested)
+- [x] TASK-4 (7b): docs and changelog
 
 ## Estrategia de entrega
 Sequential PRs from `develop` straight back to `develop`, checking with `gh pr view` that the previous one is merged.
 
 ## Evidencia
-(7a) `:salem-core:jvmTest` with the new `ImportRunnerTest`, `:salem-ui:desktopTest` with the new tests, the rest of the checks listed in the PR. Not run: the iOS simulator tests, a device.
+(7a, #76) `:salem-core:jvmTest` with the new `ImportRunnerTest`, `:salem-ui:desktopTest` with the new tests, the rest of the checks listed in the PR. Not run: the iOS simulator tests, a device.
+
+(7b) `:salem-core:jvmTest`, `:salem-ui:desktopTest`, `:salem-android:testDebugUnitTest`, `ktlintCheck`, `compileDebugAndroidTestKotlin`, `assembleDebug`, the iOS compile of core, its tests and `salem-ui` (arm64 and simulator) and `xcodebuild` (build only). Not run by me: the iOS simulator tests and the app on the simulator; the user runs them at the end of the step. To check by hand: Settings, Import data, choose `loop.db` from the Files app: the habits appear in the list with their history, the message "Habits imported successfully." shows for a few seconds, and the reminders of the imported habits are scheduled (and the permission is asked if it was not); a text file gives "File not recognized."; cancelling the picker changes nothing; importing the same file again does not duplicate habits that already have a UUID.
