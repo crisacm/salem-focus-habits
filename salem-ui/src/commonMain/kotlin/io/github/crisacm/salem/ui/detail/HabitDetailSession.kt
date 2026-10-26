@@ -53,8 +53,7 @@ class ShowHabitCallbacks(
  * platform gives it the [Hooks] for what only it can do (popups, other screens, sharing, closing) and calls
  * [attach] and [detach] while the screen is shown, so the state follows the commands that change the habit
  * (for example Archive turns into Unarchive). [theme] is read on every refresh; [scope] must run on the main
- * thread, because the state is read by the composition. [developerOptions] shows Randomize in the menu, and
- * [exportOverride] replaces Export on a platform that cannot share the file.
+ * thread, because the state is read by the composition. [developerOptions] shows Randomize in the menu.
  */
 class HabitDetailSession(
     private val habit: Habit,
@@ -66,8 +65,7 @@ class HabitDetailSession(
     private val theme: () -> Theme,
     private val hooks: Hooks,
     private val scope: CoroutineScope,
-    developerOptions: Boolean = preferences.isDeveloper,
-    private val exportOverride: (() -> Unit)? = null
+    developerOptions: Boolean = preferences.isDeveloper
 ) : CommandRunner.Listener, ShowHabitPresenter.Screen, ShowHabitMenuPresenter.Screen {
 
     /** What the session asks of the platform. */
@@ -129,11 +127,8 @@ class HabitDetailSession(
         onNumericalSpinner = presenter.barCardPresenter::onNumericalSpinnerPosition
     )
 
-    /** The Export item of the menu: [exportOverride] when the platform cannot share a file, the presenter otherwise. */
-    fun onExport() {
-        val override = exportOverride
-        if (override != null) override() else menu.onExportCSV()
-    }
+    /** The Export item of the menu: the presenter writes the file and the hooks share it. */
+    fun onExport() = menu.onExportCSV()
 
     private var attached = false
 

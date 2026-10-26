@@ -32,3 +32,5 @@ Stacked PRs 4a to 4d; this one is `feat/ios-detail-wiring`, from `develop` after
 
 ## Evidencia
 `:salem-core:jvmTest`, `:salem-ui:desktopTest` (all), `:salem-android:testDebugUnitTest`, `ktlintCheck`, `compileDebugAndroidTestKotlin`, `assembleDebug`, iOS compile (arm64 and simulator) and `xcodebuild` (build only). Not run: the simulator, any emulator. To check by hand on iOS (needs the user's OK to run the simulator): tap a habit to open the detail; the cards and the six charts (look, scrolling, taps); the menu (Edit, Archive/Unarchive with its message, Delete with confirmation, Export message); the History Edit button, taps on days (popups above the editor) and back at each level; the number and checkmark popups; rotation; dark mode; VoiceOver.
+
+Update (export PR E2): the Export item now writes the CSV of the habit and shares it with the share sheet (`HabitDetailRoute(share)`); `export_not_available` is no longer used. See `docs/tasks/ios-export.md`.

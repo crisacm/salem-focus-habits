@@ -38,7 +38,8 @@ import kotlin.test.assertTrue
 
 class HabitDetailLayersTest : BaseUiTest() {
     private var closed = 0
-    private val layers = HabitDetailLayers(onClose = { closed++ })
+    private val shared = mutableListOf<String>()
+    private val layers = HabitDetailLayers(onClose = { closed++ }, onShare = { shared += it })
     private val listener = object : OnDateClickedListener {
         override fun onDateShortPress(date: LocalDate) {}
 
@@ -105,9 +106,10 @@ class HabitDetailLayersTest : BaseUiTest() {
     }
 
     @Test
-    fun sharingAFileIsNotAvailable() {
-        layers.showSendFileScreen("habits.zip")
-        assertEquals(DetailMessage.EXPORT_UNAVAILABLE, layers.message)
+    fun sharingAFileCallsTheShareAction() {
+        layers.showSendFileScreen("/cache/habits.zip")
+        assertEquals(listOf("/cache/habits.zip"), shared)
+        assertNull(layers.message)
     }
 
     @Test

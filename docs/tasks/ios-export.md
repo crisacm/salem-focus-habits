@@ -23,11 +23,13 @@ Haiku `explorer` brief: `ExportCSVTask` and `HabitsCSVExporter` are common and u
 - [x] TASK-1 (E1): `UserFileCopyTest` (3) — RED observed — and `UserFile.copyTo` for Java and Apple (the Apple one is compiled, its test runs on the simulator)
 - [x] TASK-2 (E1): `DatabaseBackupTest` (5: same version and habits, an existing file is replaced, a name with an apostrophe, the copy can be imported again, the file name) — RED observed
 - [x] TASK-3 (E1): `DatabaseBackupExportTest` (4: copies and shares, a database that cannot be copied, a share that fails, every message has its text) — RED observed
-- [ ] TASK-4 (E2): detail, share sheet, wiring and Settings rows
-- [ ] TASK-5 (E2): docs and changelog
+- [x] TASK-4 (E2): `HabitDetailRoute(share)` and `HabitDetailLayers(onShare)` (the detail tests changed: exporting writes the zip and shares it), `IosShareSheet`, `IosExports.freshFolder()` (the caches of the app, emptied at every export), `IosListScreen` shares files and the bug report and shows the messages of the core as a banner, the Settings rows (export backup, export CSV, bug report, repair) — iosMain is only compiled, nothing of it has a test
+- [x] TASK-5 (E2): docs and changelog
 
 ## Estrategia de entrega
 Sequential PRs from `develop` straight back to `develop`, checking with `gh pr view` that the previous one is merged.
 
 ## Evidencia
 (E1) `:salem-core:jvmTest` and `:salem-ui:desktopTest` with the new tests plus the checks listed in the PR. Not run: the iOS simulator tests (`UserFileCopyTest` and `DatabaseBackupTest` run there too).
+
+(E2) `:salem-core:jvmTest`, `:salem-ui:desktopTest` (the detail tests changed), `:salem-android:testDebugUnitTest`, `ktlintCheck`, `compileDebugAndroidTestKotlin`, `assembleDebug`, the iOS compile of core, its tests and `salem-ui` (arm64 and simulator) and `xcodebuild` (build only). Not run by me: the iOS simulator tests and the app on the simulator; the user runs them at the end of the step. To check by hand: Settings, Export full backup opens the share sheet with "Salem Backup <date>.db" and the file can be saved to Files; the same file imports again from Settings, Import data (9 habits of a seeded database, or the ones of the app); Export as CSV shares a zip; the Export item of a habit detail shares its zip; Generate bug report shares the text (version and device); Repair database shows "Database repaired." and the list is still right; on an iPad the share sheet appears as a popover and does not crash; a message shows as a banner for a few seconds.

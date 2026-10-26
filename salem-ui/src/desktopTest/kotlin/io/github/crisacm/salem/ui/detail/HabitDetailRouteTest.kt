@@ -44,7 +44,6 @@ import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
-import dev.mokkery.mock
 import io.github.crisacm.salem.core.commands.CommandRunner
 import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.memory.MemoryModelFactory
@@ -57,6 +56,8 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresente
 import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.io.JavaUserFile
+import io.github.crisacm.salem.platform.io.UserFile
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.platform.time.resetToday
@@ -65,6 +66,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.nio.file.Files
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -80,6 +82,8 @@ class HabitDetailRouteTest {
     private val preferences = Preferences(MemoryStorage())
     private val fixtures = HabitFixtures(factory, habits)
     private var closes = 0
+    private val shared = mutableListOf<String>()
+    private val exportFolder = JavaUserFile(Files.createTempDirectory("export"))
     private val navigationDispatcher = NavigationEventDispatcher()
     private val input = DirectNavigationEventInput().also { navigationDispatcher.addInput(it) }
 
@@ -108,9 +112,12 @@ class HabitDetailRouteTest {
                         preferences = preferences,
                         commandRunner = runner,
                         taskRunner = taskRunner,
-                        system = mock<ShowHabitMenuPresenter.System>(),
+                        system = object : ShowHabitMenuPresenter.System {
+                            override fun getCSVOutputDir(): UserFile = exportFolder
+                        },
                         saverFactory = { HabitEditorSaver(factory, habits, runner) },
                         decimalSeparator = '.',
+                        share = { shared += it },
                         onClose = { closes++ }
                     )
                 }
@@ -193,14 +200,16 @@ class HabitDetailRouteTest {
     }
 
     @Test
-    fun exportIsNotAvailableAndWritesNothing() = runComposeUiTest {
+    fun exportWritesTheZipAndSharesIt() = runComposeUiTest {
         mainClock.autoAdvance = false
         show()
         onNodeWithTag("overflowMenu").performClick()
         mainClock.advanceTimeByFrame()
         onNodeWithTag("export").performClick()
         mainClock.advanceTimeByFrame()
-        onNodeWithText("Exporting is not available on iOS yet").assertIsDisplayed()
+        assertEquals(1, shared.size)
+        assertTrue(shared.single().endsWith(".zip"))
+        assertTrue(java.io.File(shared.single()).length() > 0)
         assertEquals(0, closes)
     }
 
