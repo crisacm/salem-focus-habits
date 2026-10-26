@@ -106,7 +106,11 @@ struct TodayProvider: TimelineProvider {
         guard let board = HabitsBoardFactory.shared.create() else {
             return TodayEntry(date: Date(), lines: [], needsApp: true)
         }
-        let state = board.today()
+        defer { board.close() }
+        // A failure (the database is locked, a read error) looks like a database that is not ready: open the app
+        guard let state = try? board.today() else {
+            return TodayEntry(date: Date(), lines: [], needsApp: true)
+        }
         return TodayEntry(date: Date(), lines: state.habits.map(HabitLine.init), needsApp: state.needsApp)
     }
 }

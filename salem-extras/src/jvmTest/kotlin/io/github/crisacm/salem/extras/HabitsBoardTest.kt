@@ -42,6 +42,7 @@ import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -245,5 +246,14 @@ class HabitsBoardTest {
         val reread = SQLModelFactory(database).buildHabitList().getById(habit.id!!)!!
         assertEquals("felt good", reread.originalEntries.get(today).notes)
         assertEquals(Entry.NO, reread.originalEntries.get(today).value)
+    }
+
+    @Test
+    fun `close releases the connection so later calls fail instead of leaking it`() {
+        val board = board()
+        yesNo()
+        assertEquals(1, board.today().habits.size)
+        board.close()
+        assertFailsWith<Exception> { board.today() }
     }
 }

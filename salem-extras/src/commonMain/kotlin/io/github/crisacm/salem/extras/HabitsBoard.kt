@@ -64,6 +64,9 @@ class BoardState(val needsApp: Boolean, val habits: List<BoardHabit>)
  * the app) and reads everything again on every call, as a short-lived process does. [date] is today (the day changes
  * at the hour the app chose) and [firstWeekday] the first day of the week of the settings. [onChanged] is told which
  * habit a change touched, so the platform can remove its delivered notification.
+ *
+ * The public functions are `@Throws(Exception::class)`: on iOS an exception that is not declared ends the process of the
+ * extension, while a declared one reaches Swift as an error that a widget or a shortcut can answer. Call [close] when done.
  */
 class HabitsBoard(
     private val database: Database,
@@ -73,20 +76,24 @@ class HabitsBoard(
     private val areQuestionMarksEnabled: Boolean = false,
     private val onChanged: (Long) -> Unit = {}
 ) {
+    @Throws(Exception::class)
     fun today(): BoardState {
         val list = open() ?: return BoardState(needsApp = true, habits = emptyList())
         return BoardState(needsApp = false, habits = active(list).map { show(it) })
     }
 
     /** Marks the habit as done: a yes, or the target for a numerical habit (an amount above it is kept). */
+    @Throws(Exception::class)
     fun check(id: Long): BoardHabit? = change(id) { habit, entry ->
         if (habit.isNumerical()) max(entry.value, target(habit)) else Entry.YES_MANUAL
     }
 
     /** Marks the habit as not done: a no, or zero for a numerical habit. */
+    @Throws(Exception::class)
     fun uncheck(id: Long): BoardHabit? = change(id) { _, _ -> Entry.NO }
 
     /** The next value of the cycle of the app (yes, no, and skip or unknown when they are on); a numerical habit goes between zero and its target. */
+    @Throws(Exception::class)
     fun toggle(id: Long): BoardHabit? = change(id) { habit, entry ->
         if (habit.isNumerical()) {
             if (habit.isCompletedOn(date())) 0 else target(habit)
@@ -96,12 +103,17 @@ class HabitsBoard(
     }
 
     /** One more unit of a numerical habit; for the others, the same as [check]. */
+    @Throws(Exception::class)
     fun increment(id: Long): BoardHabit? =
         if (isNumerical(id)) change(id) { _, entry -> max(entry.value, 0) + UNIT } else check(id)
 
     /** One unit less of a numerical habit, never below zero; for the others, the same as [uncheck]. */
+    @Throws(Exception::class)
     fun decrement(id: Long): BoardHabit? =
         if (isNumerical(id)) change(id) { _, entry -> max(entry.value - UNIT, 0) } else uncheck(id)
+
+    /** Closes the database; the board cannot be used afterwards. */
+    fun close() = database.close()
 
     private fun isNumerical(id: Long): Boolean {
         val list = open() ?: return false

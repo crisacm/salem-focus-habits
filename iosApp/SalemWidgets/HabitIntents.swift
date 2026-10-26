@@ -36,7 +36,10 @@ struct ToggleHabitIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        _ = HabitsBoardFactory.shared.create()?.toggle(id: Int64(habitId))
+        if let board = HabitsBoardFactory.shared.create() {
+            defer { board.close() }
+            _ = try? board.toggle(id: Int64(habitId))
+        }
         return .result()
     }
 }
@@ -55,7 +58,10 @@ struct IncrementHabitIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        _ = HabitsBoardFactory.shared.create()?.increment(id: Int64(habitId))
+        if let board = HabitsBoardFactory.shared.create() {
+            defer { board.close() }
+            _ = try? board.increment(id: Int64(habitId))
+        }
         return .result()
     }
 }
