@@ -89,6 +89,12 @@ interface UserFile {
     suspend fun readBytes(limit: Int): ByteArray
 
     /**
+     * Copies this file to [dest], creating its folders and replacing it if it exists. [dest] must be a file of the
+     * same platform. A failed copy leaves an existing [dest] as it was.
+     */
+    suspend fun copyTo(dest: UserFile)
+
+    /**
      * Returns a [UserFile] whose path is [child] resolved against this file's
      * parent directory (or this file itself, if it represents a directory).
      */
