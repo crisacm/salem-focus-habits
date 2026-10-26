@@ -210,6 +210,16 @@
           }
         }
       }
+    },
+    "Salem could not use its data right now. Try again in a moment.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salem no pudo usar sus datos en este momento. Inténtalo de nuevo en un momento."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

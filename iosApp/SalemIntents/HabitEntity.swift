@@ -52,11 +52,13 @@ struct HabitQuery: EntityStringQuery {
 enum HabitShortcutError: Error, CustomLocalizedStringResourceConvertible {
     case openApp
     case unknownHabit
+    case unavailable
 
     var localizedStringResource: LocalizedStringResource {
         switch self {
         case .openApp: return "Open Salem first so it can set up your habits."
         case .unknownHabit: return "That habit no longer exists."
+        case .unavailable: return "Salem could not use its data right now. Try again in a moment."
         }
     }
 }
@@ -65,7 +67,9 @@ enum HabitShortcutError: Error, CustomLocalizedStringResourceConvertible {
 /// first) from a list that is just empty.
 func loadHabits() throws -> [HabitEntity] {
     guard let board = HabitsBoardFactory.shared.create() else { throw HabitShortcutError.openApp }
-    let state = board.today()
+    defer { board.close() }
+    // The board throws what SQLite reports (a locked or unreadable database); the extension must not end with it
+    guard let state = try? board.today() else { throw HabitShortcutError.unavailable }
     if state.needsApp { throw HabitShortcutError.openApp }
     return state.habits.map { HabitEntity(id: Int($0.id), name: $0.name) }
 }

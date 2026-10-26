@@ -23,10 +23,12 @@ import WidgetKit
 
 /// Runs one change of the board on a habit and tells the widget to draw again. Throws when the database is not ready or
 /// the habit is gone (the board returns nil for both, so `loadHabits` is asked first).
-private func change(_ habit: HabitEntity, _ action: (HabitsBoard, Int64) -> BoardHabit?) throws -> BoardHabit {
+private func change(_ habit: HabitEntity, _ action: (HabitsBoard, Int64) throws -> BoardHabit?) throws -> BoardHabit {
     guard let board = HabitsBoardFactory.shared.create() else { throw HabitShortcutError.openApp }
-    if board.today().needsApp { throw HabitShortcutError.openApp }
-    guard let result = action(board, Int64(habit.id)) else { throw HabitShortcutError.unknownHabit }
+    defer { board.close() }
+    guard let state = try? board.today() else { throw HabitShortcutError.unavailable }
+    if state.needsApp { throw HabitShortcutError.openApp }
+    guard let result = try action(board, Int64(habit.id)) else { throw HabitShortcutError.unknownHabit }
     WidgetCenter.shared.reloadAllTimelines()
     return result
 }
@@ -49,7 +51,7 @@ struct CheckHabitIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Check \(\.$habit)") }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        .result(dialog: status(try change(habit) { $0.check(id: $1) }))
+        .result(dialog: status(try change(habit) { try $0.check(id: $1) }))
     }
 }
 
@@ -62,7 +64,7 @@ struct UncheckHabitIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Uncheck \(\.$habit)") }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        .result(dialog: status(try change(habit) { $0.uncheck(id: $1) }))
+        .result(dialog: status(try change(habit) { try $0.uncheck(id: $1) }))
     }
 }
 
@@ -75,7 +77,7 @@ struct ToggleHabitShortcutIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Toggle \(\.$habit)") }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        .result(dialog: status(try change(habit) { $0.toggle(id: $1) }))
+        .result(dialog: status(try change(habit) { try $0.toggle(id: $1) }))
     }
 }
 
@@ -88,7 +90,7 @@ struct IncrementHabitShortcutIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Add one to \(\.$habit)") }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        .result(dialog: status(try change(habit) { $0.increment(id: $1) }))
+        .result(dialog: status(try change(habit) { try $0.increment(id: $1) }))
     }
 }
 
@@ -101,6 +103,6 @@ struct DecrementHabitIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Subtract one from \(\.$habit)") }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        .result(dialog: status(try change(habit) { $0.decrement(id: $1) }))
+        .result(dialog: status(try change(habit) { try $0.decrement(id: $1) }))
     }
 }
