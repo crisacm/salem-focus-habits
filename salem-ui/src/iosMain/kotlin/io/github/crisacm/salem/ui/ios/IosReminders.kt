@@ -59,12 +59,19 @@ import platform.UserNotifications.UNUserNotificationCenter
  * task runner reports finished commands.
  */
 class IosReminders private constructor(
+    private val systemScheduler: AppleSystemScheduler,
     val reminderScheduler: ReminderScheduler,
     val notificationTray: NotificationTray,
     val refresher: AppForegroundRefresher,
     val actions: ReminderActions,
     val permission: ReminderPermissionPrompter
 ) {
+    /** Pending notifications and habits are in line again: for changes the commands did not report (an import). */
+    fun rescheduleAll() {
+        systemScheduler.clear()
+        reminderScheduler.scheduleAll()
+    }
+
     companion object {
         suspend fun create(
             habitList: HabitList,
@@ -112,6 +119,7 @@ class IosReminders private constructor(
             )
             IosNotificationRouter.attach(actions)
             return IosReminders(
+                systemScheduler,
                 reminderScheduler,
                 tray,
                 AppForegroundRefresher(preferences, midnightTimer, reminderScheduler, systemScheduler),
