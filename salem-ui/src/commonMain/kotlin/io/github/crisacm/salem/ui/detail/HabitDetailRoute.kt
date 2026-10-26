@@ -56,7 +56,6 @@ import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.could_not_export
-import io.github.crisacm.salem.ui.resources.export_not_available
 import io.github.crisacm.salem.ui.resources.toast_habits_archived
 import io.github.crisacm.salem.ui.resources.toast_habits_unarchived
 import kotlinx.coroutines.delay
@@ -83,12 +82,14 @@ fun HabitDetailRoute(
     system: ShowHabitMenuPresenter.System,
     saverFactory: () -> HabitEditorSaver,
     decimalSeparator: Char,
+    share: (String) -> Unit,
     onClose: () -> Unit,
     developer: Boolean = false
 ) {
     val currentOnClose by rememberUpdatedState(onClose)
+    val currentShare by rememberUpdatedState(share)
     val currentTheme by rememberUpdatedState(theme)
-    val layers = remember(habit) { HabitDetailLayers { currentOnClose() } }
+    val layers = remember(habit) { HabitDetailLayers(onClose = { currentOnClose() }, onShare = { currentShare(it) }) }
     val scope = rememberCoroutineScope()
     val session = remember(habit) {
         HabitDetailSession(
@@ -101,8 +102,7 @@ fun HabitDetailRoute(
             theme = { currentTheme },
             hooks = layers,
             scope = scope,
-            developerOptions = developer,
-            exportOverride = { layers.show(DetailMessage.EXPORT_UNAVAILABLE) }
+            developerOptions = developer
         )
     }
     DisposableEffect(session) {
@@ -156,7 +156,6 @@ fun DetailMessageBanner(layers: HabitDetailLayers) {
         DetailMessage.ARCHIVED -> pluralStringResource(Res.plurals.toast_habits_archived, 1)
         DetailMessage.UNARCHIVED -> pluralStringResource(Res.plurals.toast_habits_unarchived, 1)
         DetailMessage.COULD_NOT_EXPORT -> stringResource(Res.string.could_not_export)
-        DetailMessage.EXPORT_UNAVAILABLE -> stringResource(Res.string.export_not_available)
     }
     Box(Modifier.fillMaxSize().safeDrawingPadding(), contentAlignment = Alignment.BottomCenter) {
         Surface(

@@ -33,13 +33,15 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsSelectionMe
 import io.github.crisacm.salem.ui.AppScreen
 import io.github.crisacm.salem.ui.ScreenNavigation
 import io.github.crisacm.salem.ui.about.SalemLinks
+import io.github.crisacm.salem.ui.compose.TransientMessage
 import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.list.ListOverlays
+import io.github.crisacm.salem.ui.list.listMessage
 
 /**
  * The actions of the habit list that need another screen. The dialogs, the popups and the editor are opened through
- * [overlays]; the others (sharing) arrive with their screens, so they only leave a
- * line in the log. [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was
+ * [overlays]; the files and the bug report go to the share sheet, and the messages of the core
+ * show as a banner. [lastMessage] holds the last message of the core, and [themeVersion] changes when the theme was
  * applied again.
  */
 class IosListScreen(
@@ -48,7 +50,10 @@ class IosListScreen(
     private val overlays: ListOverlays,
     private val navigation: DetailNavigation,
     private val screens: ScreenNavigation,
-    private val openUrl: (String) -> Unit
+    private val openUrl: (String) -> Unit,
+    private val shareFile: (String) -> Unit,
+    private val shareText: (String) -> Unit,
+    private val messages: TransientMessage
 ) : ListHabitsBehavior.Screen,
     ListHabitsMenuBehavior.Screen,
     ListHabitsSelectionMenuBehavior.Screen {
@@ -58,7 +63,8 @@ class IosListScreen(
     var themeVersion by mutableIntStateOf(0)
         private set
 
-    private fun todo(what: String) = logger.info("Not available on iOS yet: $what")
+    /** Set once the list exists: a repaired database may have changed the habits it shows. */
+    var onRepaired: () -> Unit = {}
 
     // ListHabitsBehavior.Screen
     override fun showHabitScreen(h: Habit) = navigation.open(h)
@@ -68,6 +74,8 @@ class IosListScreen(
     override fun showMessage(m: ListHabitsBehavior.Message) {
         lastMessage = m
         logger.info("Message: $m")
+        messages.show(listMessage(m))
+        if (m == ListHabitsBehavior.Message.DATABASE_REPAIRED) onRepaired()
     }
 
     override fun showNumberPopup(value: Double, notes: String, callback: io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback) =
@@ -80,9 +88,9 @@ class IosListScreen(
         callback: io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
     ) = overlays.showCheckmark(selectedValue, notes, color, callback)
 
-    override fun showSendBugReportToDeveloperScreen(log: String) = todo("send bug report")
+    override fun showSendBugReportToDeveloperScreen(log: String) = shareText(log)
 
-    override fun showSendFileScreen(filename: String) = todo("share $filename")
+    override fun showSendFileScreen(filename: String) = shareFile(filename)
 
     override fun showConfetti(color: PaletteColor, x: Float, y: Float) {}
 

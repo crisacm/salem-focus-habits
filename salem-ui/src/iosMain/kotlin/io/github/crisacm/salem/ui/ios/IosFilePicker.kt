@@ -22,10 +22,8 @@ import io.github.crisacm.salem.platform.io.AppleUserFile
 import io.github.crisacm.salem.platform.io.UserFile
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSURL
-import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
-import platform.UIKit.UIViewController
 import platform.UniformTypeIdentifiers.UTTypeItem
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
@@ -60,12 +58,6 @@ object IosFilePicker {
             picker.dismissViewControllerAnimated(true, completion = null)
         }
         host.presentViewController(picker, animated = true, completion = null)
-    }
-
-    private fun topViewController(): UIViewController? {
-        var top = UIApplication.sharedApplication.keyWindow?.rootViewController
-        while (top?.presentedViewController != null) top = top.presentedViewController
-        return top
     }
 }
 

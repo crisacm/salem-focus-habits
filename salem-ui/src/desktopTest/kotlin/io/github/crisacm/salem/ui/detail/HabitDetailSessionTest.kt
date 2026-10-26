@@ -168,19 +168,6 @@ class HabitDetailSessionTest : BaseUiTest() {
     }
 
     @Test
-    fun anExportOverrideReplacesTheExportOfThePresenter() {
-        var exports = 0
-        val overridden = HabitDetailSession(
-            habit, habitList, preferences, commandRunner, taskRunner, mock<ShowHabitMenuPresenter.System>(),
-            { LightTheme() }, hooks, CoroutineScope(UnconfinedTestDispatcher()), exportOverride = { exports++ }
-        )
-        overridden.onExport()
-        assertEquals(1, exports)
-        assertNull(hooks.sentFile)
-        assertTrue(hooks.messages.isEmpty())
-    }
-
-    @Test
     fun attachingTwiceRegistersTheSessionOnlyOnce() {
         session.attach()
         session.attach()

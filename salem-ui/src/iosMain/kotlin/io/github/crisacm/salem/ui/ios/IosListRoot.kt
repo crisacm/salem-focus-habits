@@ -59,9 +59,16 @@ import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.customize_notification
 import io.github.crisacm.salem.ui.resources.customize_notification_summary
 import io.github.crisacm.salem.ui.resources.database
+import io.github.crisacm.salem.ui.resources.export_as_csv_summary
+import io.github.crisacm.salem.ui.resources.export_full_backup
+import io.github.crisacm.salem.ui.resources.export_full_backup_summary
+import io.github.crisacm.salem.ui.resources.export_to_csv
+import io.github.crisacm.salem.ui.resources.generate_bug_report
 import io.github.crisacm.salem.ui.resources.import_data
 import io.github.crisacm.salem.ui.resources.import_data_summary
 import io.github.crisacm.salem.ui.resources.reminder
+import io.github.crisacm.salem.ui.resources.repair_database
+import io.github.crisacm.salem.ui.resources.troubleshooting
 import io.github.crisacm.salem.ui.settings.SettingsContent
 import io.github.crisacm.salem.ui.settings.SettingsState
 import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
@@ -182,6 +189,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                     system = graph.dirFinder,
                     saverFactory = graph.saverFactory,
                     decimalSeparator = remember { iosDecimalSeparator() },
+                    share = IosShareSheet::shareFile,
                     onClose = graph.navigation::close,
                     developer = Platform.isDebugBinary
                 )
@@ -217,9 +225,20 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                                     middleSections = {
                                         CategoryHeader(stringResource(Res.string.database))
                                         ClickRow(
+                                            stringResource(Res.string.export_full_backup),
+                                            stringResource(Res.string.export_full_backup_summary)
+                                        ) { importScope.launch { graph.backupExport.start() } }
+                                        ClickRow(
+                                            stringResource(Res.string.export_to_csv),
+                                            stringResource(Res.string.export_as_csv_summary)
+                                        ) { graph.behavior.onExportCSV() }
+                                        ClickRow(
                                             stringResource(Res.string.import_data),
                                             stringResource(Res.string.import_data_summary)
                                         ) { importScope.launch { graph.importFlow.start() } }
+                                        CategoryHeader(stringResource(Res.string.troubleshooting))
+                                        ClickRow(stringResource(Res.string.generate_bug_report)) { graph.behavior.onSendBugReport() }
+                                        ClickRow(stringResource(Res.string.repair_database)) { graph.behavior.onRepairDB() }
                                         CategoryHeader(stringResource(Res.string.reminder))
                                         ClickRow(
                                             stringResource(Res.string.customize_notification),

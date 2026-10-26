@@ -41,11 +41,13 @@ import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.platform.io.AppleFileOpener
 import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.time.computeToday
+import io.github.crisacm.salem.platform.time.getToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.ScreenNavigation
 import io.github.crisacm.salem.ui.compose.TransientMessage
 import io.github.crisacm.salem.ui.detail.DetailNavigation
+import io.github.crisacm.salem.ui.exporting.DatabaseBackupExport
 import io.github.crisacm.salem.ui.importing.ImportFlow
 import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
@@ -53,6 +55,7 @@ import io.github.crisacm.salem.ui.list.ListHabitsMenu
 import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
 import io.github.crisacm.salem.ui.list.ListOverlays
 import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.could_not_export
 import io.github.crisacm.salem.ui.resources.hint_drag
 import io.github.crisacm.salem.ui.resources.hint_landscape
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +79,7 @@ class IosHabitsGraph private constructor(
     val midnightTimer: MidnightTimer,
     val reminders: IosReminders,
     val importFlow: ImportFlow,
+    val backupExport: DatabaseBackupExport,
     val message: TransientMessage,
     val themeSwitcher: IosThemeSwitcher,
     val screen: IosListScreen,
@@ -115,8 +119,19 @@ class IosHabitsGraph private constructor(
             val overlays = ListOverlays()
             val navigation = DetailNavigation()
             val screens = ScreenNavigation()
-            val dirFinder = IosDirFinder(fileOpener)
-            val screen = IosListScreen(logging.getLogger("ListScreen"), themeSwitcher, overlays, navigation, screens, ::openUrl)
+            val dirFinder = IosDirFinder()
+            val message = TransientMessage()
+            val screen = IosListScreen(
+                logging.getLogger("ListScreen"),
+                themeSwitcher,
+                overlays,
+                navigation,
+                screens,
+                ::openUrl,
+                IosShareSheet::shareFile,
+                IosShareSheet::shareText,
+                message
+            )
             val behavior = ListHabitsBehavior(
                 habitList,
                 dirFinder,
@@ -128,6 +143,7 @@ class IosHabitsGraph private constructor(
             )
 
             val listState = HabitListState(cache, preferences, midnightTimer)
+            screen.onRepaired = listState::refresh
             val menuBehavior = ListHabitsMenuBehavior(screen, listState, preferences, themeSwitcher)
             val menu = ListHabitsMenu(preferences, themeSwitcher, menuBehavior)
             val selectionBehavior = ListHabitsSelectionMenuBehavior(habitList, screen, listState, commandRunner)
@@ -143,7 +159,6 @@ class IosHabitsGraph private constructor(
                 reminders.notificationTray
             )
 
-            val message = TransientMessage()
             val importFlow = IosImport.create(
                 modelFactory,
                 habitList,
@@ -159,12 +174,20 @@ class IosHabitsGraph private constructor(
                 message = message
             )
 
+            val backupExport = DatabaseBackupExport(
+                source = fileOpener.openUserFile(DATABASE_FILENAME),
+                folder = IosExports::freshFolder,
+                today = ::getToday,
+                share = IosShareSheet::shareFile,
+                onFailed = { message.show(Res.string.could_not_export) }
+            )
+
             // The string-array of Android refers to other strings, which Compose resources do not resolve
             val hints = arrayOf(getString(Res.string.hint_drag), getString(Res.string.hint_landscape))
             val hintList = HintListFactory(preferences).create(hints)
 
             return IosHabitsGraph(
-                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders, importFlow, message,
+                preferences, habitList, logging, taskRunner, commandRunner, dirFinder, navigation, screens, midnightTimer, reminders, importFlow, backupExport, message,
                 themeSwitcher, screen, overlays,
                 { HabitEditorSaver(modelFactory, habitList, commandRunner) }, hintList,
                 listState, menu, selectionMenu, controller, behavior

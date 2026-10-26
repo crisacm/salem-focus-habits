@@ -21,10 +21,14 @@ package io.github.crisacm.salem.ui.ios
 
 import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
-import io.github.crisacm.salem.platform.io.FileOpener
+import io.github.crisacm.salem.platform.io.AppleUserFile
 import io.github.crisacm.salem.platform.io.UserFile
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
+import platform.Foundation.NSCachesDirectory
+import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenNotificationSettingsURLString
 import platform.UIKit.UIDevice
@@ -53,7 +57,25 @@ class IosBugReporter : ListHabitsBehavior.BugReporter {
     }
 }
 
-/** The folder of the CSV export, inside the files of the app. */
-class IosDirFinder(private val fileOpener: FileOpener) : ListHabitsBehavior.DirFinder, ShowHabitMenuPresenter.System {
-    override fun getCSVOutputDir(): UserFile = fileOpener.openUserFile("CSV")
+/**
+ * The folder where the files to share are written: in the caches of the app, which the system may empty and the Files
+ * app does not show. [freshFolder] empties it first, so the exports do not pile up.
+ */
+object IosExports {
+    @OptIn(ExperimentalForeignApi::class)
+    fun freshFolder(): UserFile {
+        val manager = NSFileManager.defaultManager
+        val caches = manager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask).first() as NSURL
+        val folder = "${checkNotNull(caches.path) { "No caches directory" }}/Exports"
+        manager.removeItemAtPath(folder, null)
+        check(manager.createDirectoryAtPath(folder, withIntermediateDirectories = true, attributes = null, error = null)) {
+            "Cannot create $folder"
+        }
+        return AppleUserFile(folder)
+    }
+}
+
+/** The CSV export of one habit or of all of them is written to the folder of the exports. */
+class IosDirFinder : ListHabitsBehavior.DirFinder, ShowHabitMenuPresenter.System {
+    override fun getCSVOutputDir(): UserFile = IosExports.freshFolder()
 }

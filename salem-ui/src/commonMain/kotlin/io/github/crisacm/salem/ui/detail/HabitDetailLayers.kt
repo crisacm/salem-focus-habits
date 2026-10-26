@@ -33,7 +33,7 @@ import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.ui.list.ListOverlays
 
 /** The messages that the detail shows in a banner. */
-enum class DetailMessage { ARCHIVED, UNARCHIVED, COULD_NOT_EXPORT, EXPORT_UNAVAILABLE }
+enum class DetailMessage { ARCHIVED, UNARCHIVED, COULD_NOT_EXPORT }
 
 /** Which habit the app shows in its detail screen, if any: the screen over the habit list. */
 class DetailNavigation {
@@ -54,7 +54,10 @@ class DetailNavigation {
  * confirmation are the [overlays], the history editor is a layer of its own (a popup of a day opens above it), and
  * the messages go to a banner. [onClose] leaves the detail.
  */
-class HabitDetailLayers(private val onClose: () -> Unit) : HabitDetailSession.Hooks {
+class HabitDetailLayers(
+    private val onClose: () -> Unit,
+    private val onShare: (String) -> Unit
+) : HabitDetailSession.Hooks {
     val overlays = ListOverlays()
     val historyEditor = HistoryEditorLayer()
 
@@ -100,7 +103,7 @@ class HabitDetailLayers(private val onClose: () -> Unit) : HabitDetailSession.Ho
         }
     }
 
-    override fun showSendFileScreen(filename: String) = show(DetailMessage.EXPORT_UNAVAILABLE)
+    override fun showSendFileScreen(filename: String) = onShare(filename)
 
     override fun showDeleteConfirmationScreen(callback: OnConfirmedCallback) = overlays.showDelete(1, callback)
 
