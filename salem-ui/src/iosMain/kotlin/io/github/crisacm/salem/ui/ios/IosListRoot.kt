@@ -44,6 +44,8 @@ import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.ui.AppScreen
 import io.github.crisacm.salem.ui.about.AboutRoute
 import io.github.crisacm.salem.ui.about.SalemLinks
+import io.github.crisacm.salem.ui.compose.CategoryHeader
+import io.github.crisacm.salem.ui.compose.ClickRow
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.detail.HabitDetailRoute
@@ -51,12 +53,17 @@ import io.github.crisacm.salem.ui.intro.IntroContent
 import io.github.crisacm.salem.ui.list.ListHabitsContent
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.list.hiddenWhileOverlay
+import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.customize_notification
+import io.github.crisacm.salem.ui.resources.customize_notification_summary
+import io.github.crisacm.salem.ui.resources.reminder
 import io.github.crisacm.salem.ui.settings.SettingsContent
 import io.github.crisacm.salem.ui.settings.SettingsState
 import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.stringResource
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
 
@@ -110,6 +117,7 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
     DisposableEffect(graph) {
         // The day, the first weekday, the timer and the reminders; the habits are already recomputed
         graph.reminders.refresher.onLaunch()
+        graph.reminders.permission.onLaunch(graph.reminders.reminderScheduler.hasHabitsWithReminders())
         // Back from the background the day may have changed and the reminders are scheduled again
         val observer = AppLifecycleObserver(
             onForeground = {
@@ -198,7 +206,15 @@ private fun HabitListScreen(graph: IosHabitsGraph) {
                                     onBack = { graph.screens.close(AppScreen.SETTINGS) },
                                     onHelp = { openUrl(SalemLinks.HELP) },
                                     onRate = { openUrl(SalemLinks.RATE) },
-                                    onAbout = { graph.screens.open(AppScreen.ABOUT) }
+                                    onAbout = { graph.screens.open(AppScreen.ABOUT) },
+                                    middleSections = {
+                                        CategoryHeader(stringResource(Res.string.reminder))
+                                        ClickRow(
+                                            stringResource(Res.string.customize_notification),
+                                            stringResource(Res.string.customize_notification_summary),
+                                            ::openNotificationSettings
+                                        )
+                                    }
                                 )
                             }
                         }

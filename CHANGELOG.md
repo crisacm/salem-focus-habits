@@ -18,6 +18,7 @@ attribution.
 
 ### Added
 
+- Ask for the permission to show notifications on iOS when a habit with a reminder is saved, and when the app starts with reminders already set, and add "Customize notifications" to the iOS Settings, which opens the notification settings of the app. With the previous change the reminders now work on iOS.
 - Wire the reminders into the iOS app: the habits with a reminder schedule their local notifications (the next days, again after every change and every time the app comes back), the Yes and No buttons check and uncheck the habit, a tap opens its detail, and a checked or deleted habit loses its delivered notification. The permission request and the notification row of Settings come in the next change, so nothing is shown yet on a fresh install.
 - Show Settings on iOS (menu Settings): the short press toggle, the midnight delay, skip days, question marks, reversed days, pure black, the first day of the week, Help, Rate, About and the developer switch. The rows move to `salem-ui` and are shared with Android, which keeps its own sections (widgets, reminders, backups, import and export, troubleshooting). The first day of the week can be set from the shared code (`Preferences.firstWeekday` has a setter), and About opened from Settings goes back to Settings.
 - Show the intro on the first launch of the iOS app: the intro (three slides with Skip, Next and Done) moves to `salem-ui` and is shared with Android; before, iOS marked the first run as done and showed nothing.

@@ -34,22 +34,27 @@ import io.github.crisacm.salem.platform.notifications.AppleReminderSync
 import io.github.crisacm.salem.platform.notifications.AppleSystemScheduler
 import io.github.crisacm.salem.platform.notifications.AppleSystemTray
 import io.github.crisacm.salem.platform.notifications.HabitCompletionRearmer
+import io.github.crisacm.salem.platform.notifications.NotificationPermission
 import io.github.crisacm.salem.platform.notifications.UNDeliveredNotificationCenter
 import io.github.crisacm.salem.platform.notifications.UNPendingNotificationCenter
 import io.github.crisacm.salem.platform.notifications.buildReminderCategory
 import io.github.crisacm.salem.ui.detail.DetailNavigation
 import io.github.crisacm.salem.ui.reminders.ReminderActions
+import io.github.crisacm.salem.ui.reminders.ReminderPermissionPrompter
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.default_reminder_question
 import io.github.crisacm.salem.ui.resources.no
 import io.github.crisacm.salem.ui.resources.yes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.compose.resources.getString
 import platform.UserNotifications.UNUserNotificationCenter
 
 /**
  * The reminders and notifications of the iOS app, wired the way `HabitsApplication` does it on Android: the scheduler
  * with the system scheduler of iOS, the tray, the listeners of the commands, the refresh when the app comes back and
- * the actions of the notification buttons. [create] starts the listeners; [refresher] must be launched once the habits
+ * the actions of the notification buttons and the request for the permission. [create] starts the listeners; [refresher] must be launched once the habits
  * are on screen. Everything here runs on the main thread (the classes of iOS are not synchronized), which is where the
  * task runner reports finished commands.
  */
@@ -57,7 +62,8 @@ class IosReminders private constructor(
     val reminderScheduler: ReminderScheduler,
     val notificationTray: NotificationTray,
     val refresher: AppForegroundRefresher,
-    val actions: ReminderActions
+    val actions: ReminderActions,
+    val permission: ReminderPermissionPrompter
 ) {
     companion object {
         suspend fun create(
@@ -89,6 +95,12 @@ class IosReminders private constructor(
             AppleReminderSync(commandRunner, reminderScheduler, systemScheduler).startListening()
             commandRunner.addListener(HabitCompletionRearmer(reminderScheduler) { preferences.midnightDelayHours })
             tray.startListening()
+            // The permission is asked when a habit with a reminder is saved, and at launch (see IosListRoot)
+            val permission = ReminderPermissionPrompter(
+                request = NotificationPermission()::request,
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+            )
+            commandRunner.addListener(permission)
 
             UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(
                 setOf(buildReminderCategory(getString(Res.string.yes), getString(Res.string.no)))
@@ -103,7 +115,8 @@ class IosReminders private constructor(
                 reminderScheduler,
                 tray,
                 AppForegroundRefresher(preferences, midnightTimer, reminderScheduler, systemScheduler),
-                actions
+                actions,
+                permission
             )
         }
     }
