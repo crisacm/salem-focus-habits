@@ -1,0 +1,216 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hábito"
+          }
+        }
+      }
+    },
+    "Open Salem first so it can set up your habits.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre Salem primero para que prepare tus hábitos."
+          }
+        }
+      }
+    },
+    "That habit no longer exists.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ese hábito ya no existe."
+          }
+        }
+      }
+    },
+    "%@: %@ / %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@ / %@"
+          }
+        }
+      }
+    },
+    "%@ is done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está hecho"
+          }
+        }
+      }
+    },
+    "%@ is not done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ no está hecho"
+          }
+        }
+      }
+    },
+    "Check habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar hábito"
+          }
+        }
+      }
+    },
+    "Marks a habit as done for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marca un hábito como hecho hoy."
+          }
+        }
+      }
+    },
+    "Check ${habit}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar ${habit}"
+          }
+        }
+      }
+    },
+    "Uncheck habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desmarcar hábito"
+          }
+        }
+      }
+    },
+    "Marks a habit as not done for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marca un hábito como no hecho hoy."
+          }
+        }
+      }
+    },
+    "Uncheck ${habit}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desmarcar ${habit}"
+          }
+        }
+      }
+    },
+    "Toggle habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alternar hábito"
+          }
+        }
+      }
+    },
+    "Moves a habit to its next value for today, as a tap in the app does.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasa un hábito a su siguiente valor de hoy, como un toque en la app."
+          }
+        }
+      }
+    },
+    "Toggle ${habit}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alternar ${habit}"
+          }
+        }
+      }
+    },
+    "Add one to habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumar uno a un hábito"
+          }
+        }
+      }
+    },
+    "Adds one unit to a numerical habit for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suma una unidad a un hábito numérico hoy."
+          }
+        }
+      }
+    },
+    "Add one to ${habit}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumar uno a ${habit}"
+          }
+        }
+      }
+    },
+    "Subtract one from habit": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restar uno a un hábito"
+          }
+        }
+      }
+    },
+    "Takes one unit from a numerical habit for today, never below zero.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resta una unidad a un hábito numérico hoy, sin bajar de cero."
+          }
+        }
+      }
+    },
+    "Subtract one from ${habit}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restar uno a ${habit}"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

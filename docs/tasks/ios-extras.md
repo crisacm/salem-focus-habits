@@ -26,7 +26,7 @@ Haiku `explorer` brief: Android has six widgets and the Locale plugin (`FireSett
 - [x] TASK-2 (X1): `MoveDatabaseTest` (4) and `ExternalChangesTest` (3) — RED observed, then `moveDatabase` and `ExternalChanges`
 - [x] TASK-3 (X1): `AppGroup`, `AppleFileOpener.createDefault(groupId)`, the graph uses the group and reloads after external changes, `HabitsBoardFactory`, iOS 17.0, CI — compiled only, nothing of iosMain has a test
 - [x] TASK-4 (X2): `SalemWidgets` (WidgetKit extension: `TodayWidget` with the habits of today, small, medium and large; `ToggleHabitIntent` and `IncrementHabitIntent` for the buttons; strings in English and Spanish in a string catalog), the target and its embedding in the app by hand in `project.pbxproj`, the entitlements of the App Group, the call to `WidgetCenter.reloadAllTimelines()` from `ContentView` — built and embedded (`PlugIns/SalemWidgets.appex`), nothing of it has a test
-- [ ] TASK-5 (X3): shortcuts extension
+- [x] TASK-5 (X3): `SalemIntents` (App Intents extension: `HabitEntity` and `HabitQuery`, the five action intents, `SalemShortcuts` with the Siri phrases, string catalogs for the actions and for the phrases in English and Spanish), the target by hand in `project.pbxproj` (it depends on `SalemWidgets` so the two Gradle runs of `:salem-extras` never overlap), embedded in the app — built (`PlugIns/SalemIntents.appex`, `NSExtensionPointIdentifier` `com.apple.appintents-extension`, iOS 17, `Metadata.appintents` with the five actions and two App Shortcuts), nothing of it has a test
 
 ## Estrategia de entrega
 Sequential PRs from `develop` straight back to `develop`, checking with `gh pr view` that the previous one is merged.
@@ -41,6 +41,13 @@ Sequential PRs from `develop` straight back to `develop`, checking with `gh pr v
 - What it shows: the active habits of today in the order of the app (3 rows small, 4 medium, 8 large): a circle of the colour of the habit (filled when done) that is a button (`ToggleHabitIntent`), the name and the score; a numerical habit shows "value/target unit" and a plus button (`IncrementHabitIntent`). If the app has not created its database (or is older) it says to open Salem. It draws again in an hour or just after midnight, and the app tells it to draw again whenever the habits change.
 - Signing: a build for the simulator with no team ("Sign to Run Locally") compiles and embeds simulated entitlements that include the App Group (`FAKETEAMID`, checked in `Salem.app-Simulated.xcent` and `SalemWidgets.appex-Simulated.xcent`), so the shared container should exist in the simulator; a device needs a team. `CODE_SIGNING_ALLOWED=NO` (CI) applies no entitlements.
 - To try it in the simulator (the user does it at the end): run the app once, create a habit, go to the home screen, long press, add the Salem widget, tap its circle and open the app again.
+
+## Atajos (X3)
+- Where: `iosApp/SalemIntents/`. Links `SalemExtras` like the widget, never `SalemUi`. The intents have their own names (`ToggleHabitShortcutIntent`, `IncrementHabitShortcutIntent`; the widget keeps `ToggleHabitIntent` and `IncrementHabitIntent`, which take a plain id and are not discoverable).
+- Each action takes a `HabitEntity` (chosen from the active habits of the shared database), changes today, answers with a dialog ("Name is done", "Name: 3 / 5") and calls `WidgetCenter.reloadAllTimelines()`. The board returns nil both for an unknown habit and for a database that is not ready, so the intent asks `today().needsApp` first and throws "Open Salem first…" or "That habit no longer exists.".
+- Not known until it runs: whether Shortcuts and Siri pick up the `AppShortcutsProvider` from an extension (the metadata of the build lists the provider and the two shortcuts; if Siri does not find the phrases, the actions are still in the Shortcuts app); the memory of the Kotlin framework in this extension.
+- Known gap: `HabitCompletionRearmer` runs only inside the app, so a shortcut that completes a habit does not move its pending reminder to tomorrow until the app is opened again (the delivered notification is removed).
+- To try it (the user does it at the end): run the app once, create a habit, open the Shortcuts app, add the action "Toggle habit" of Salem, choose a habit and run it; then open the app and the widget.
 
 ## Equivalencia con Tasker (Android) para los atajos (X3)
 | Locale action | Parameter | iOS intent (X3) |

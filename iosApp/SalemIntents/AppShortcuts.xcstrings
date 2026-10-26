@@ -1,0 +1,36 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Toggle a habit in ${applicationName}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alternar un hábito en ${applicationName}"
+          }
+        }
+      }
+    },
+    "Check off a habit in ${applicationName}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar un hábito en ${applicationName}"
+          }
+        }
+      }
+    },
+    "Add one to a habit in ${applicationName}": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumar uno a un hábito en ${applicationName}"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
