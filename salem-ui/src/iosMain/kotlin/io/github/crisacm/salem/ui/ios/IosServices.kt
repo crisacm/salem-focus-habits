@@ -26,6 +26,7 @@ import io.github.crisacm.salem.platform.io.UserFile
 import platform.Foundation.NSBundle
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationOpenNotificationSettingsURLString
 import platform.UIKit.UIDevice
 
 /** The version of the app as the user sees it, from the Info.plist. */
@@ -36,6 +37,9 @@ fun openUrl(url: String) {
     val target = NSURL.URLWithString(url) ?: return
     UIApplication.sharedApplication.openURL(target, emptyMap<Any?, Any?>(), null)
 }
+
+/** Opens the notification settings of the app (iOS 16 or later, which is the minimum of the app). */
+fun openNotificationSettings() = openUrl(UIApplicationOpenNotificationSettingsURLString)
 
 /** The report of an iOS app is its version and the device; there is no log file to dump yet. */
 class IosBugReporter : ListHabitsBehavior.BugReporter {
