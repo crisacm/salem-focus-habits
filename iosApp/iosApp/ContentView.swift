@@ -18,11 +18,12 @@
 
 import SwiftUI
 import SalemUi
+import WidgetKit
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        // The widget will be told to draw again here (the widget arrives in its own change)
-        MainViewControllerKt.MainViewController(onHabitsChanged: {})
+        // The widget draws the habits of the database: tell it to draw again whenever they change
+        MainViewControllerKt.MainViewController(onHabitsChanged: { WidgetCenter.shared.reloadAllTimelines() })
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

@@ -25,14 +25,22 @@ Haiku `explorer` brief: Android has six widgets and the Locale plugin (`FireSett
 - [x] TASK-1 (X1): `HabitsBoardTest` (15: the list of today, archived ones, an empty database, an older schema, colour, check, uncheck, toggle with skip and question marks, yes/no and numerical increments, targets, unknown ids, score, notes kept) — RED observed (unresolved reference), then `HabitsBoard`
 - [x] TASK-2 (X1): `MoveDatabaseTest` (4) and `ExternalChangesTest` (3) — RED observed, then `moveDatabase` and `ExternalChanges`
 - [x] TASK-3 (X1): `AppGroup`, `AppleFileOpener.createDefault(groupId)`, the graph uses the group and reloads after external changes, `HabitsBoardFactory`, iOS 17.0, CI — compiled only, nothing of iosMain has a test
-- [ ] TASK-4 (X2): widget extension
+- [x] TASK-4 (X2): `SalemWidgets` (WidgetKit extension: `TodayWidget` with the habits of today, small, medium and large; `ToggleHabitIntent` and `IncrementHabitIntent` for the buttons; strings in English and Spanish in a string catalog), the target and its embedding in the app by hand in `project.pbxproj`, the entitlements of the App Group, the call to `WidgetCenter.reloadAllTimelines()` from `ContentView` — built and embedded (`PlugIns/SalemWidgets.appex`), nothing of it has a test
 - [ ] TASK-5 (X3): shortcuts extension
 
 ## Estrategia de entrega
 Sequential PRs from `develop` straight back to `develop`, checking with `gh pr view` that the previous one is merged.
 
 ## Evidencia
+(X2) `xcodebuild … iosApp … build` with and without `CODE_SIGNING_ALLOWED=NO` builds both targets; the appex has `NSExtension` `com.apple.widgetkit-extension`, bundle `io.github.crisacm.salem.widgets`, minimum iOS 17.0 and the Spanish strings. Not run by me: the app and the widget on the simulator.
+
 (X1) `:salem-core:jvmTest`, `:salem-extras:jvmTest`, `:salem-ui:desktopTest`, `:salem-android:testDebugUnitTest`, `ktlintCheck`, `compileDebugAndroidTestKotlin`, `assembleDebug`, the iOS compile of core, its tests, `salem-extras` and `salem-ui` (arm64 and simulator) and `xcodebuild` (build only). Not run by me: the iOS simulator tests and the app on the simulator.
+
+## Widget de hoy (X2)
+- Where: `iosApp/SalemWidgets/`. The app target depends on the widget target and embeds it, which also makes Gradle build `:salem-extras` before `:salem-ui` (never two Gradle runs at once). The widget links `SalemExtras` (about 4 MB in the Debug dylib), never `SalemUi`.
+- What it shows: the active habits of today in the order of the app (3 rows small, 4 medium, 8 large): a circle of the colour of the habit (filled when done) that is a button (`ToggleHabitIntent`), the name and the score; a numerical habit shows "value/target unit" and a plus button (`IncrementHabitIntent`). If the app has not created its database (or is older) it says to open Salem. It draws again in an hour or just after midnight, and the app tells it to draw again whenever the habits change.
+- Signing: a build for the simulator with no team ("Sign to Run Locally") compiles and embeds simulated entitlements that include the App Group (`FAKETEAMID`, checked in `Salem.app-Simulated.xcent` and `SalemWidgets.appex-Simulated.xcent`), so the shared container should exist in the simulator; a device needs a team. `CODE_SIGNING_ALLOWED=NO` (CI) applies no entitlements.
+- To try it in the simulator (the user does it at the end): run the app once, create a habit, go to the home screen, long press, add the Salem widget, tap its circle and open the app again.
 
 ## Equivalencia con Tasker (Android) para los atajos (X3)
 | Locale action | Parameter | iOS intent (X3) |
