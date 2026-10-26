@@ -148,6 +148,24 @@ class AppleUserFile(private val path: String) : UserFile {
 
     override suspend fun readBytes(limit: Int): ByteArray = readFileBytes(path, limit)
 
+    /**
+     * Copies to a temporary sibling first, so a failed copy leaves an existing [dest] untouched.
+     */
+    override suspend fun copyTo(dest: UserFile) {
+        require(dest is AppleUserFile) { "Expected an AppleUserFile" }
+        val fm = NSFileManager.defaultManager
+        val temporary = AppleUserFile(dest.pathString + ".copy-tmp")
+        temporary.delete()
+        createParentDirectories(dest.pathString)
+        try {
+            check(fm.copyItemAtPath(path, temporary.pathString, null)) { "Cannot copy $path to ${dest.pathString}" }
+            dest.delete()
+            check(fm.moveItemAtPath(temporary.pathString, dest.pathString, null)) { "Cannot replace ${dest.pathString}" }
+        } finally {
+            temporary.delete()
+        }
+    }
+
     override fun resolve(child: String): UserFile = AppleUserFile("$path/$child")
 
     /**

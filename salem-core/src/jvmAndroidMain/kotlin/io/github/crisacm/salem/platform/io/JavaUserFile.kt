@@ -58,6 +58,12 @@ class JavaUserFile(val path: Path) : UserFile {
         }
     }
 
+    override suspend fun copyTo(dest: UserFile) {
+        require(dest is JavaUserFile) { "Expected a JavaUserFile" }
+        dest.path.toFile().parentFile?.mkdirs()
+        Files.copy(path, dest.path, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+    }
+
     override fun resolve(child: String): UserFile {
         return JavaUserFile(path.resolve(child))
     }
