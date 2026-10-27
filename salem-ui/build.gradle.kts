@@ -30,19 +30,6 @@ kotlin {
     // The desktop target only exists to run the rendering tests on the JVM (Skia); no desktop app ships
     jvm("desktop")
     androidTarget()
-    iosArm64()
-    iosSimulatorArm64()
-    // The iOS app links this framework
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
-        binaries.framework {
-            baseName = "SalemUi"
-            isStatic = true
-        }
-    }
-    // sqliter (iOS database, through salem-core) needs the system SQLite library when a native binary is linked
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
-        binaries.all { linkerOpts("-lsqlite3") }
-    }
     jvmToolchain(17)
 
     sourceSets {

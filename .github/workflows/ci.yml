@@ -39,6 +39,9 @@ jobs:
       - name: iOS extras tests
         run: ./gradlew :salem-extras:jvmTest
 
+      - name: iOS session tests
+        run: ./gradlew :salem-kit:jvmTest
+
       - name: Android JVM unit tests
         run: ./gradlew :salem-android:testDebugUnitTest
 
@@ -84,8 +87,8 @@ jobs:
       - name: Run iOS tests
         run: ./gradlew :salem-core:iosSimulatorArm64Test
 
-      - name: Compile the shared UI for iOS
-        run: ./gradlew :salem-ui:compileKotlinIosSimulatorArm64 :salem-ui:compileKotlinIosArm64
+      - name: Compile the iOS app framework
+        run: ./gradlew :salem-kit:compileKotlinIosSimulatorArm64 :salem-kit:compileKotlinIosArm64
 
       - name: Compile the iOS extras
         run: ./gradlew :salem-extras:compileKotlinIosSimulatorArm64 :salem-extras:compileKotlinIosArm64

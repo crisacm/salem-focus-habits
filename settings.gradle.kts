@@ -11,7 +11,7 @@ pluginManagement {
     }
 }
 
-include(":salem-android", ":salem-core", ":salem-extras", ":salem-ui")
+include(":salem-android", ":salem-core", ":salem-extras", ":salem-kit", ":salem-ui")
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {

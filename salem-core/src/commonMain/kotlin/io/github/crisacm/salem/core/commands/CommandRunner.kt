@@ -43,6 +43,12 @@ open class CommandRunner(
         )
     }
 
+    /** Runs [command] on the current thread, then notifies listeners (does not use [TaskRunner]). */
+    open fun runAndWait(command: Command) {
+        command.run()
+        notifyListeners(command)
+    }
+
     open fun addListener(l: Listener) {
         listeners.add(l)
     }
