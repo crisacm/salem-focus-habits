@@ -61,4 +61,22 @@ class HabitEditorSaver(
         commandRunner.run(command)
         return SaveResult.SAVED
     }
+
+    /** Like [save], but waits until the command has finished before returning. */
+    fun saveAndWait(form: EditHabitForm, habitId: Long?): SaveResult {
+        if (saving) return SaveResult.ALREADY_SAVING
+        val habit = modelFactory.buildHabit()
+        val command = if (habitId != null) {
+            val original = habitList.getById(habitId) ?: return SaveResult.HABIT_NOT_FOUND
+            habit.copyFrom(original)
+            form.applyTo(habit)
+            EditHabitCommand(habitList, habitId, habit)
+        } else {
+            form.applyTo(habit)
+            CreateHabitCommand(modelFactory, habitList, habit)
+        }
+        saving = true
+        commandRunner.runAndWait(command)
+        return SaveResult.SAVED
+    }
 }

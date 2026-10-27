@@ -23,7 +23,7 @@ plugins {
 }
 
 // What the iOS extensions (the widget and the shortcuts) link instead of the whole app: the core without Compose, with a
-// small API for Swift. The app itself does not link it (it already has the core inside SalemUi)
+// small API for Swift. The app itself does not link it (it already has the core inside SalemKit)
 kotlin {
     iosArm64()
     iosSimulatorArm64()

@@ -9,6 +9,7 @@ attribution.
 
 ### Fixed
 
+- Opening the iOS app no longer fails when the database already has habits: the day is set before those habits are recomputed.
 - The iOS app no longer crashes on launch when it reschedules the reminders: the reminder and notification loggers passed a Kotlin string straight to the variadic `NSLog`, which read it as a pointer
 - A habit completed from a shortcut or the iOS widget no longer shows today's reminder (the pending notification is removed, and put back if the habit is unchecked before its time), and the reminders scheduled when the app returns to the foreground skip today for a habit that is already done. Shortcuts also do less work per action.
 - The habit detail follows the dark mode while it is open on iOS (the cards, charts and history editor used to keep the old theme), it no longer refreshes after it was left or registers twice for the commands, it covers the screen from the first frame, and the Android detail stops its pending refreshes when it is destroyed.
@@ -20,6 +21,7 @@ attribution.
 
 ### Added
 
+- The iOS app draws its screens in SwiftUI (list, editor, habit detail with charts, settings, about and intro). The habit logic stays in Kotlin (`SalemKit`). Android keeps Compose. Strings for iOS are generated from `strings.xml` by `syncIosStrings`. The habit list was opened on the iPhone 18 Pro Max simulator. Editor, charts, import, export and the notification permission are not fully checked there yet.
 - Add shortcuts to iOS: the Shortcuts app gets the actions Check habit, Uncheck habit, Toggle habit, Add one to habit and Subtract one from habit (the iOS counterpart of the Tasker actions of Android), each on a habit you choose and always for today, and Siri and Spotlight know "Toggle a habit in Salem" and "Add one to a habit in Salem"; they change the database of the app through the App Group and tell the widget to draw again. English and Spanish. Not seen on a device or the simulator yet.
 - Add a widget to iOS with the habits of today (small, medium and large): each habit has a button to check it from the home screen, a numerical habit has a plus button, and it shows the score; it uses the database of the app through the App Group and the app tells it to draw again when the habits change. It needs iOS 17 (the minimum of the app is now 17.0). Not seen on a device or the simulator yet.
 - Export and share data on iOS with the share sheet of the system (AirDrop, Messages, Save to Files): Settings has "Export full backup" (a copy of the database that can be imported again), "Export as CSV", "Generate bug report" (version and device, as text) and "Repair database"; the Export item of the habit detail now shares the CSV of that habit instead of saying it is not available, and the messages of the app (exported, repaired, imported) show as a banner.
