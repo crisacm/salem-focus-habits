@@ -44,7 +44,11 @@ import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.edit.SaveResult
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.BarCardPresenter
+import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardPresenter
 import io.github.crisacm.salem.core.ui.views.DarkTheme
+import io.github.crisacm.salem.core.ui.views.HistoryChart
+import io.github.crisacm.salem.core.ui.views.toShortString
 import io.github.crisacm.salem.core.ui.views.LightTheme
 import io.github.crisacm.salem.platform.gui.DrawOp
 import io.github.crisacm.salem.platform.gui.toArgb
@@ -279,6 +283,56 @@ class SalemSession(
         )
     }
 
+    /** The data of the charts of the habit screen: the same states the core builds for Android, grouped by week and by month. */
+    fun detailCharts(id: Long): DetailCharts? {
+        val habit = habitList.getById(id) ?: return null
+        val theme = theme()
+        val state = ShowHabitPresenter.buildState(habit, preferences, theme)
+        val firstWeekday = preferences.firstWeekdayInt
+        fun scores(position: Int) = ScoreCardPresenter
+            .buildState(habit, firstWeekday, position, theme).scores
+            .map { ScorePoint(it.date.daysSince2000, it.value) }
+            .sortedBy { it.day }
+        // The positions of the spinners: the week and the month, for the numerical habits and for the yes or no ones
+        fun bars(numericalPosition: Int, boolPosition: Int) = BarCardPresenter
+            .buildState(habit, firstWeekday, numericalPosition, boolPosition, theme).entries
+            .map { BarPoint(it.date.daysSince2000, it.value / 1000.0) }
+            .sortedBy { it.day }
+        // The counts of each month start on Saturday
+        val sums = IntArray(7)
+        for (month in state.frequency.frequency.values) for (index in 0 until 7) sums[index] += month[index]
+        val weekdays = (0 until 7).map { day ->
+            val sum = sums[(day + 1) % 7]
+            WeekdayTotal(day, if (habit.isNumerical) (sum / 1000.0).roundToInt() else sum)
+        }
+        val calendar = state.history.series.take(MAX_CALENDAR_DAYS).mapIndexed { index, square ->
+            CalendarDay(
+                state.history.today.daysSince2000 - index,
+                when (square) {
+                    HistoryChart.Square.ON -> 1
+                    HistoryChart.Square.DIMMED, HistoryChart.Square.GREY -> 2
+                    HistoryChart.Square.HATCHED -> 3
+                    HistoryChart.Square.OFF -> 0
+                }
+            )
+        }
+        return DetailCharts(
+            today = getToday().daysSince2000,
+            scoresByWeek = scores(1),
+            scoresByMonth = scores(2),
+            barsByWeek = bars(1, 0),
+            barsByMonth = bars(2, 1),
+            weekdays = weekdays,
+            streaks = state.streaks.bestStreaks.map { StreakItem(it.start.daysSince2000, it.end.daysSince2000, it.length) },
+            targets = state.target.intervals.mapIndexed { index, interval ->
+                val value = state.target.values.getOrElse(index) { 0.0 }
+                val target = state.target.targets.getOrElse(index) { 0.0 }
+                TargetRow(interval, value, target, kotlin.math.max(0.0, target - value).toShortString())
+            },
+            calendar = calendar
+        )
+    }
+
     fun setScoreSpinner(position: Int) {
         preferences.scoreCardSpinnerPosition = position
         changed()
@@ -493,3 +547,5 @@ private fun signedPercent(diff: Float): String {
     val percent = kotlin.math.abs(diff * 100).roundToInt()
     return if (diff >= 0) "+$percent%" else "−$percent%"
 }
+
+private const val MAX_CALENDAR_DAYS = 400

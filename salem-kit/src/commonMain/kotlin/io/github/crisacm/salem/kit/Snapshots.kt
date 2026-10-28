@@ -96,6 +96,40 @@ class DetailSnapshot(
     val targetIntervals: List<Int>
 )
 
+/** A point of the score line: [day] counts from 2000-01-01 and [value] goes from 0 to 1. */
+class ScorePoint(val day: Int, val value: Double)
+
+/** A bar of the history: the first [day] of its week or month and the amount, in units, done in it. */
+class BarPoint(val day: Int, val value: Double)
+
+/** The completions on a day of the week, [day] being 0 for Sunday. */
+class WeekdayTotal(val day: Int, val total: Int)
+
+/** A streak from [start] to [end] (days since 2000-01-01) that lasted [length] days. */
+class StreakItem(val start: Int, val end: Int, val length: Int)
+
+/** What a period (1 day, 7, 30, 91 or 365) has reached out of its target; [remaining] is what is left, written as the core writes it. */
+class TargetRow(val interval: Int, val value: Double, val target: Double, val remaining: String)
+
+/** How a day looks in the calendar: [state] is 0 missed, 1 done, 2 soft (done by the frequency or only partly), 3 skipped. */
+class CalendarDay(val day: Int, val state: Int)
+
+/**
+ * The data of the charts of the habit screen, the same the core gives Android. The score and the bars come grouped by week
+ * and by month, oldest first; the calendar comes newest first, starting with today.
+ */
+class DetailCharts(
+    val today: Int,
+    val scoresByWeek: List<ScorePoint>,
+    val scoresByMonth: List<ScorePoint>,
+    val barsByWeek: List<BarPoint>,
+    val barsByMonth: List<BarPoint>,
+    val weekdays: List<WeekdayTotal>,
+    val streaks: List<StreakItem>,
+    val targets: List<TargetRow>,
+    val calendar: List<CalendarDay>
+)
+
 /** One day in the history editor. */
 class HistoryDay(val day: Int, val value: Int, val number: Double, val notes: String)
 

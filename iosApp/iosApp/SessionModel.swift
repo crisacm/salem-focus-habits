@@ -38,7 +38,7 @@ final class SessionModel {
     var detailId: Int64?
     var showSettings = false
     var showAbout = false
-    var dayCount = 7
+    var dayCount = 60
 
     private var loadStarted = false
     private var sessionReady = false
@@ -227,6 +227,10 @@ final class SessionModel {
 
     func detail(id: Int64) -> DetailSnapshot? {
         withSessionOptional { $0.detail(id: id) }
+    }
+
+    func detailCharts(id: Int64) -> DetailCharts? {
+        withSessionOptional { $0.detailCharts(id: id) }
     }
 
     func editorSnapshot(id: Int64) -> EditorSnapshot? {
