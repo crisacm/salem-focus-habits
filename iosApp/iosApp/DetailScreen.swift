@@ -148,11 +148,16 @@ struct DetailScreen: View {
             DetailCard {
                 VStack(alignment: .leading, spacing: 4) {
                     CardTitle(title: L("best_streaks", "Best streaks"))
-                    StreakRowsChart(
-                        streaks: charts.streaks.compactMap { $0 as? StreakItem },
-                        palette: palette,
-                        dayText: dayCount
-                    )
+                    let streaks = charts.streaks.compactMap { $0 as? StreakItem }
+                    if streaks.isEmpty {
+                        Text(L("no_streaks", "No streaks yet"))
+                            .font(.system(size: 15))
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 24)
+                    } else {
+                        StreakRowsChart(streaks: streaks, palette: palette, dayText: dayCount)
+                    }
                 }
             }
             DetailCard {

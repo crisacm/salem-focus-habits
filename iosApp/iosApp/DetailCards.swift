@@ -70,7 +70,11 @@ struct DetailHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 12) {
-                ScoreRing(score: Int(detail.scorePercent), symbol: habitSymbol(id: detail.id), tone: tone, size: 46)
+                Image(systemName: habitSymbol(id: detail.id))
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(tone.accent)
+                    .frame(width: 40, height: 40)
+                    .accessibilityHidden(true)
                 Text(detail.name)
                     .font(.system(size: 34, weight: .bold))
                     .lineLimit(2)
