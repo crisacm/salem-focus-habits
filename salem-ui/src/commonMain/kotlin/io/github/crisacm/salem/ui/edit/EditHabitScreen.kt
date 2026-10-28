@@ -274,7 +274,7 @@ fun EditHabitScreen(
                                 keyboardType = KeyboardType.Decimal
                             ) { form = form.copy(targetText = it) }
                         }
-                        FormCard(label = stringResource(Res.string.target_type)) {
+                        FormCard(label = stringResource(Res.string.target_type), labelSpacing = 10.dp) {
                             SegmentedChoice(
                                 options = listOf(
                                     stringResource(Res.string.target_type_at_least),
@@ -284,7 +284,7 @@ fun EditHabitScreen(
                                 onSelect = {
                                     form = form.copy(targetType = if (it == 0) NumericalHabitType.AT_LEAST else NumericalHabitType.AT_MOST)
                                 },
-                                height = 54.dp,
+                                height = 52.dp,
                                 tags = listOf("targetTypeAtLeast", "targetTypeAtMost")
                             )
                         }

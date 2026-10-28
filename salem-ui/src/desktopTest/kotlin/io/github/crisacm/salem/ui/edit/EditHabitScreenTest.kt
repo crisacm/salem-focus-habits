@@ -39,6 +39,7 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import io.github.crisacm.salem.core.models.HabitType
+import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.views.LightTheme
@@ -247,5 +248,24 @@ class EditHabitScreenTest {
         onNodeWithTag("reminderSwitch").performClick()
         onNodeWithTag("timePickerOk").performClick()
         onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+    }
+
+    @Test
+    fun theMeasurableTypeShowsTheUnitTheTargetAndTheTargetType() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.NUMERICAL))
+        onNodeWithTag("unitInput").assertIsDisplayed()
+        onNodeWithTag("targetInput").assertIsDisplayed()
+        onNodeWithText("Target Type").assertIsDisplayed()
+        onNodeWithTag("targetTypeAtLeast").assertIsDisplayed()
+    }
+
+    @Test
+    fun atMostIsReportedOnSave() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.NUMERICAL))
+        onNodeWithTag("targetTypeAtMost").performClick()
+        onNodeWithTag("nameInput").performTextInput("Coffee")
+        onNodeWithTag("targetInput").performTextInput("2")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(NumericalHabitType.AT_MOST, saved?.targetType)
     }
 }

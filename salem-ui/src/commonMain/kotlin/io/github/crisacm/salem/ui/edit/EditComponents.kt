@@ -217,14 +217,15 @@ internal fun SegmentedChoice(
 }
 
 /**
- * A rounded panel of the form, with an optional [label] in the primary colour on top. [contentPadding] is the room around
- * its content (20 dp, or what each card of the design has).
+ * A rounded panel of the form, with an optional [label] in the primary colour on top and [labelSpacing] under it.
+ * [contentPadding] is the room around its content (20 dp, or what each card of the design has).
  */
 @Composable
 internal fun FormCard(
     modifier: Modifier = Modifier,
     label: String? = null,
     contentPadding: PaddingValues = PaddingValues(20.dp),
+    labelSpacing: Dp = 12.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scheme = MaterialTheme.colorScheme
@@ -237,7 +238,7 @@ internal fun FormCard(
                     fontSize = 14.sp,
                     lineHeight = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                    modifier = Modifier.padding(bottom = labelSpacing)
                 )
             }
             content()
