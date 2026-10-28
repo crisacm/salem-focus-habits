@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,14 +47,14 @@ import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
-import io.github.crisacm.salem.core.ui.views.StreakChart
-import io.github.crisacm.salem.core.ui.views.TargetChart
 import io.github.crisacm.salem.core.ui.views.toShortString
 import io.github.crisacm.salem.platform.io.formatInvariant
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.ui.canvas.CoreCanvasView
-import io.github.crisacm.salem.ui.canvas.rememberSalemFonts
 import io.github.crisacm.salem.ui.compose.usesDarkTones
+import io.github.crisacm.salem.ui.detail.charts.StreakBarsChart
+import io.github.crisacm.salem.ui.detail.charts.TargetBarsChart
+import io.github.crisacm.salem.ui.detail.charts.TargetRow
+import io.github.crisacm.salem.ui.detail.charts.streakBars
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.best_streaks
 import io.github.crisacm.salem.ui.resources.month
@@ -74,33 +73,24 @@ fun formatPercentageDiff(percentageDiff: Float): String =
 
 @Composable
 fun StreakCardContent(state: StreakCardState, dateFormatter: LocalDateFormatter) {
-    val fonts = rememberSalemFonts()
-    val chart = remember(state) {
-        StreakChart(state.theme, dateFormatter::longFormat, state.bestStreaks, state.theme.color(state.color))
-    }
+    val tones = rememberDetailTones(state.theme, state.color)
+    val bars = remember(state) { streakBars(state.bestStreaks) }
     Column(Modifier.fillMaxWidth().testTag("streakCard")) {
         CardHeader(stringResource(Res.string.best_streaks), spacing = 12.dp)
-        CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("streakChart"))
+        StreakBarsChart(bars, tones, dateFormatter::longFormat, Modifier.testTag("streakChart"))
     }
 }
 
 @Composable
 fun TargetCardContent(state: TargetCardState) {
-    val fonts = rememberSalemFonts()
+    val tones = rememberDetailTones(state.theme, state.color)
     val labels = state.intervals.map { stringResource(intervalLabelRes(it)) }
-    val chart = remember(state, labels) {
-        TargetChart(
-            theme = state.theme,
-            labels = labels,
-            values = state.values,
-            targets = state.targets,
-            color = state.theme.color(state.color),
-            formatValue = { it.toShortString() }
-        )
+    val rows = remember(state, labels) {
+        labels.mapIndexed { i, label -> TargetRow(label, state.values[i], state.targets[i]) }
     }
     Column(Modifier.fillMaxWidth().testTag("targetCard")) {
         CardHeader(stringResource(Res.string.target), spacing = 12.dp)
-        CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("targetChart"))
+        TargetBarsChart(rows, tones, { it.toShortString() }, Modifier.testTag("targetChart"))
     }
 }
 

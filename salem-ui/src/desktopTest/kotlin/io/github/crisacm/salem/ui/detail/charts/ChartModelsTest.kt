@@ -21,6 +21,7 @@ package io.github.crisacm.salem.ui.detail.charts
 
 import io.github.crisacm.salem.core.models.Entry
 import io.github.crisacm.salem.core.models.Score
+import io.github.crisacm.salem.core.models.Streak
 import io.github.crisacm.salem.core.ui.views.HistoryChart.Square
 import io.github.crisacm.salem.platform.time.DayOfWeek
 import io.github.crisacm.salem.platform.time.LocalDate
@@ -193,5 +194,23 @@ class ChartModelsTest {
     fun theLettersFollowTheFirstWeekday() {
         val letters = weekdayLetters(DayOfWeek.MONDAY) { it.name.take(1) }
         assertEquals(listOf("M", "T", "W", "T", "F", "S", "S"), letters)
+    }
+
+    @Test
+    fun streaksAreTieredByTheirLengthAgainstTheLongest() {
+        val bars = streakBars(listOf(Streak(sunday.minus(8), sunday), Streak(sunday.minus(4), sunday), Streak(sunday.minus(1), sunday)))
+        assertEquals(listOf(StreakTier.TOP, StreakTier.MID, StreakTier.LOW), bars.map { it.tier })
+        assertEquals(41f, streakPillWidth(0.1f, 147f))
+        assertEquals(147f, streakPillWidth(1f, 147f))
+        assertEquals(true, streakBars(emptyList()).isEmpty())
+    }
+
+    @Test
+    fun aTargetShowsWhatIsLeftAndFillsUpToTheTarget() {
+        assertEquals(0f, targetFraction(0.0, 10.0))
+        assertEquals(1f, targetFraction(30.0, 10.0))
+        assertEquals(1f, targetFraction(1.0, 0.0))
+        assertEquals(7.0, targetRemaining(3.0, 10.0))
+        assertEquals(0.0, targetRemaining(12.0, 10.0))
     }
 }
