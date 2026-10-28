@@ -23,6 +23,8 @@
 		D10000000000000000000002 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* RootView.swift */; };
 		D10000000000000000000003 /* SessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* SessionModel.swift */; };
 		D10000000000000000000004 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* Strings.swift */; };
+		D100000000000000000000F1 /* FloatingBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D200000000000000000000F1 /* FloatingBar.swift */; };
+		D100000000000000000000F0 /* HabitStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D200000000000000000000F0 /* HabitStyle.swift */; };
 		D10000000000000000000005 /* ListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* ListScreen.swift */; };
 		D10000000000000000000006 /* EditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* EditorScreen.swift */; };
 		D10000000000000000000007 /* Dialogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* Dialogs.swift */; };
@@ -94,6 +96,8 @@
 		D20000000000000000000002 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D20000000000000000000003 /* SessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModel.swift; sourceTree = "<group>"; };
 		D20000000000000000000004 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		D200000000000000000000F1 /* FloatingBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBar.swift; sourceTree = "<group>"; };
+		D200000000000000000000F0 /* HabitStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitStyle.swift; sourceTree = "<group>"; };
 		D20000000000000000000005 /* ListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListScreen.swift; sourceTree = "<group>"; };
 		D20000000000000000000006 /* EditorScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorScreen.swift; sourceTree = "<group>"; };
 		D20000000000000000000007 /* Dialogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dialogs.swift; sourceTree = "<group>"; };
@@ -146,6 +150,8 @@
 				D20000000000000000000002 /* RootView.swift */,
 				D20000000000000000000003 /* SessionModel.swift */,
 				D20000000000000000000004 /* Strings.swift */,
+				D200000000000000000000F1 /* FloatingBar.swift */,
+				D200000000000000000000F0 /* HabitStyle.swift */,
 				D20000000000000000000005 /* ListScreen.swift */,
 				D20000000000000000000006 /* EditorScreen.swift */,
 				D20000000000000000000007 /* Dialogs.swift */,
@@ -404,6 +410,8 @@
 				D10000000000000000000002 /* RootView.swift in Sources */,
 				D10000000000000000000003 /* SessionModel.swift in Sources */,
 				D10000000000000000000004 /* Strings.swift in Sources */,
+				D100000000000000000000F1 /* FloatingBar.swift in Sources */,
+				D100000000000000000000F0 /* HabitStyle.swift in Sources */,
 				D10000000000000000000005 /* ListScreen.swift in Sources */,
 				D10000000000000000000006 /* EditorScreen.swift in Sources */,
 				D10000000000000000000007 /* Dialogs.swift in Sources */,

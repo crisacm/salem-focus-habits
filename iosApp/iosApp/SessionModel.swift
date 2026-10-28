@@ -38,7 +38,7 @@ final class SessionModel {
     var detailId: Int64?
     var showSettings = false
     var showAbout = false
-    var dayCount = 7
+    var dayCount = 60
 
     private var loadStarted = false
     private var sessionReady = false
