@@ -58,11 +58,12 @@ fun StreakBarsChart(
 ) {
     val scheme = MaterialTheme.colorScheme
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        val longest = min(STREAK_LONGEST_WIDTH_DP, maxWidth.value - 2 * STREAK_DATE_ROOM_DP)
+        val fullWidth = maxWidth.value
+        val longest = min(STREAK_LONGEST_WIDTH_DP, fullWidth - 2 * STREAK_DATE_ROOM_DP)
         Column(verticalArrangement = Arrangement.spacedBy(STREAK_ROW_GAP_DP.dp), modifier = Modifier.fillMaxWidth()) {
             bars.forEach { bar ->
                 val width = streakPillWidth(bar.fraction, longest)
-                val showDates = streakDatesFit((maxWidth.value - width) / 2 - DATE_GAP_DP)
+                val showDates = streakDatesFit((fullWidth - width) / 2 - DATE_GAP_DP)
                 val (container, content) = when (bar.tier) {
                     StreakTier.TOP -> tones.accent to tones.onAccent
                     StreakTier.MID -> tones.muted to tones.onContainer
