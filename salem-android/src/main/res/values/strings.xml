@@ -141,6 +141,9 @@
     <string name="best_streaks">Best streaks</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
+    <string name="per_week">Per week</string>
+    <string name="custom">Custom</string>
+    <string name="yes_no_option">Yes / No</string>
     <string name="help">Help &amp; FAQ</string>
     <string name="could_not_export">Failed to export data.</string>
     <string name="export_not_available">Exporting is not available on iOS yet</string>

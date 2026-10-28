@@ -80,11 +80,11 @@ fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, modifier: M
                     .weight(1f)
                     .height(52.dp)
                     .clip(DayShape)
-                    .background(if (isToday) colors.primaryContainer else colors.background)
+                    .background(if (isToday) colors.secondaryContainer else colors.background)
             ) {
                 val color = when {
                     !isToday -> colors.onSurfaceVariant
-                    colors.background.luminance() < 0.5f -> colors.onPrimaryContainer
+                    colors.background.luminance() < 0.5f -> colors.onSecondaryContainer
                     else -> colors.primary
                 }
                 Text(formatter.shortWeekdayName(date).uppercase(), color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)

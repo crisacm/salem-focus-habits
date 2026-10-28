@@ -19,7 +19,10 @@
 
 package io.github.crisacm.salem.ui.edit
 
+import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.models.WeekdayList
+import io.github.crisacm.salem.platform.time.DayOfWeek
+import io.github.crisacm.salem.platform.time.getWeekdaySequence
 
 /** How the days of a reminder are summed up; [Custom] lists the short names of the days. */
 sealed class WeekdaysSummary {
@@ -69,4 +72,39 @@ fun reminderStartTime(hour: Int, minute: Int): Pair<Int, Int> =
 fun uses24Hour(pattern: String): Boolean {
     val letters = pattern.split('\'').filterIndexed { index, _ -> index % 2 == 0 }.joinToString("")
     return 'H' in letters || 'k' in letters
+}
+
+/** The colours the editor offers at a glance: blue, pink, orange and purple (the others are in the picker). */
+val QuickColors = listOf(11, 15, 2, 13)
+
+/** The swatches to show for a habit of colour [current]: the quick colours, with a colour that is not one of them in the first place. */
+fun swatchColors(current: PaletteColor): List<Int> =
+    if (current.paletteIndex in QuickColors) QuickColors else listOf(current.paletteIndex) + QuickColors.drop(1)
+
+/** The chips of the frequency of a habit; [CUSTOM] is anything that the other two do not say. */
+enum class FrequencyChoice { EVERY_DAY, PER_WEEK, CUSTOM }
+
+fun frequencyChoice(numerator: Int, denominator: Int, numerical: Boolean): FrequencyChoice = when {
+    // A numerical habit only has a period, so its numerator does not tell the chips apart
+    numerical && denominator == 1 -> FrequencyChoice.EVERY_DAY
+    numerical && denominator == 7 -> FrequencyChoice.PER_WEEK
+    !numerical && numerator == 1 && denominator == 1 -> FrequencyChoice.EVERY_DAY
+    !numerical && numerator == 1 && denominator == 7 -> FrequencyChoice.PER_WEEK
+    else -> FrequencyChoice.CUSTOM
+}
+
+/** A day of the week of the reminder, and its position in a [WeekdayList], which starts at Saturday. */
+class WeekdaySlot(val day: DayOfWeek, val index: Int)
+
+/** The days of the week in the order they are shown, starting at [firstWeekday], with their place in a [WeekdayList]. */
+fun weekdaySlots(firstWeekday: DayOfWeek): List<WeekdaySlot> {
+    val listOrder = getWeekdaySequence(DayOfWeek.SATURDAY)
+    return getWeekdaySequence(firstWeekday).map { WeekdaySlot(it, listOrder.indexOf(it)) }
+}
+
+/** [days] with the day at [index] turned on or off; the last day on stays on, because a reminder needs at least one. */
+fun toggleWeekday(days: WeekdayList, index: Int): WeekdayList {
+    val selected = days.toArray()
+    selected[index] = !selected[index]
+    return if (selected.none { it }) days else WeekdayList(selected)
 }

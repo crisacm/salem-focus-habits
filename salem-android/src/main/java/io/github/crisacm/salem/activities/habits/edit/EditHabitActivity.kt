@@ -23,15 +23,20 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.activities.AndroidThemeSwitcher
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.edit.SaveResult
+import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.edit.EditHabitScreen
 import io.github.crisacm.salem.ui.edit.PickerLabels
 import java.util.Locale
@@ -51,6 +56,7 @@ class EditHabitActivity : AppCompatActivity() {
         val themeSwitcher = AndroidThemeSwitcher(this, component.preferences)
         saver = HabitEditorSaver(component.modelFactory, component.habitList, component.commandRunner)
         themeSwitcher.apply()
+        paintStatusBar(themeSwitcher.currentTheme)
 
         val initial = if (intent.hasExtra("habitId")) {
             habitId = intent.getLongExtra("habitId", -1)
@@ -71,7 +77,6 @@ class EditHabitActivity : AppCompatActivity() {
                     initial = initial,
                     isEditing = habitId >= 0,
                     theme = theme,
-                    isNight = themeSwitcher.isNightMode,
                     dateFormatter = remember { JavaLocalDateFormatter(Locale.getDefault()) },
                     onSave = ::save,
                     onBack = ::finish,
@@ -84,6 +89,14 @@ class EditHabitActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the header; on every
+    // version its icons follow the theme: dark on the light one, light on the dark ones.
+    @Suppress("DEPRECATION")
+    private fun paintStatusBar(theme: Theme) {
+        window.statusBarColor = theme.toExpressiveColorScheme().primaryContainer.toArgb()
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !theme.usesDarkTones()
     }
 
     private fun save(form: EditHabitForm) {

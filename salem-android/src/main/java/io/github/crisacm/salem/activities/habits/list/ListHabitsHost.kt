@@ -36,6 +36,8 @@ import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.getToday
+import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.list.DAY_COLUMNS
 import io.github.crisacm.salem.ui.list.EmptyListState
 import io.github.crisacm.salem.ui.list.HabitListController
@@ -47,8 +49,6 @@ import io.github.crisacm.salem.ui.list.ListRowCallbacks
 import io.github.crisacm.salem.ui.list.ListScreenModel
 import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
 import io.github.crisacm.salem.ui.list.emptyListState
-import io.github.crisacm.salem.ui.list.isDarkList
-import io.github.crisacm.salem.ui.list.toListColorScheme
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.xml.KonfettiView
 import java.util.Locale
@@ -119,8 +119,8 @@ class ListHabitsHost(
     @Suppress("DEPRECATION")
     fun paintStatusBar(activity: Activity) {
         val theme = themeSwitcher.currentTheme ?: return
-        activity.window.statusBarColor = theme.toListColorScheme().background.toArgb()
-        WindowCompat.getInsetsController(activity.window, activity.window.decorView).isAppearanceLightStatusBars = !theme.isDarkList()
+        activity.window.statusBarColor = theme.toExpressiveColorScheme().background.toArgb()
+        WindowCompat.getInsetsController(activity.window, activity.window.decorView).isAppearanceLightStatusBars = !theme.usesDarkTones()
     }
 
     /** Called when the screen enters the composition, which happens when its window is attached. */

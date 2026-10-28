@@ -76,7 +76,6 @@ class EditHabitScreenTest {
                         initial = initial,
                         isEditing = false,
                         theme = LightTheme(),
-                        isNight = false,
                         dateFormatter = FakeFormatter(),
                         onSave = { saved = it },
                         onBack = { backs++ }
@@ -165,5 +164,45 @@ class EditHabitScreenTest {
         runOnIdle { sendBack() }
         onNodeWithTag("buttonSave").assertIsDisplayed()
         assertEquals(0, backs)
+    }
+
+    @Test
+    fun theMeasurableOptionShowsTheTargetFieldsAndCreatesANumericalHabit() = runComposeUiTest {
+        show()
+        onNodeWithTag("targetInput").assertDoesNotExist()
+        onNodeWithTag("typeMeasurable").performClick()
+        onNodeWithTag("targetInput").assertIsDisplayed()
+        onNodeWithTag("nameInput").performTextInput("Run")
+        onNodeWithTag("targetInput").performTextInput("5")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(HabitType.NUMERICAL, saved?.type)
+    }
+
+    @Test
+    fun thePerWeekChipSetsTheFrequency() = runComposeUiTest {
+        show()
+        onNodeWithText("Per week").performClick()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(1 to 7, saved?.let { it.freqNum to it.freqDen })
+    }
+
+    @Test
+    fun aSwatchChangesTheColourOfTheForm() = runComposeUiTest {
+        show()
+        onNodeWithContentDescription("Color 16").performClick()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(PaletteColor(15), saved?.color)
+    }
+
+    @Test
+    fun anExistingReminderShowsItsTimeAndDaysAndIsKept() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(reminderHour = 7, reminderMin = 30))
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+        onNodeWithTag("reminderTimePicker").assertIsDisplayed()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(7 to 30, saved?.let { it.reminderHour to it.reminderMin })
     }
 }

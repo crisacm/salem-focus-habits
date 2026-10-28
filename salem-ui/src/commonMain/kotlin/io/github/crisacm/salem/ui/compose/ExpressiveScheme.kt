@@ -17,7 +17,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.crisacm.salem.ui.list
+package io.github.crisacm.salem.ui.compose
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
@@ -27,13 +27,13 @@ import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.PureBlackTheme
 import io.github.crisacm.salem.core.ui.views.Theme
 
-private val LightListScheme = lightColorScheme(
+private val LightExpressiveScheme = lightColorScheme(
     primary = Color(0xFF1C5BC0),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFDDE3F9),
+    primaryContainer = Color(0xFFDDE6FB),
     onPrimaryContainer = Color(0xFF0A2B6B),
     secondaryContainer = Color(0xFFDDE3F9),
-    onSecondaryContainer = Color(0xFF151B2C),
+    onSecondaryContainer = Color(0xFF0B2260),
     background = Color(0xFFFBF8FF),
     onBackground = Color(0xFF1B1B21),
     surface = Color(0xFFFBF8FF),
@@ -46,11 +46,11 @@ private val LightListScheme = lightColorScheme(
     outline = Color(0xFF767680)
 )
 
-private val DarkListScheme = darkColorScheme(
-    primary = Color(0xFFB8C3FF),
-    onPrimary = Color(0xFF00177B),
-    primaryContainer = Color(0xFF3B45C6),
-    onPrimaryContainer = Color(0xFFFFFFFF),
+private val DarkExpressiveScheme = darkColorScheme(
+    primary = Color(0xFFA8C8FF),
+    onPrimary = Color(0xFF00315F),
+    primaryContainer = Color(0xFF1B365F),
+    onPrimaryContainer = Color(0xFFD6E3FF),
     secondaryContainer = Color(0xFF3B45C6),
     onSecondaryContainer = Color(0xFFFFFFFF),
     background = Color(0xFF121316),
@@ -65,7 +65,7 @@ private val DarkListScheme = darkColorScheme(
     outline = Color(0xFF90909A)
 )
 
-private val BlackListScheme = DarkListScheme.copy(
+private val BlackExpressiveScheme = DarkExpressiveScheme.copy(
     background = Color.Black,
     surface = Color.Black,
     surfaceContainer = Color(0xFF0E0E10),
@@ -74,14 +74,15 @@ private val BlackListScheme = DarkListScheme.copy(
 )
 
 /**
- * The Material 3 colours of the habit list screen for a theme: the lavender light scheme of the design, and the
- * dark one (or the black one, for the pure black theme). The cards take their own tones from the habit ([habitTones]).
+ * The Material 3 colours of the Expressive screens (the habit list and the editor) for a theme: the lavender light
+ * scheme of the design, and the dark one (or the black one, for the pure black theme). The primary colours (blue)
+ * paint the editor; the secondary container (indigo in the dark scheme) the button and the day of the list.
  */
-fun Theme.toListColorScheme(): ColorScheme = when (this) {
-    is PureBlackTheme -> BlackListScheme
-    is DarkTheme -> DarkListScheme
-    else -> LightListScheme
+fun Theme.toExpressiveColorScheme(): ColorScheme = when (this) {
+    is PureBlackTheme -> BlackExpressiveScheme
+    is DarkTheme -> DarkExpressiveScheme
+    else -> LightExpressiveScheme
 }
 
-/** Whether the list uses its dark tones for a theme. */
-fun Theme.isDarkList(): Boolean = this is DarkTheme
+/** Whether the Expressive screens use their dark tones for a theme. */
+fun Theme.usesDarkTones(): Boolean = this is DarkTheme

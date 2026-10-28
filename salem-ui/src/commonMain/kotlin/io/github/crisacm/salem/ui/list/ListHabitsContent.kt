@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.new_habit
 import org.jetbrains.compose.resources.stringResource
@@ -86,7 +87,7 @@ fun ListHabitsContent(
     val left = horizontalInsets.getLeft(density, direction)
     val right = horizontalInsets.getRight(density, direction)
     SideEffect { onSideInsets(left, right) }
-    MaterialTheme(colorScheme = theme.toListColorScheme()) {
+    MaterialTheme(colorScheme = theme.toExpressiveColorScheme()) {
         val scheme = MaterialTheme.colorScheme
         val browsing = !model.selectionMenu.active && !model.menu.searchActive
         Box(
@@ -124,8 +125,8 @@ fun ListHabitsContent(
             if (browsing) {
                 ExtendedFloatingActionButton(
                     onClick = model.menu::onCreateHabit,
-                    containerColor = scheme.primaryContainer,
-                    contentColor = scheme.onPrimaryContainer,
+                    containerColor = scheme.secondaryContainer,
+                    contentColor = scheme.onSecondaryContainer,
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

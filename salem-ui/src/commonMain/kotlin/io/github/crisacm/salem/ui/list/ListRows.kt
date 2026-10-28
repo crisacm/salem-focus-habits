@@ -80,6 +80,7 @@ import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.compose.toCompose
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 
 /** What the rows tell the screen; [onDrop] moves the row at `from` to `to` while it is dragged, and [onDragEnd] ends the drag. Positions are the centre of the touched cell in window coordinates. */
 class ListRowCallbacks(
@@ -126,7 +127,7 @@ fun HabitListContent(
     val listState = rememberLazyListState()
     val drag = remember { RowDrag() }
     val sortable = state.isSortable
-    val dark = theme.isDarkList()
+    val dark = theme.usesDarkTones()
     val gap = with(LocalDensity.current) { CardGap.roundToPx() }
     val direction = LocalLayoutDirection.current
     LazyColumn(

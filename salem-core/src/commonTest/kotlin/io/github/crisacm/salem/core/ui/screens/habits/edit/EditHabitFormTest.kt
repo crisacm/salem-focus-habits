@@ -175,4 +175,31 @@ class EditHabitFormTest : BaseUnitTest() {
         val form = EditHabitForm.from(fixtures.createEmptyHabit())
         assertFalse(form.hasReminder)
     }
+
+    @Test
+    fun theSameTypeKeepsTheForm() {
+        val form = yesNo()
+        assertEquals(form, form.withType(HabitType.YES_NO))
+    }
+
+    @Test
+    fun aNumericalHabitKeepsADayWeekOrMonthFrequency() {
+        val week = yesNo().copy(freqNum = 1, freqDen = 7).withType(HabitType.NUMERICAL)
+        assertEquals(HabitType.NUMERICAL, week.type)
+        assertEquals(1 to 7, week.freqNum to week.freqDen)
+    }
+
+    @Test
+    fun aNumericalHabitCannotKeepATimesPerWeekFrequency() {
+        val form = yesNo().copy(freqNum = 3, freqDen = 7).withType(HabitType.NUMERICAL)
+        assertEquals(1 to 1, form.freqNum to form.freqDen)
+    }
+
+    @Test
+    fun goingBackToYesNoKeepsTheFrequencyAndTheRest() {
+        val form = numerical().copy(freqDen = 30, unit = "km").withType(HabitType.YES_NO)
+        assertEquals(HabitType.YES_NO, form.type)
+        assertEquals(30, form.freqDen)
+        assertEquals("km", form.unit)
+    }
 }

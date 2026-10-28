@@ -10,6 +10,7 @@ attribution.
 ### Changed
 
 - Android: the habit list has the Material 3 Expressive design: a large title with round filter and more buttons, five fixed days (today in a tonal pill, scrolling the header goes back in time), one rounded card per habit with its icon inside the score ring, a button to open it and rounded day cells, and an extended "New habit" button in place of the plus in the bar. The card tones are derived from the colour of the habit for the light, dark and pure black themes. Habits do not store an icon yet, so each one gets a stable icon from a pool, chosen from its uuid.
+- Android: the create and edit habit screen has the same design: a rounded header with the badge and the large title, a Yes/No and Measurable selector (it can also change the type of an existing habit; a numerical habit keeps a daily, weekly or monthly frequency), four colour swatches plus a button for the whole palette, rounded fields, a target type selector, the Every day, Per week and Custom chips (Custom opens the previous frequency list) and a reminder card with a switch whose days are round toggles. The new strings (`new_habit`, `yes_no_option`, `per_week`, `custom`) are only in English.
 
 ### Fixed
 
