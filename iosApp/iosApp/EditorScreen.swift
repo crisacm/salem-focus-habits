@@ -43,6 +43,8 @@ struct EditorScreen: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
+                    .controlSize(.large)
+                    .frame(height: 44)
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
@@ -77,7 +79,7 @@ struct EditorScreen: View {
                         .buttonStyle(.plain)
                         Spacer(minLength: 8)
                         ColorSwatchRow(selected: Int(form.color)) { form = copy(color: Int32($0)) }
-                            .padding(.trailing, -8)
+                            .padding(.trailing, -9.5)
                     }
                     .formRow()
                 }
@@ -85,7 +87,7 @@ struct EditorScreen: View {
                     frequencyMenu.formRow()
                 }
                 Section {
-                    reminderRow.formRow()
+                    reminderRow.formRow(height: 64)
                     if form.reminderHour >= 0 {
                         Button { picker = .time } label: {
                             HStack {
@@ -97,24 +99,28 @@ struct EditorScreen: View {
                         .buttonStyle(.plain)
                         .formRow()
                         WeekdayCircles(days: Int(form.reminderDays), tone: tone) { form = copy(reminderDays: Int32($0)) }
-                            .padding(.vertical, 8)
+                            .frame(height: 57)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
                     }
                 }
                 Section {
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: notes)
                             .scrollContentBackground(.hidden)
-                            .frame(minHeight: 120)
-                            .padding(.horizontal, -5)
+                            .padding(.top, 8)
+                            .padding(.leading, -5)
                         if form.notes.isEmpty {
                             Text(L("notes", "Notes"))
                                 .foregroundStyle(Color(.placeholderText))
-                                .padding(.top, 8)
+                                .padding(.top, 16)
                                 .allowsHitTesting(false)
                         }
                     }
+                    .frame(height: 120)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 17.5, bottom: 0, trailing: 17.5))
                 }
             }
+            .listSectionSpacing(20)
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle(form.id < 0 ? L("new_habit", "New Habit") : L("edit_habit", "Edit habit"))
             .navigationBarTitleDisplayMode(.inline)
@@ -180,7 +186,7 @@ struct EditorScreen: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(L("reminder", "Reminder"))
                 Text(form.reminderHour >= 0 ? reminderTimeText : L("reminder_off", "Off"))
-                    .font(.system(size: 17))
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
         }

@@ -20,9 +20,10 @@ import SwiftUI
 import UIKit
 
 extension View {
-    /// A row of a card of the editor: 56 pt high, as in the design.
-    func formRow() -> some View {
-        frame(minHeight: 56)
+    /// A row of a card of the editor: 56 pt high (or [height]) with no vertical insets, as in the design.
+    func formRow(height: CGFloat = 56) -> some View {
+        frame(minHeight: height)
+            .listRowInsets(EdgeInsets(top: 0, leading: 17.5, bottom: 0, trailing: 17.5))
     }
 }
 
@@ -112,6 +113,7 @@ struct WeekdayCircles: View {
         let names = Calendar.current.weekdaySymbols
         HStack(spacing: 0) {
             ForEach(0..<7, id: \.self) { position in
+                if position > 0 { Spacer(minLength: 0) }
                 let bit = Self.bits[position]
                 let symbol = Self.symbolIndex[position]
                 let on = (days & (1 << bit)) != 0
@@ -123,8 +125,7 @@ struct WeekdayCircles: View {
                             .foregroundStyle(on ? tone.onAccent : Color.secondary)
                     }
                     .frame(width: 38, height: 38)
-                    .frame(maxWidth: .infinity)
-                    .contentShape(Rectangle())
+                    .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(names.indices.contains(symbol) ? names[symbol] : "")
