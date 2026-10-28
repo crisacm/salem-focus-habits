@@ -99,20 +99,22 @@ struct ScoreRing: View {
     let score: Int
     let symbol: String
     let tone: HabitTone
+    var size: CGFloat = 37
 
     var body: some View {
+        let line = size * 3 / 37
         ZStack {
-            Circle().strokeBorder(tone.track, lineWidth: 3)
+            Circle().strokeBorder(tone.track, lineWidth: line)
             Circle()
-                .inset(by: 1.5)
+                .inset(by: line / 2)
                 .trim(from: 0, to: CGFloat(min(max(score, 0), 100)) / 100)
-                .stroke(tone.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .stroke(tone.accent, style: StrokeStyle(lineWidth: line, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Image(systemName: symbol)
-                .font(.system(size: 17))
+                .font(.system(size: size * 17 / 37))
                 .foregroundStyle(tone.accent)
         }
-        .frame(width: 37, height: 37)
+        .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
 }

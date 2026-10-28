@@ -322,6 +322,26 @@ class SalemSessionTest {
         val ops = session.chartOps(habit.id!!, ChartCard.HISTORY, 320.0, 160.0, 0, emptyList())
         assertTrue(ops.any { it.kind == DrawOp.FILL_RECT || it.kind == DrawOp.FILL_ROUND_RECT })
     }
+
+    @Test
+    fun detailChartsGiveTheDataOfTheCards() {
+        val habit = fixtures.createLongHabit()
+        val charts = session.detailCharts(habit.id!!)!!
+        assertEquals(today.daysSince2000, charts.today)
+        assertEquals(7, charts.weekdays.size)
+        assertEquals((0 until 7).toList(), charts.weekdays.map { it.day })
+        assertTrue(charts.scoresByWeek.isNotEmpty())
+        assertEquals(charts.scoresByWeek.map { it.day }.sorted(), charts.scoresByWeek.map { it.day })
+        assertEquals(charts.barsByMonth.map { it.day }.sorted(), charts.barsByMonth.map { it.day })
+        assertTrue(charts.scoresByWeek.size >= charts.scoresByMonth.size)
+        assertEquals(today.daysSince2000, charts.calendar.first().day)
+        assertTrue(charts.streaks.all { it.length == it.end - it.start + 1 })
+    }
+
+    @Test
+    fun detailChartsOfAMissingHabitAreNull() {
+        assertEquals(null, session.detailCharts(12345))
+    }
 }
 
 /** Queues tasks like production runners but never executes them (toggle still needs [InlineTaskRunner]). */

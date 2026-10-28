@@ -229,6 +229,10 @@ final class SessionModel {
         withSessionOptional { $0.detail(id: id) }
     }
 
+    func detailCharts(id: Int64) -> DetailCharts? {
+        withSessionOptional { $0.detailCharts(id: id) }
+    }
+
     func editorSnapshot(id: Int64) -> EditorSnapshot? {
         withSessionOptional { $0.editorSnapshot(id: id) }
     }
