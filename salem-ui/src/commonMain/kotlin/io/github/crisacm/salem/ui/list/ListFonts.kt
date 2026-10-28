@@ -20,33 +20,15 @@
 package io.github.crisacm.salem.ui.list
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontFamily
-import io.github.crisacm.salem.ui.canvas.rememberSalemFonts
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.fontawesome
 import org.jetbrains.compose.resources.Font
 
-/** The FontAwesome glyphs of the cells and the empty state, from the font of the core. */
+/** The FontAwesome glyphs of the cells (skip and question) and the empty state, from the font of the core. */
 @Composable
 fun rememberFontAwesome(): FontFamily {
     val font = Font(Res.font.fontawesome)
     return remember(font) { FontFamily(font) }
-}
-
-/** The fonts of the numbers and the units of a numerical cell. */
-class CondensedFonts(val regular: FontFamily, val bold: FontFamily)
-
-/**
- * A condensed font for the numerical cells, which Android has by name (`sans-serif-condensed`) and the other
- * platforms do not: the Android app provides it here. Without it the cells use Noto Sans.
- */
-val LocalCondensedFonts = compositionLocalOf<CondensedFonts?> { null }
-
-@Composable
-fun rememberCondensedFonts(): CondensedFonts {
-    val provided = LocalCondensedFonts.current
-    val noto = rememberSalemFonts()
-    return provided ?: remember(noto) { CondensedFonts(noto.regular, noto.bold) }
 }

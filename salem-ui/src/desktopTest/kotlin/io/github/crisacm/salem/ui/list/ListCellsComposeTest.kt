@@ -40,7 +40,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class ListCellsComposeTest {
-    private val colors = CellColors(Color.Blue, Color.LightGray, Color.Gray, Color.White)
+    private val tones = habitTones(Color.Blue, dark = false)
 
     // The header counts the days back from today, which the app sets when it starts
     @BeforeTest
@@ -57,7 +57,7 @@ class ListCellsComposeTest {
                 CheckmarkCell(
                     value = Entry.NO,
                     notes = "",
-                    colors = colors,
+                    tones = tones,
                     questionMarksEnabled = false,
                     skipEnabled = false,
                     shortToggle = true,
@@ -75,7 +75,7 @@ class ListCellsComposeTest {
         val state = HeaderState(bucketPx = 100f) {}
         state.buttonCount = 4
         setContent {
-            MaterialTheme { HeaderContent(state, JavaLocalDateFormatter(Locale.US), Color.LightGray, Color.Gray) }
+            MaterialTheme { HeaderContent(state, JavaLocalDateFormatter(Locale.US)) }
         }
         onNodeWithTag("dayHeader").assertIsDisplayed()
     }

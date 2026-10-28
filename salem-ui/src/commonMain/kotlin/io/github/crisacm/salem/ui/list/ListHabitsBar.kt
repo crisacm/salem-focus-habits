@@ -19,11 +19,17 @@
 
 package io.github.crisacm.salem.ui.list
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -35,6 +41,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -47,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
@@ -55,11 +64,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.about
 import io.github.crisacm.salem.ui.resources.action_settings
-import io.github.crisacm.salem.ui.resources.add_habit
 import io.github.crisacm.salem.ui.resources.archive
 import io.github.crisacm.salem.ui.resources.by_color
 import io.github.crisacm.salem.ui.resources.by_name
@@ -86,36 +96,35 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The top bar of the habit list. It shows the title and the actions, a search field while searching,
- * or the number of selected habits and their actions while there is a selection. The `testTag`s are
- * exposed as resource ids for UiAutomator.
+ * The top bar of the habit list. It shows the large title with the filter and the more buttons, a search field
+ * while searching, or the number of selected habits and their actions while there is a selection. The
+ * `testTag`s are exposed as resource ids for UiAutomator.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ListHabitsBar(
     menu: ListHabitsMenu,
     selection: ListHabitsSelectionMenu,
-    barColor: Color,
-    onBarColor: Color
+    modifier: Modifier = Modifier
 ) {
     BackHandler(enabled = selection.active) { selection.cancel() }
     BackHandler(enabled = menu.searchActive && !selection.active) { menu.closeSearch() }
+    val scheme = MaterialTheme.colorScheme
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = Color.Transparent,
-        titleContentColor = onBarColor,
-        navigationIconContentColor = onBarColor,
-        actionIconContentColor = onBarColor
+        titleContentColor = scheme.onSurface,
+        navigationIconContentColor = scheme.onSurface,
+        actionIconContentColor = scheme.onSurfaceVariant
     )
     Surface(
-        color = barColor,
-        contentColor = onBarColor,
-        shadowElevation = 2.dp,
-        modifier = Modifier.exposeTestTags()
+        color = if (selection.active || menu.searchActive) scheme.surfaceContainerHigh else scheme.background,
+        contentColor = scheme.onSurface,
+        modifier = modifier.exposeTestTags()
     ) {
         when {
             selection.active -> SelectionBar(selection, colors)
             menu.searchActive -> SearchBar(menu, colors)
-            else -> MainBar(menu, colors)
+            else -> MainBar(menu)
         }
     }
 }
@@ -124,21 +133,38 @@ fun ListHabitsBar(
 @Composable
 private fun barInsets() = WindowInsets.systemBars.only(WindowInsetsSides.Top)
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** A round button on a tonal surface, as the filter and the more buttons of the title. */
 @Composable
-private fun MainBar(menu: ListHabitsMenu, colors: androidx.compose.material3.TopAppBarColors) {
-    TopAppBar(
-        title = { Text(stringResource(Res.string.main_activity_title)) },
-        actions = {
-            IconButton(onClick = menu::onCreateHabit, modifier = Modifier.testTag("actionCreateHabit")) {
-                Icon(rememberVectorPainter(ListIcons.Add), stringResource(Res.string.add_habit))
-            }
-            FilterMenu(menu)
-            OverflowMenu(menu)
-        },
-        colors = colors,
-        windowInsets = barInsets()
+private fun TonalCircleButton(onClick: () -> Unit, tag: String, content: @Composable () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    IconButton(
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(containerColor = scheme.surfaceContainerHigh, contentColor = scheme.onSurface),
+        modifier = Modifier.size(48.dp).testTag(tag),
+        content = content
     )
+}
+
+@Composable
+private fun MainBar(menu: ListHabitsMenu) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(barInsets())
+            .padding(start = 24.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)
+    ) {
+        Text(
+            stringResource(Res.string.main_activity_title),
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = (-1).sp,
+            modifier = Modifier.weight(1f)
+        )
+        FilterMenu(menu)
+        OverflowMenu(menu)
+    }
 }
 
 @Composable
@@ -148,12 +174,12 @@ private fun FilterMenu(menu: ListHabitsMenu) {
     // The checked states are read again every time the menu is opened.
     val snapshot = remember(expanded) { menu.snapshot() }
     Box {
-        IconButton(
+        TonalCircleButton(
             onClick = {
                 sortOpen = false
                 expanded = true
             },
-            modifier = Modifier.testTag("action_filter")
+            tag = "action_filter"
         ) {
             Icon(rememberVectorPainter(ListIcons.Filter), stringResource(Res.string.filter))
         }
@@ -224,7 +250,7 @@ private fun OverflowMenu(menu: ListHabitsMenu) {
     var expanded by remember { mutableStateOf(false) }
     val snapshot = remember(expanded) { menu.snapshot() }
     Box {
-        IconButton(onClick = { expanded = true }, modifier = Modifier.testTag("overflowMenu")) {
+        TonalCircleButton(onClick = { expanded = true }, tag = "overflowMenu") {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.more_options))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

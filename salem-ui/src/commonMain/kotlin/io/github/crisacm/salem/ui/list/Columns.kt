@@ -19,19 +19,5 @@
 
 package io.github.crisacm.salem.ui.list
 
-import androidx.compose.ui.unit.dp
-import kotlin.math.max
-import kotlin.math.min
-
-/** The width that the name of a habit has at least, as `habitNameWidth` in the Android resources. */
-val HabitNameWidth = 160.dp
-
-/**
- * How many day columns fit in [width] pixels: the name of the habit takes a third of the width, or
- * [nameWidth] if that is larger, and each column is [buttonWidth] wide.
- */
-fun checkmarkColumns(width: Float, nameWidth: Float, buttonWidth: Float): Int {
-    val labelWidth = max(width / 3, nameWidth)
-    val buttonCount = ((width - labelWidth) / buttonWidth).toInt()
-    return min(MAX_CHECKMARK_COUNT, max(0, buttonCount))
-}
+/** How many days the header and every card show; the rest of the history is reached by scrolling the header. */
+const val DAY_COLUMNS = 5

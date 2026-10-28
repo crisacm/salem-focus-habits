@@ -24,7 +24,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
@@ -91,7 +90,7 @@ class ListHabitsBackTest : BaseUiTest() {
             override val navigationEventDispatcher = dispatcher
         }
         CompositionLocalProvider(LocalCompatNavigationEventDispatcherOwner provides owner) {
-            MaterialTheme { ListHabitsBar(menu, selection, Color.Blue, Color.White) }
+            MaterialTheme { ListHabitsBar(menu, selection) }
         }
     }
 

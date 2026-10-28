@@ -20,7 +20,6 @@
 package io.github.crisacm.salem.ui.list
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
@@ -71,7 +70,7 @@ class ListHabitsBarTest : BaseUiTest() {
     }
 
     private fun androidx.compose.ui.test.ComposeUiTest.showBar() = setContent {
-        MaterialTheme { ListHabitsBar(menu, selection, Color.Blue, Color.White) }
+        MaterialTheme { ListHabitsBar(menu, selection) }
     }
 
     @Test

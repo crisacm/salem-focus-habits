@@ -26,17 +26,17 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -45,43 +45,50 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 
+private val DayShape = RoundedCornerShape(18.dp)
+
 /**
- * The row of days above the habit list; [formatter] gives the names of the weekdays. Dragging it sideways scrolls the days of the rows; the columns
- * follow the reading order (today first, or last when the sequence is reversed) and mirror in right-to-left.
+ * The days above the habit cards; [formatter] gives the names of the weekdays and today is the one in a tonal
+ * pill. Dragging it sideways scrolls the days of the cards; the columns follow the reading order (today
+ * first, or last when the sequence is reversed) and mirror in right-to-left. They line up with the cells
+ * of the cards: the same margin, the same gap and the same share of the width.
  */
 @Composable
-fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, background: Color, textColor: Color) {
+fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, modifier: Modifier = Modifier) {
     val direction = scrollDirection(state.reversed, LocalLayoutDirection.current == LayoutDirection.Rtl)
-    val columnWidth = CheckmarkSize
     val dates = headerColumns(state.buttonCount, state.dataOffset, state.today, state.reversed)
-    Surface(
-        color = background,
-        shadowElevation = 2.dp,
-        modifier = Modifier.exposeTestTags()
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .exposeTestTags()
+            .testTag("dayHeader")
+            .draggable(
+                state = rememberDraggableState { state.dragBy(it, direction) },
+                orientation = Orientation.Horizontal,
+                onDragStopped = { velocity -> state.fling(direction * velocity / 2) }
+            )
+            .padding(horizontal = 28.dp, vertical = 8.dp)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(CheckmarkSize)
-                .background(background)
-                .testTag("dayHeader")
-                .draggable(
-                    state = rememberDraggableState { state.dragBy(it, direction) },
-                    orientation = Orientation.Horizontal,
-                    onDragStopped = { velocity -> state.fling(direction * velocity / 2) }
-                )
-                .padding(end = 3.dp)
-        ) {
-            dates.forEach { date ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.width(columnWidth).fillMaxHeight()
-                ) {
-                    Text(formatter.shortWeekdayName(date).uppercase(), color = textColor, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    Text(date.day.toString(), color = textColor, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        dates.forEach { date ->
+            val isToday = date.daysUntil(state.today) == 0
+            val colors = MaterialTheme.colorScheme
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp)
+                    .clip(DayShape)
+                    .background(if (isToday) colors.primaryContainer else colors.background)
+            ) {
+                val color = when {
+                    !isToday -> colors.onSurfaceVariant
+                    colors.background.luminance() < 0.5f -> colors.onPrimaryContainer
+                    else -> colors.primary
                 }
+                Text(formatter.shortWeekdayName(date).uppercase(), color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(date.day.toString(), color = color, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

@@ -33,7 +33,7 @@ import io.github.crisacm.salem.platform.time.getToday
  * [onDataOffsetChanged] how many days they are scrolled, and holds what the header draws.
  */
 class HeaderState(bucketPx: Float, private val onDataOffsetChanged: (Int) -> Unit) {
-    var buttonCount by mutableIntStateOf(0)
+    var buttonCount by mutableIntStateOf(DAY_COLUMNS)
     var reversed by mutableStateOf(false)
     var today by mutableStateOf(getToday())
     var dataOffset by mutableIntStateOf(0)

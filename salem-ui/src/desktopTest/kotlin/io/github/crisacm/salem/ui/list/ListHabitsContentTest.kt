@@ -21,7 +21,6 @@ package io.github.crisacm.salem.ui.list
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
@@ -76,15 +75,6 @@ class ListHabitsContentTest : BaseUiTest() {
             override suspend fun await() {}
         }
         override val dateFormatter = JavaLocalDateFormatter(Locale.US)
-        override val colors = ListScreenColors(
-            windowBackground = Color.White,
-            barColor = Color.Blue,
-            onBarColor = Color.White,
-            headerBackground = Color.LightGray,
-            headerText = Color.Gray,
-            list = ListColors(Color.White, Color.LightGray, Color.LightGray, Color.Gray, Color.Black)
-        )
-
         override fun onAttached() {
             attached++
         }

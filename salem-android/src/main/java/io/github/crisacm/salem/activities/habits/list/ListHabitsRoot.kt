@@ -22,23 +22,19 @@ package io.github.crisacm.salem.activities.habits.list
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import io.github.crisacm.salem.ui.compose.resolveTheme
 import io.github.crisacm.salem.ui.compose.systemIsDark
 import io.github.crisacm.salem.ui.list.ListHabitsContent
-import io.github.crisacm.salem.ui.list.LocalCondensedFonts
 
 /**
- * The shared habit list screen with what only Android provides: the condensed font of the numbers, the theme
+ * The shared habit list screen with what only Android provides: the theme
  * as the activity resolves it, and the side insets that the confetti View over the screen needs.
  */
 @Composable
 fun ListHabitsRoot(host: ListHabitsHost) {
-    CompositionLocalProvider(LocalCondensedFonts provides host.condensedFonts) {
-        ListHabitsContent(
-            model = host,
-            theme = resolveTheme(host.preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())),
-            onSideInsets = host::onSideInsets
-        )
-    }
+    ListHabitsContent(
+        model = host,
+        theme = resolveTheme(host.preferences, systemIsDark(Build.VERSION.SDK_INT, isSystemInDarkTheme())),
+        onSideInsets = host::onSideInsets
+    )
 }

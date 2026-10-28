@@ -7,6 +7,10 @@ attribution.
 
 ## [Unreleased]
 
+### Changed
+
+- Android: the habit list has the Material 3 Expressive design: a large title with round filter and more buttons, five fixed days (today in a tonal pill, scrolling the header goes back in time), one rounded card per habit with its icon inside the score ring, a button to open it and rounded day cells, and an extended "New habit" button in place of the plus in the bar. The card tones are derived from the colour of the habit for the light, dark and pure black themes. Habits do not store an icon yet, so each one gets a stable icon from a pool, chosen from its uuid.
+
 ### Fixed
 
 - Opening the iOS app no longer fails when the database already has habits: the day is set before those habits are recomputed.

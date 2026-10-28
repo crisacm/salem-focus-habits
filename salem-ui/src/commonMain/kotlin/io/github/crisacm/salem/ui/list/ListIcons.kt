@@ -30,13 +30,6 @@ import androidx.compose.ui.unit.dp
  * (`ic_action_*_dark`), so every platform draws the same icon. The 32 dp ones keep the glyph 4 units from the edge.
  */
 object ListIcons {
-    val Add: ImageVector by lazy {
-        ImageVector.Builder("add", 32.dp, 32.dp, 32f, 32f).apply {
-            addGroup(translationX = 4f, translationY = 4f)
-            addPath(addPathNodes("M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"), fill = SolidColor(Color.White))
-        }.build()
-    }
-
     val Filter: ImageVector by lazy {
         ImageVector.Builder("filter", 24.dp, 24.dp, 24f, 24f).apply {
             addPath(addPathNodes("M10,18h4v-2h-4v2zM3,6v2h18L21,6L3,6zM6,13h12v-2L6,11v2z"), fill = SolidColor(Color.White))

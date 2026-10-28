@@ -21,24 +21,31 @@ package io.github.crisacm.salem.ui.list
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-class CheckmarkColumnsTest {
-    // A phone in portrait: the name takes a third of the width or the minimum name width, whichever is larger.
+class HabitIconsTest {
     @Test
-    fun theNameKeepsAtLeastItsMinimumWidth() {
-        assertEquals(4, checkmarkColumns(width = 1080f, nameWidth = 480f, buttonWidth = 150f))
-        assertEquals(2, checkmarkColumns(width = 900f, nameWidth = 480f, buttonWidth = 150f))
+    fun theSameKeyAlwaysGivesTheSameIcon() {
+        assertEquals(habitIconIndex("a1b2c3", 28), habitIconIndex("a1b2c3", 28))
+        assertEquals(habitIconFor("a1b2c3", null), habitIconFor("a1b2c3", 7L))
     }
 
     @Test
-    fun theNameTakesAThirdOfAWideScreen() {
-        assertEquals(10, checkmarkColumns(width = 2400f, nameWidth = 480f, buttonWidth = 150f))
+    fun theIndexIsAlwaysInsideThePool() {
+        val keys = listOf("", "0", "zzzz", "ffffffff-ffff-ffff-ffff-ffffffffffff") + (1..200).map { "habit-$it" }
+        for (size in listOf(1, 7, 28)) {
+            for (key in keys) assertTrue(habitIconIndex(key, size) in 0 until size)
+        }
     }
 
     @Test
-    fun neverNegativeAndNeverMoreThanTheMaximum() {
-        assertEquals(0, checkmarkColumns(width = 100f, nameWidth = 480f, buttonWidth = 150f))
-        assertEquals(0, checkmarkColumns(width = 0f, nameWidth = 480f, buttonWidth = 150f))
-        assertEquals(MAX_CHECKMARK_COUNT, checkmarkColumns(width = 100000f, nameWidth = 480f, buttonWidth = 150f))
+    fun aHabitWithoutUuidFallsBackToItsId() {
+        assertEquals(habitIconFor(null, 12L), habitIconFor(null, 12L))
+    }
+
+    @Test
+    fun manyHabitsUseManyDifferentIcons() {
+        val used = (1..100).map { habitIconIndex("uuid-$it", HabitIconPool.size) }.toSet()
+        assertTrue(used.size > HabitIconPool.size / 2)
     }
 }
