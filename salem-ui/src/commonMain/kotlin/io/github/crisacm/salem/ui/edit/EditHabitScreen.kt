@@ -24,6 +24,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -36,14 +37,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +55,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
@@ -155,6 +159,9 @@ fun EditHabitScreen(
     val isNumerical = form.type == HabitType.NUMERICAL
     val blank = stringResource(Res.string.validation_cannot_be_blank)
     val close = { picker = EditPicker.None }
+    val nameFocus = remember { FocusRequester() }
+    // A new habit starts with the cursor in its name; an existing one does not take the focus
+    LaunchedEffect(Unit) { if (!isEditing) runCatching { nameFocus.requestFocus() } }
 
     BackHandler(enabled = picker != EditPicker.None) { close() }
 
@@ -191,7 +198,7 @@ fun EditHabitScreen(
                         .verticalScroll(rememberScrollState())
                         .navigationBarsPadding()
                         .imePadding()
-                        .padding(16.dp),
+                        .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     SegmentedChoice(
@@ -201,14 +208,24 @@ fun EditHabitScreen(
                         tags = listOf("typeYesNo", "typeMeasurable")
                     )
 
-                    NameTextField(
+                    FormTextField(
                         label = stringResource(Res.string.name),
                         value = form.name,
                         tag = "nameInput",
-                        error = if (errors.nameBlank) blank else null
+                        error = if (errors.nameBlank) blank else null,
+                        outlined = true,
+                        maxLines = 2,
+                        capitalization = KeyboardCapitalization.Sentences,
+                        focusRequester = nameFocus
                     ) { form = form.copy(name = it.take(MAX_NAME_LENGTH)) }
 
-                    FormCard {
+                    // The whole card opens the palette of 20 colours; the swatches pick one of the four at a glance
+                    FormCard(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(28.dp))
+                            .clickable(onClickLabel = stringResource(Res.string.color_picker_default_title)) { picker = EditPicker.Color },
+                        contentPadding = PaddingValues(start = TextInset, end = 16.dp, top = 16.dp, bottom = 16.dp)
+                    ) {
                         val swatches = swatchColors(form.color)
                         val colorLabel = stringResource(Res.string.color)
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -217,16 +234,14 @@ fun EditHabitScreen(
                                 color = scheme.primary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f)
+                                // The tag is on the label, so a tap at its centre opens the palette and does not pick a swatch
+                                modifier = Modifier.weight(1f).testTag("colorButton")
                             )
                             ColorSwatches(
                                 swatches = swatches.map { habitTones(it, dark).accent },
                                 selectedIndex = swatches.indexOf(form.color.paletteIndex),
                                 checkColor = habitTones(form.color.paletteIndex, dark).onAccent,
-                                moreColor = scheme.onSurfaceVariant,
                                 onPick = { form = form.copy(color = PaletteColor(swatches[it])) },
-                                onMore = { picker = EditPicker.Color },
-                                moreDescription = stringResource(Res.string.color_picker_default_title),
                                 swatchDescription = { "$colorLabel ${swatches[it] + 1}" }
                             )
                         }
@@ -236,6 +251,7 @@ fun EditHabitScreen(
                         label = stringResource(Res.string.question),
                         value = form.question,
                         tag = "questionInput",
+                        maxLines = 2,
                         capitalization = KeyboardCapitalization.Sentences
                     ) { form = form.copy(question = it) }
 
@@ -299,7 +315,7 @@ fun EditHabitScreen(
                         }
                     }
 
-                    FormCard {
+                    FormCard(contentPadding = PaddingValues(start = TextInset, end = 18.dp, top = 15.dp, bottom = 15.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth().testTag("reminderTimePicker").clickable { picker = EditPicker.Time }
@@ -309,17 +325,20 @@ fun EditHabitScreen(
                                     stringResource(Res.string.reminder),
                                     color = scheme.primary,
                                     fontSize = 16.sp,
+                                    lineHeight = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     if (form.hasReminder) timeFormat.format(form.reminderHour, form.reminderMin) else stringResource(Res.string.reminder_off),
                                     color = scheme.onSurface,
-                                    fontSize = 28.sp
+                                    fontSize = 24.sp,
+                                    lineHeight = 28.sp
                                 )
                             }
-                            Switch(
+                            ExpressiveSwitch(
                                 checked = form.hasReminder,
-                                onCheckedChange = { on -> if (on) picker = EditPicker.Time else form = form.clearReminder() }
+                                onCheckedChange = { on -> if (on) picker = EditPicker.Time else form = form.clearReminder() },
+                                modifier = Modifier.testTag("reminderSwitch")
                             )
                         }
                         if (form.hasReminder) {
@@ -329,7 +348,7 @@ fun EditHabitScreen(
                                 letter = { dateFormatter.narrowWeekdayName(it.day) },
                                 description = { dateFormatter.longWeekdayName(it.day) },
                                 onToggle = { form = form.copy(reminderDays = toggleWeekday(form.reminderDays, it.index)) },
-                                modifier = Modifier.padding(top = 16.dp).testTag("reminderDatePicker")
+                                modifier = Modifier.padding(top = 15.dp).testTag("reminderDatePicker")
                             )
                         }
                     }
@@ -338,7 +357,8 @@ fun EditHabitScreen(
                         label = stringResource(Res.string.notes),
                         value = form.notes,
                         tag = "notesInput",
-                        minLines = 4,
+                        shape = RoundedCornerShape(28.dp),
+                        minHeight = 124.dp,
                         capitalization = KeyboardCapitalization.Sentences
                     ) { form = form.copy(notes = it) }
                 }

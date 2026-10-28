@@ -24,27 +24,33 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -53,24 +59,25 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -79,7 +86,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val CardShape = RoundedCornerShape(28.dp)
-private val FieldShape = RoundedCornerShape(28.dp)
+private val FieldShape = RoundedCornerShape(22.dp)
+
+/** The room between the edge of a card or a field and its text. */
+internal val TextInset = 22.dp
 
 @Composable
 internal fun isDarkScheme() = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -101,13 +111,13 @@ internal fun EditHeader(
     val scheme = MaterialTheme.colorScheme
     Surface(
         color = scheme.primaryContainer,
-        shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp),
+        shape = RoundedCornerShape(bottomStart = 44.dp, bottomEnd = 44.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.statusBars.only(WindowInsetsSides.Top))
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 30.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +129,7 @@ internal fun EditHeader(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(if (isDarkScheme()) Color.White.copy(alpha = 0.15f) else scheme.surface.copy(alpha = 0.8f))
+                        .background(if (isDarkScheme()) Color.White.copy(alpha = 0.12f) else Color(0xFFF4F7FF))
                         .clickable(onClick = onBack)
                 ) {
                     Icon(
@@ -134,19 +144,19 @@ internal fun EditHeader(
                     enabled = saveEnabled,
                     colors = ButtonDefaults.buttonColors(containerColor = scheme.primary, contentColor = scheme.onPrimary),
                     contentPadding = PaddingValues(horizontal = 24.dp),
-                    modifier = Modifier.heightIn(min = 48.dp).testTag("buttonSave")
+                    modifier = Modifier.heightIn(min = 48.dp).widthIn(min = 88.dp).testTag("buttonSave")
                 ) {
                     Text(saveLabel, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.padding(top = 16.dp)
+                horizontalArrangement = Arrangement.spacedBy(17.dp),
+                modifier = Modifier.padding(start = 3.dp, top = 22.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(72.dp).clip(ScallopShape()).background(scheme.primary)
+                    modifier = Modifier.size(68.dp).clip(ScallopShape()).background(scheme.primary)
                 ) {
                     Icon(icon, contentDescription = null, tint = scheme.onPrimary, modifier = Modifier.size(36.dp))
                 }
@@ -176,10 +186,10 @@ internal fun SegmentedChoice(
     tags: List<String> = options.map { "" }
 ) {
     val scheme = MaterialTheme.colorScheme
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier.fillMaxWidth()) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = modifier.fillMaxWidth()) {
         options.forEachIndexed { index, label ->
             val isSelected = index == selected
-            val corner by animateDpAsState(if (isSelected) height / 2 else 20.dp)
+            val corner by animateDpAsState(if (isSelected) height / 2 else 14.dp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -206,25 +216,40 @@ internal fun SegmentedChoice(
     }
 }
 
-/** A rounded panel of the form, with an optional [label] in the primary colour on top. */
+/**
+ * A rounded panel of the form, with an optional [label] in the primary colour on top. [contentPadding] is the room around
+ * its content (20 dp, or what each card of the design has).
+ */
 @Composable
 internal fun FormCard(
     modifier: Modifier = Modifier,
     label: String? = null,
-    content: @Composable () -> Unit
+    contentPadding: PaddingValues = PaddingValues(20.dp),
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val scheme = MaterialTheme.colorScheme
     Surface(color = scheme.surfaceContainer, shape = CardShape, modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+        Column(modifier = Modifier.padding(contentPadding)) {
             if (label != null) {
-                Text(label, color = scheme.primary, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 12.dp))
+                Text(
+                    label,
+                    color = scheme.primary,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
             }
             content()
         }
     }
 }
 
-/** A text field of the form: a rounded panel with the label as its hint. */
+/**
+ * A text field of the form: a rounded panel with the [label] as its hint, drawn here (and not with the Material text
+ * field) because its text starts [TextInset] from the edge. [outlined] gives it a border that is thick and in the primary
+ * colour while the field has the focus; [minHeight] and [minLines] make a tall field, whose text starts at the top.
+ */
 @Composable
 internal fun FormTextField(
     label: String,
@@ -232,68 +257,64 @@ internal fun FormTextField(
     tag: String,
     modifier: Modifier = Modifier,
     error: String? = null,
+    outlined: Boolean = false,
+    shape: RoundedCornerShape = FieldShape,
+    minHeight: Dp = 64.dp,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType = KeyboardType.Text,
+    focusRequester: FocusRequester? = null,
     onChange: (String) -> Unit
 ) {
     val scheme = MaterialTheme.colorScheme
-    TextField(
-        value = value,
-        onValueChange = onChange,
-        placeholder = { Text(label) },
-        isError = error != null,
-        supportingText = error?.let { { Text(it) } },
-        minLines = minLines,
-        maxLines = maxLines,
-        singleLine = maxLines == 1,
-        shape = FieldShape,
-        keyboardOptions = KeyboardOptions(capitalization = capitalization, keyboardType = keyboardType),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = scheme.surfaceContainer,
-            unfocusedContainerColor = scheme.surfaceContainer,
-            errorContainerColor = scheme.surfaceContainer,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            errorIndicatorColor = Color.Transparent,
-            focusedPlaceholderColor = scheme.onSurfaceVariant,
-            unfocusedPlaceholderColor = scheme.onSurfaceVariant
-        ),
-        modifier = modifier.fillMaxWidth().heightIn(min = 64.dp).testTag(tag)
-    )
-}
-
-/** The name of the habit: the same panel as the other fields with the primary outline of the field that has the focus. */
-@Composable
-internal fun NameTextField(
-    label: String,
-    value: String,
-    tag: String,
-    error: String?,
-    onChange: (String) -> Unit
-) {
-    val scheme = MaterialTheme.colorScheme
-    OutlinedTextField(
-        value = value,
-        onValueChange = onChange,
-        placeholder = { Text(label) },
-        isError = error != null,
-        supportingText = error?.let { { Text(it) } },
-        maxLines = 2,
-        shape = FieldShape,
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = scheme.surfaceContainer,
-            unfocusedContainerColor = scheme.surfaceContainer,
-            errorContainerColor = scheme.surfaceContainer,
-            focusedBorderColor = scheme.primary,
-            unfocusedBorderColor = scheme.outline.copy(alpha = 0.4f),
-            focusedPlaceholderColor = scheme.onSurfaceVariant,
-            unfocusedPlaceholderColor = scheme.onSurfaceVariant
-        ),
-        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp).testTag(tag)
-    )
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val tall = minHeight > 64.dp
+    val borderColor = when {
+        error != null -> scheme.error
+        focused -> scheme.primary
+        else -> scheme.outline.copy(alpha = 0.4f)
+    }
+    Column(modifier.fillMaxWidth()) {
+        Box(
+            contentAlignment = if (tall) Alignment.TopStart else Alignment.CenterStart,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = minHeight)
+                .clip(shape)
+                .background(scheme.surfaceContainer)
+                .then(if (outlined) Modifier.border(if (focused) 2.dp else 1.dp, borderColor, shape) else Modifier)
+                .padding(start = TextInset, end = 16.dp, top = if (tall) 20.dp else 0.dp, bottom = if (tall) 16.dp else 0.dp)
+        ) {
+            BasicTextField(
+                value = value,
+                onValueChange = onChange,
+                textStyle = TextStyle(color = scheme.onSurface, fontSize = 16.sp, lineHeight = 24.sp),
+                cursorBrush = SolidColor(scheme.primary),
+                keyboardOptions = KeyboardOptions(capitalization = capitalization, keyboardType = keyboardType),
+                singleLine = maxLines == 1,
+                minLines = minLines,
+                maxLines = maxLines,
+                interactionSource = interaction,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
+                    .testTag(tag),
+                decorationBox = { inner ->
+                    Box {
+                        if (value.isEmpty()) {
+                            Text(label, color = scheme.onSurfaceVariant, fontSize = 16.sp, lineHeight = 24.sp)
+                        }
+                        inner()
+                    }
+                }
+            )
+        }
+        if (error != null) {
+            Text(error, color = scheme.error, fontSize = 12.sp, modifier = Modifier.padding(start = TextInset, top = 4.dp))
+        }
+    }
 }
 
 /** An option of a group that wraps: a pill with an outline, or filled with a check when it is the [selected] one. */
@@ -335,7 +356,7 @@ internal fun PillRow(content: @Composable () -> Unit) {
     ) { content() }
 }
 
-/** The seven days of the week as round toggles; [slots] are in the order they are shown. */
+/** The seven days of the week as round toggles, 44 dp high; [slots] are in the order they are shown. */
 @Composable
 internal fun WeekdayCircles(
     slots: List<WeekdaySlot>,
@@ -354,7 +375,7 @@ internal fun WeekdayCircles(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(1f)
+                    .height(44.dp)
                     .clip(CircleShape)
                     .background(if (on) scheme.primary else scheme.surfaceContainerHighest)
                     .semantics { contentDescription = name }
@@ -372,27 +393,24 @@ internal fun WeekdayCircles(
 }
 
 /**
- * The colour of the habit as a row of swatches; the selected one is a scalloped badge with a check, and the last
- * one opens the whole palette. [swatches] are the colours to paint and [selectedIndex] is the position of the one of the habit.
+ * The colour of the habit as a row of swatches; the selected one is a scalloped badge with a check. [swatches] are the
+ * colours to paint and [selectedIndex] is the position of the one of the habit.
  */
 @Composable
 internal fun ColorSwatches(
     swatches: List<Color>,
     selectedIndex: Int,
     checkColor: Color,
-    moreColor: Color,
     onPick: (Int) -> Unit,
-    onMore: () -> Unit,
-    moreDescription: String,
     swatchDescription: (Int) -> String
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
         swatches.forEachIndexed { index, color ->
             val isSelected = index == selectedIndex
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(44.8.dp)
                     .clip(CircleShape)
                     .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onPick(index) })
                     .semantics { contentDescription = swatchDescription(index) }
@@ -400,7 +418,7 @@ internal fun ColorSwatches(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(if (isSelected) 40.dp else 32.dp)
+                        .size(if (isSelected) 44.8.dp else 32.7.dp)
                         .clip(if (isSelected) ScallopShape() else CircleShape)
                         .background(color)
                 ) {
@@ -408,24 +426,34 @@ internal fun ColorSwatches(
                 }
             }
         }
+    }
+}
+
+/**
+ * A switch 60 dp wide and 36 dp high: an outlined track with a small thumb when it is off, a track in the primary colour
+ * with a large thumb when it is on.
+ */
+@Composable
+internal fun ExpressiveSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    val scheme = MaterialTheme.colorScheme
+    val thumb by animateDpAsState(if (checked) 24.dp else 16.dp)
+    // The centre of the thumb is at the centre of the round end of the track
+    val center by animateDpAsState(if (checked) 42.dp else 18.dp)
+    Box(
+        modifier = modifier
+            .size(width = 60.dp, height = 36.dp)
+            .clip(CircleShape)
+            .background(if (checked) scheme.primary else scheme.surfaceContainerHighest)
+            .then(if (checked) Modifier else Modifier.border(2.dp, scheme.outline, CircleShape))
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+    ) {
         Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(40.dp)
+            Modifier
+                .align(Alignment.CenterStart)
+                .offset(x = center - thumb / 2)
+                .size(thumb)
                 .clip(CircleShape)
-                .clickable(onClick = onMore)
-                .semantics { contentDescription = moreDescription }
-                .testTag("colorButton")
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .border(BorderStroke(1.dp, moreColor), CircleShape)
-            ) {
-                Text("+", color = moreColor, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            }
-        }
+                .background(if (checked) scheme.onPrimary else scheme.outline)
+        )
     }
 }

@@ -28,10 +28,10 @@ import io.github.crisacm.salem.core.ui.views.PureBlackTheme
 import io.github.crisacm.salem.core.ui.views.Theme
 
 private val LightExpressiveScheme = lightColorScheme(
-    primary = Color(0xFF1C5BC0),
+    primary = Color(0xFF1B5FC1),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFDDE6FB),
-    onPrimaryContainer = Color(0xFF0A2B6B),
+    primaryContainer = Color(0xFFDDE8FB),
+    onPrimaryContainer = Color(0xFF052654),
     secondaryContainer = Color(0xFFE1E1FE),
     onSecondaryContainer = Color(0xFF010055),
     background = Color(0xFFFBF8FD),
@@ -40,17 +40,17 @@ private val LightExpressiveScheme = lightColorScheme(
     onSurface = Color(0xFF131519),
     surfaceVariant = Color(0xFFE3E1EC),
     onSurfaceVariant = Color(0xFF434549),
-    surfaceContainer = Color(0xFFEFEDF4),
+    surfaceContainer = Color(0xFFF1EEF6),
     surfaceContainerHigh = Color(0xFFEDE9F1),
-    surfaceContainerHighest = Color(0xFFE4E1E9),
-    outline = Color(0xFF767680)
+    surfaceContainerHighest = Color(0xFFE3E0E8),
+    outline = Color(0xFF79747E)
 )
 
 private val DarkExpressiveScheme = darkColorScheme(
-    primary = Color(0xFFA8C8FF),
-    onPrimary = Color(0xFF00315F),
-    primaryContainer = Color(0xFF1B365F),
-    onPrimaryContainer = Color(0xFFD6E3FF),
+    primary = Color(0xFFAAC7FF),
+    onPrimary = Color(0xFF002A62),
+    primaryContainer = Color(0xFF1C3460),
+    onPrimaryContainer = Color(0xFFE1EEFF),
     secondaryContainer = Color(0xFF353DBE),
     onSecondaryContainer = Color(0xFFE4E4FF),
     background = Color(0xFF111315),
@@ -59,10 +59,10 @@ private val DarkExpressiveScheme = darkColorScheme(
     onSurface = Color(0xFFE9E8EF),
     surfaceVariant = Color(0xFF46464F),
     onSurfaceVariant = Color(0xFFC9C9CD),
-    surfaceContainer = Color(0xFF1F1F25),
+    surfaceContainer = Color(0xFF1F1E25),
     surfaceContainerHigh = Color(0xFF2B2A31),
-    surfaceContainerHighest = Color(0xFF34343A),
-    outline = Color(0xFF90909A)
+    surfaceContainerHighest = Color(0xFF2F3137),
+    outline = Color(0xFF938F99)
 )
 
 private val BlackExpressiveScheme = DarkExpressiveScheme.copy(

@@ -26,6 +26,8 @@ import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -65,7 +67,10 @@ class EditHabitScreenTest {
     private var saved: EditHabitForm? = null
     private var backs = 0
 
-    private fun androidx.compose.ui.test.ComposeUiTest.show(initial: EditHabitForm = EditHabitForm.new(HabitType.YES_NO)) =
+    private fun androidx.compose.ui.test.ComposeUiTest.show(
+        initial: EditHabitForm = EditHabitForm.new(HabitType.YES_NO),
+        isEditing: Boolean = false
+    ) =
         setContent {
             val owner = object : NavigationEventDispatcherOwner {
                 override val navigationEventDispatcher = dispatcher
@@ -74,7 +79,7 @@ class EditHabitScreenTest {
                 MaterialTheme {
                     EditHabitScreen(
                         initial = initial,
-                        isEditing = false,
+                        isEditing = isEditing,
                         theme = LightTheme(),
                         dateFormatter = FakeFormatter(),
                         onSave = { saved = it },
@@ -204,5 +209,43 @@ class EditHabitScreenTest {
         onNodeWithTag("nameInput").performTextInput("Meditate")
         onNodeWithTag("buttonSave").performClick()
         assertEquals(7 to 30, saved?.let { it.reminderHour to it.reminderMin })
+    }
+
+    @Test
+    fun aNewHabitStartsWithTheCursorInItsName() = runComposeUiTest {
+        show()
+        onNodeWithTag("nameInput").assertIsFocused()
+    }
+
+    @Test
+    fun anExistingHabitDoesNotTakeTheFocus() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(name = "Meditate"), isEditing = true)
+        onNodeWithTag("nameInput").assertIsNotFocused()
+    }
+
+    @Test
+    fun theColourCardOpensThePalette() = runComposeUiTest {
+        show()
+        onNodeWithText("Color").performClick()
+        onNodeWithText("Change color").assertIsDisplayed()
+    }
+
+    @Test
+    fun theSwitchOfTheReminderTurnsItOffAndTheDaysGo() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(reminderHour = 7, reminderMin = 30))
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+        onNodeWithTag("reminderSwitch").performClick()
+        onNodeWithTag("reminderDatePicker").assertDoesNotExist()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(false, saved?.hasReminder)
+    }
+
+    @Test
+    fun theSwitchOfTheReminderAsksForTheTimeWhenItIsTurnedOn() = runComposeUiTest {
+        show()
+        onNodeWithTag("reminderSwitch").performClick()
+        onNodeWithTag("timePickerOk").performClick()
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
     }
 }
