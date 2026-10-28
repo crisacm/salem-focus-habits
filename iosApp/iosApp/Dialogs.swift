@@ -659,16 +659,23 @@ struct DeleteHabitsDialog: View {
         VStack(spacing: 20) {
             Text(title).font(.headline)
             Text(message).multilineTextAlignment(.center).foregroundStyle(.secondary)
-            HStack {
-                Button(L("cancel", "Cancel")) { dismiss() }
-                Button(L("delete", "Delete"), role: .destructive) {
+            HStack(spacing: 16) {
+                Button { dismiss() } label: {
+                    Text(L("cancel", "Cancel")).frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                Button(role: .destructive) {
                     onDelete()
                     dismiss()
+                } label: {
+                    Text(L("delete", "Delete")).frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.bordered)
             }
+            .controlSize(.large)
         }
         .padding(24)
-        .presentationDetents([.height(200)])
+        .presentationDetents([.height(220)])
     }
 
     private var title: String {

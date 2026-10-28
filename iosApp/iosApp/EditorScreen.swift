@@ -32,6 +32,10 @@ struct EditorScreen: View {
     /// The numbers the frequency dialog starts from.
     @State private var frequencySeed: (Int, Int) = (1, 1)
     @FocusState private var nameFocused: Bool
+    /// The type the person asked for while editing an existing habit, until they confirm the change.
+    @State private var pendingType: Int32?
+    /// Changes when the change is cancelled, so the selector goes back to the type of the habit.
+    @State private var typeReset = 0
 
     var body: some View {
         NavigationStack {
@@ -45,6 +49,7 @@ struct EditorScreen: View {
                     .labelsHidden()
                     .controlSize(.large)
                     .frame(height: 44)
+                    .id(typeReset)
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
@@ -149,6 +154,24 @@ struct EditorScreen: View {
                 }
             }
             .onAppear { if form.id < 0 { nameFocused = true } }
+            .alert(
+                L("change_type_title", "Change habit type?"),
+                isPresented: Binding(get: { pendingType != nil }, set: { if !$0 { pendingType = nil } })
+            ) {
+                Button(L("cancel", "Cancel"), role: .cancel) {
+                    pendingType = nil
+                    typeReset += 1
+                }
+                Button(L("change_type", "Change type")) {
+                    if let type = pendingType { changeType(type) }
+                    pendingType = nil
+                }
+            } message: {
+                Text(L(
+                    "change_type_message",
+                    "The way this habit works will change. The entries you already recorded are not lost, but they will not be shown because they use a different format."
+                ))
+            }
         }
     }
 
@@ -193,7 +216,14 @@ struct EditorScreen: View {
     }
 
     private var typeBinding: Binding<Int32> {
-        Binding(get: { form.type }, set: { changeType($0) })
+        Binding(
+            get: { form.type },
+            set: { newType in
+                guard newType != form.type else { return }
+                // A new habit has nothing recorded yet; an existing one asks first
+                if form.id >= 0 { pendingType = newType } else { changeType(newType) }
+            }
+        )
     }
 
     /// A numerical habit only has a frequency per day, week or month, so another one becomes every day.

@@ -332,20 +332,23 @@ struct ListScreen: View {
     }
 
     private var selectionBar: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 8) {
             Button(L("archive", "Archive")) {
                 model.archive(ids: ids)
                 selecting = false
                 selected.removeAll()
             }
             .disabled(selected.isEmpty)
+            .padding(.horizontal, 12)
             Button(L("delete", "Delete")) { showDeleteConfirm = true }
                 .disabled(selected.isEmpty)
+                .padding(.horizontal, 12)
             Button(L("done", "Done")) { selecting = false; selected.removeAll() }
                 .fontWeight(.semibold)
+                .padding(.horizontal, 12)
         }
         .foregroundStyle(Color.primary)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 8)
         .frame(height: 44)
         .floatingGlass(in: Capsule())
     }
