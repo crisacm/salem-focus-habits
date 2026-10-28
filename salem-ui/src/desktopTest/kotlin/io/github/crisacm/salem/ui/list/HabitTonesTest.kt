@@ -21,6 +21,7 @@ package io.github.crisacm.salem.ui.list
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -106,4 +107,22 @@ class HabitTonesTest {
             }
         }
     }
+
+    @Test
+    fun theMutedAndEmphasisTonesAreBetweenTheOthers() {
+        for (dark in listOf(false, true)) {
+            val tones = habitTones(15, dark)
+            // The muted colour is a step from the card towards the accent, the emphasis one from the accent to the text
+            assertTrue(tones.muted != tones.container && tones.muted != tones.accent)
+            assertTrue(tones.emphasis != tones.accent && tones.emphasis != tones.onContainer)
+        }
+    }
+
+    @Test
+    fun theEmphasisOfThePinkMatchesTheMockups() {
+        assertEquals(0xFFBCD6, packed(habitTones(15, dark = true).emphasis))
+    }
+
+    private fun packed(color: Color) =
+        ((color.red * 255).roundToInt() shl 16) or ((color.green * 255).roundToInt() shl 8) or (color.blue * 255).roundToInt()
 }

@@ -33,7 +33,9 @@ import kotlin.math.sin
 /**
  * The colours of one habit card: a pale (or deep, in the dark theme) [container] for the card, a strong [accent] for the
  * filled cells, the ring and the icon, a [soft] fill for the cells that are not done (and the track of the ring), and the
- * colours of the text and of the glyphs on each of them. [chip] is the fill of the small round buttons on the card.
+ * colours of the text and of the glyphs on each of them. [chip] is the fill of the small round buttons on the card,
+ * [muted] the softer colour of the bars of a chart that are not the highlighted one and [emphasis] the colour of the
+ * figures that stand out on a neutral card.
  */
 class HabitTones(
     val container: Color,
@@ -43,7 +45,9 @@ class HabitTones(
     val soft: Color,
     val onSoft: Color,
     val ringTrack: Color,
-    val chip: Color
+    val chip: Color,
+    val muted: Color,
+    val emphasis: Color
 )
 
 private fun argb(hex: Long) = Color(0xFF000000 or hex)
@@ -101,7 +105,9 @@ fun habitTones(paletteIndex: Int, dark: Boolean): HabitTones {
         // What is written on a soft cell and not enough to read twice (an empty day) is fainter than the text of the card
         onSoft = lerp(soft, onContainer, 0.6f),
         ringTrack = soft,
-        chip = if (dark) Color.White.copy(alpha = 0.12f) else soft
+        chip = if (dark) Color.White.copy(alpha = 0.12f) else soft,
+        muted = lerp(container, accent, 0.30f),
+        emphasis = lerp(accent, onContainer, if (dark) 0.27f else 0.5f)
     )
 }
 

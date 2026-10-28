@@ -64,21 +64,36 @@ internal fun rememberDetailTones(theme: Theme, color: PaletteColor): HabitTones 
 internal fun ExpressiveCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(36.dp),
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)
     ) {
         Column(Modifier.padding(20.dp), content = content)
     }
 }
 
-/** The title of a card with the period that its chart shows under it, and an [action] (a drop-down) at the end. */
+/**
+ * The title of a card with the period that its chart shows under it, and an [action] (a drop-down) at the end;
+ * [spacing] is the room left under it for what has no room of its own (the charts have).
+ */
 @Composable
-internal fun CardHeader(title: String, subtitle: String? = null, modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null) {
-    Row(modifier.fillMaxWidth().padding(bottom = 12.dp), verticalAlignment = Alignment.Top) {
+internal fun CardHeader(
+    title: String,
+    subtitle: String? = null,
+    modifier: Modifier = Modifier,
+    spacing: Dp = 0.dp,
+    action: (@Composable () -> Unit)? = null
+) {
+    Row(modifier.fillMaxWidth().padding(bottom = spacing), verticalAlignment = Alignment.Top) {
         Column(Modifier.weight(1f)) {
-            Text(title, color = MaterialTheme.colorScheme.onSurface, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                title,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 24.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.SemiBold
+            )
             if (!subtitle.isNullOrEmpty()) {
-                Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, lineHeight = 17.sp)
             }
         }
         action?.invoke()
@@ -97,7 +112,7 @@ internal fun PillSpinner(entries: List<String>, selected: Int, onSelected: (Int)
                 .clip(CircleShape)
                 .background(scheme.surfaceContainerHighest)
                 .clickable { expanded = true }
-                .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
+                .padding(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 10.dp)
         ) {
             Text(entries.getOrElse(selected) { "" }, color = scheme.onSurface, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = scheme.onSurface)

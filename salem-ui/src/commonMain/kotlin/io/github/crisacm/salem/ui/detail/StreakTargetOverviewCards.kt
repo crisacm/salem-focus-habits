@@ -55,6 +55,7 @@ import io.github.crisacm.salem.platform.io.formatInvariant
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 import io.github.crisacm.salem.ui.canvas.CoreCanvasView
 import io.github.crisacm.salem.ui.canvas.rememberSalemFonts
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.best_streaks
 import io.github.crisacm.salem.ui.resources.month
@@ -78,7 +79,7 @@ fun StreakCardContent(state: StreakCardState, dateFormatter: LocalDateFormatter)
         StreakChart(state.theme, dateFormatter::longFormat, state.bestStreaks, state.theme.color(state.color))
     }
     Column(Modifier.fillMaxWidth().testTag("streakCard")) {
-        CardHeader(stringResource(Res.string.best_streaks))
+        CardHeader(stringResource(Res.string.best_streaks), spacing = 12.dp)
         CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("streakChart"))
     }
 }
@@ -98,7 +99,7 @@ fun TargetCardContent(state: TargetCardState) {
         )
     }
     Column(Modifier.fillMaxWidth().testTag("targetCard")) {
-        CardHeader(stringResource(Res.string.target))
+        CardHeader(stringResource(Res.string.target), spacing = 12.dp)
         CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("targetChart"))
     }
 }
@@ -113,19 +114,20 @@ fun OverviewCardContent(state: OverviewCardState) {
     val scheme = MaterialTheme.colorScheme
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("overviewCard"),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
             stringResource(Res.string.overview),
             color = scheme.onSurface,
-            fontSize = 20.sp,
+            fontSize = 24.sp,
+            lineHeight = 28.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 4.dp)
+            modifier = Modifier.padding(start = 8.dp, top = 7.dp, bottom = 4.dp)
         )
-        Surface(color = tones.accent, shape = RoundedCornerShape(32.dp), modifier = Modifier.fillMaxWidth()) {
+        Surface(color = tones.accent, shape = RoundedCornerShape(36.dp), modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 24.dp, end = 28.dp, top = 20.dp, bottom = 20.dp)
+                modifier = Modifier.padding(start = 24.dp, end = 28.dp, top = 23.dp, bottom = 23.dp)
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(Res.string.score), color = tones.onAccent, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -138,12 +140,12 @@ fun OverviewCardContent(state: OverviewCardState) {
                         letterSpacing = (-2).sp
                     )
                 }
-                ScoreDonut(state.scoreToday, tones.onAccent)
+                ScoreDonut(state.scoreToday, tones.onAccent, if (state.theme.usesDarkTones()) 0.36f else 0.30f)
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            StatCard(formatPercentageDiff(state.scoreMonthDiff), Res.string.month, scheme.surfaceContainer, scheme.onSurface, scheme.onSurfaceVariant)
-            StatCard(formatPercentageDiff(state.scoreYearDiff), Res.string.year, scheme.surfaceContainer, scheme.onSurface, scheme.onSurfaceVariant)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+            StatCard(formatPercentageDiff(state.scoreMonthDiff), Res.string.month, scheme.surfaceContainer, tones.emphasis, scheme.onSurfaceVariant)
+            StatCard(formatPercentageDiff(state.scoreYearDiff), Res.string.year, scheme.surfaceContainer, tones.emphasis, scheme.onSurfaceVariant)
             StatCard(state.totalCount.toString(), Res.string.total, tones.container, tones.onContainer, tones.onContainer)
         }
     }
@@ -151,22 +153,22 @@ fun OverviewCardContent(state: OverviewCardState) {
 
 @Composable
 private fun RowScope.StatCard(value: String, label: StringResource, container: Color, valueColor: Color, labelColor: Color) {
-    Surface(color = container, shape = RoundedCornerShape(24.dp), modifier = Modifier.weight(1f)) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(value, color = valueColor, fontSize = 24.sp, fontWeight = FontWeight.Black, maxLines = 1)
-            Text(stringResource(label), color = labelColor, fontSize = 14.sp)
+    Surface(color = container, shape = RoundedCornerShape(28.dp), modifier = Modifier.weight(1f)) {
+        Column(Modifier.padding(14.dp)) {
+            Text(value, color = valueColor, fontSize = 30.sp, lineHeight = 36.sp, fontWeight = FontWeight.Black, maxLines = 1)
+            Text(stringResource(label), color = labelColor, fontSize = 16.sp, lineHeight = 20.sp)
         }
     }
 }
 
 /** The ring of the score of the overview: a track and an arc from the top, as thick as the large number is bold. */
 @Composable
-private fun ScoreDonut(score: Float, color: Color) {
+private fun ScoreDonut(score: Float, color: Color, trackAlpha: Float) {
     Canvas(Modifier.size(88.dp)) {
-        val stroke = 14.dp.toPx()
+        val stroke = 12.dp.toPx()
         val topLeft = Offset(stroke / 2, stroke / 2)
         val arcSize = Size(size.width - stroke, size.height - stroke)
-        drawArc(color.copy(alpha = 0.3f), -90f, 360f, useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke))
+        drawArc(color.copy(alpha = trackAlpha), -90f, 360f, useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke))
         drawArc(color, -90f, 360f * score.coerceIn(0f, 1f), useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
     }
 }

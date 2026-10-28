@@ -85,6 +85,31 @@ class ChartModelsTest {
     }
 
     @Test
+    fun theTextsUnderTheScoreNameTheMonthWhenItChangesAndTheDayOtherwise() {
+        val names = listOf("Jan", "Feb", "Mar", "Apr")
+        val texts = scoreAxisTexts(
+            listOf(
+                LocalDate(2021, 1, 3), LocalDate(2021, 2, 7), LocalDate(2021, 2, 21), LocalDate(2021, 3, 7),
+                LocalDate(2021, 3, 21), LocalDate(2021, 4, 4), LocalDate(2021, 4, 18)
+            )
+        ) { names[it.month - 1] }
+        assertEquals(listOf("Jan", "Feb", "21", "Mar", "21", "Apr", "18"), texts)
+    }
+
+    @Test
+    fun theSameMonthOfAnotherYearIsNamedAgain() {
+        val texts = scoreAxisTexts(listOf(LocalDate(2020, 3, 8), LocalDate(2021, 3, 7))) { "Mar" }
+        assertEquals(listOf("Mar", "Mar"), texts)
+    }
+
+    @Test
+    fun theTallestBarTakesTheFractionOfTheRoom() {
+        assertEquals(TALLEST_BAR_FRACTION, barHeightFraction(29.0, 29.0))
+        assertEquals(TALLEST_BAR_FRACTION / 2, barHeightFraction(14.5, 29.0), 0.0001f)
+        assertEquals(0f, barHeightFraction(0.0, 29.0))
+    }
+
+    @Test
     fun theDaysOfTheWeekAreAddedUpAcrossTheMonths() {
         // Saturday first: Sat, Sun, Mon, Tue, Wed, Thu, Fri
         val frequency = hashMapOf(

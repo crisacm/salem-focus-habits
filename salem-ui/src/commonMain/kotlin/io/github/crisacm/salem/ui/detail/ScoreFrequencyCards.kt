@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.FrequencyCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
@@ -32,7 +33,6 @@ import io.github.crisacm.salem.ui.detail.charts.ScoreLineChart
 import io.github.crisacm.salem.ui.detail.charts.WeekdayBarsChart
 import io.github.crisacm.salem.ui.detail.charts.rangeLabel
 import io.github.crisacm.salem.ui.detail.charts.rememberChartScroll
-import io.github.crisacm.salem.ui.detail.charts.scoreAxisLabel
 import io.github.crisacm.salem.ui.detail.charts.scorePoints
 import io.github.crisacm.salem.ui.detail.charts.weekdayBars
 import io.github.crisacm.salem.ui.resources.Res
@@ -63,7 +63,7 @@ fun ScoreCardContent(state: ScoreCardState, onSpinner: (Int) -> Unit, dateFormat
             bucketSize = state.bucketSize,
             scroll = scroll,
             tones = tones,
-            axisLabel = { scoreAxisLabel(state.bucketSize, it, dateFormatter::shortMonthName) },
+            monthName = dateFormatter::shortMonthName,
             modifier = Modifier.testTag("scoreChart")
         )
     }
@@ -74,7 +74,7 @@ fun FrequencyCardContent(state: FrequencyCardState, dateFormatter: LocalDateForm
     val tones = rememberDetailTones(state.theme, state.color)
     val bars = remember(state) { weekdayBars(state.frequency, state.isNumerical, state.firstWeekday) }
     Column(Modifier.fillMaxWidth().testTag("frequencyCard")) {
-        CardHeader(stringResource(Res.string.frequency), stringResource(Res.string.completions_by_weekday))
+        CardHeader(stringResource(Res.string.frequency), stringResource(Res.string.completions_by_weekday), spacing = 15.5.dp)
         WeekdayBarsChart(bars, tones, dateFormatter::shortWeekdayName, Modifier.testTag("frequencyChart"))
     }
 }

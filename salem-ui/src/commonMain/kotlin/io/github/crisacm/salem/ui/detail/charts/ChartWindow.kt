@@ -63,7 +63,7 @@ fun barColumnsInView(bucketSize: Int): Int = when (bucketSize) {
 }
 
 /** How many weeks of the calendar fit in the screen. */
-const val CALENDAR_COLUMNS_IN_VIEW = 20
+const val CALENDAR_COLUMNS_IN_VIEW = 18
 
 /**
  * The period shown, as the subtitle of a card: "Apr 2021", "Jan – Apr 2021" or "Mar 2020 – Apr 2021".
@@ -74,14 +74,3 @@ fun rangeLabel(oldest: LocalDate, newest: LocalDate, monthName: (LocalDate) -> S
     oldest.year == newest.year -> "${monthName(oldest)} \u2013 ${monthName(newest)} ${newest.year}"
     else -> "${monthName(oldest)} ${oldest.year} \u2013 ${monthName(newest)} ${newest.year}"
 }
-
-/**
- * The columns of a chart of the score that get a name under them, from the dates of its columns (newest first): the
- * oldest column of each month, or every column for buckets of a quarter or more, which are all in different months or years.
- */
-fun axisMarks(dates: List<LocalDate>, bucketSize: Int): List<Int> =
-    if (bucketSize >= 92) {
-        dates.indices.toList()
-    } else {
-        dates.indices.filter { it == dates.lastIndex || dates[it].month != dates[it + 1].month }
-    }

@@ -38,3 +38,20 @@ fun percentText(value: Float): String = "${(value * 100).roundToInt()}%"
 /** The name under a column of the score: the month for buckets of a month or less, the quarter or the year for longer ones. */
 fun scoreAxisLabel(bucketSize: Int, date: LocalDate, monthName: (LocalDate) -> String): String =
     if (bucketSize >= 92) barAxisLabel(bucketSize, date, monthName) else monthName(date)
+
+/**
+ * The texts under a chart of the score for buckets of a month or less, which are in fixed places 40 dp apart and
+ * not under a column: the short name of the month for the first one and wherever the month changes, the day of the
+ * month for the others. [dates] are the dates of the columns that are under those places, from the oldest.
+ */
+fun scoreAxisTexts(dates: List<LocalDate>, monthName: (LocalDate) -> String): List<String> =
+    dates.mapIndexed { index, date ->
+        if (index == 0 || dates[index - 1].month != date.month || dates[index - 1].year != date.year) {
+            monthName(date)
+        } else {
+            date.day.toString()
+        }
+    }
+
+/** The distance between two texts under a chart of the score. */
+const val SCORE_AXIS_SPACING_DP = 40.3f

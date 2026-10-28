@@ -84,13 +84,13 @@ fun HabitDetailHeader(session: HabitDetailSession, state: ShowHabitState, onBack
     var expanded by remember { mutableStateOf(false) }
     Surface(
         color = tones.container,
-        shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp),
+        shape = RoundedCornerShape(bottomStart = 45.dp, bottomEnd = 45.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             Modifier
                 .windowInsetsPadding(WindowInsets.statusBars.only(WindowInsetsSides.Top))
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 27.dp)
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 RoundButton(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.navigate_up), tones, "showHabitBack", onBack)
@@ -131,25 +131,25 @@ fun HabitDetailHeader(session: HabitDetailSession, state: ShowHabitState, onBack
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(top = 16.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                modifier = Modifier.padding(start = 3.dp, top = 20.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(48.dp).clip(ScallopShape()).background(tones.accent)
+                    modifier = Modifier.size(60.dp).clip(ScallopShape()).background(tones.accent)
                 ) {
-                    Icon(habitIconFor(state.habitUuid, state.habitId), contentDescription = null, tint = tones.onAccent, modifier = Modifier.size(26.dp))
+                    Icon(habitIconFor(state.habitUuid, state.habitId), contentDescription = null, tint = tones.onAccent, modifier = Modifier.size(30.dp))
                 }
                 Text(
                     state.title,
                     color = tones.onContainer,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     modifier = Modifier.weight(1f)
                 )
             }
-            SubtitleCardContent(state.subtitle, Modifier.padding(top = 16.dp))
+            SubtitleCardContent(state.subtitle, Modifier.padding(top = 20.dp))
         }
     }
 }

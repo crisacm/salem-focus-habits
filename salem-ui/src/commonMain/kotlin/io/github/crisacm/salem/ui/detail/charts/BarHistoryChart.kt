@@ -32,10 +32,17 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.list.HabitTones
+import kotlin.math.max
+
+// The measures of the chart, in dp
+private const val CHART_HEIGHT = 183.1f
+private const val BASELINE_FROM_BOTTOM = 18f
+private const val VALUE_ABOVE_BAR = 7.4f
+private const val INITIAL_BASELINE_FROM_BOTTOM = 3.3f
 
 /**
- * The history as vertical rounded bars with their number on top and the period under them. The newest bar has
- * the full colour of the habit and the others a softer one. [axisLabel] names the bucket of a bar.
+ * The history as vertical rounded bars with their number over them and the period under them. The newest bar has the
+ * colour of the habit and the others its muted one. [axisLabel] names the bucket of a bar.
  */
 @Composable
 fun BarHistoryChart(
@@ -52,40 +59,42 @@ fun BarHistoryChart(
     Canvas(
         modifier
             .fillMaxWidth()
-            .height(190.dp)
+            .height(CHART_HEIGHT.dp)
             .chartScrollable(scroll)
             .onSizeChanged { scroll.viewportPx = it.width.toFloat() }
     ) {
         val columnPx = scroll.columnPx
         if (columnPx <= 0f || bars.isEmpty()) return@Canvas
         val range = scroll.visible()
-        val valueRoom = 20.dp.toPx()
-        val axisRoom = 24.dp.toPx()
-        val baseline = size.height - axisRoom
-        val barArea = baseline - valueRoom
+        val baseline = size.height - BASELINE_FROM_BOTTOM.dp.toPx()
         val scale = barScaleMax(range.map { bars[it].value })
-        val barWidth = columnPx * 0.56f
+        val barWidth = columnPx * 0.53f
 
         for (index in range) {
             val bar = bars[index]
             val centerX = columnLeft(index, columnPx, scroll.viewportPx, scroll.offsetPx) + columnPx / 2
             val isNewest = index == 0
-            val height = maxOf((bar.value / scale).toFloat() * barArea, barWidth)
-            val color = if (isNewest) tones.accent else tones.accent.copy(alpha = 0.45f)
+            val height = max(barHeightFraction(bar.value, scale) * baseline, barWidth)
             drawRoundRect(
-                color,
+                if (isNewest) tones.accent else tones.muted,
                 Offset(centerX - barWidth / 2, baseline - height),
                 Size(barWidth, height),
                 CornerRadius(barWidth / 2)
             )
-            drawCentered(
+            drawLabel(
                 measurer,
                 barValueText(bar.value),
                 labelStyle(if (isNewest) tones.accent else colors.label, bold = isNewest),
                 centerX,
-                baseline - height - 16.dp.toPx()
+                baseline - height - VALUE_ABOVE_BAR.dp.toPx()
             )
-            drawCentered(measurer, axisLabel(bucketSize, bar.date), labelStyle(colors.label), centerX, baseline + 6.dp.toPx())
+            drawLabel(
+                measurer,
+                axisLabel(bucketSize, bar.date),
+                labelStyle(colors.label),
+                centerX,
+                size.height - INITIAL_BASELINE_FROM_BOTTOM.dp.toPx()
+            )
         }
     }
 }

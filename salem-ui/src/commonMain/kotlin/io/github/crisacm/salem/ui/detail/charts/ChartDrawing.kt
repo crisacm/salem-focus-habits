@@ -39,18 +39,33 @@ internal fun chartColors(): ChartColors {
     return ChartColors(
         grid = scheme.onSurface.copy(alpha = 0.10f),
         label = scheme.onSurfaceVariant,
-        dim = scheme.onSurface.copy(alpha = 0.10f)
+        dim = scheme.surfaceContainerHighest
     )
 }
 
 internal fun labelStyle(color: Color, bold: Boolean = false) = TextStyle(
     color = color,
-    fontSize = 11.sp,
+    fontSize = 12.sp,
     fontWeight = if (bold) FontWeight.Bold else null
 )
 
-/** Draws [text] with its centre at [centerX] and its top at [top]. */
-internal fun DrawScope.drawCentered(measurer: TextMeasurer, text: String, style: TextStyle, centerX: Float, top: Float) {
+/** Where [drawLabel] puts the text in relation to the x it is given. */
+internal enum class LabelAlign { START, CENTER, END }
+
+/** Draws [text] with its baseline at [baseline] and its start, centre or end at [x]. */
+internal fun DrawScope.drawLabel(
+    measurer: TextMeasurer,
+    text: String,
+    style: TextStyle,
+    x: Float,
+    baseline: Float,
+    align: LabelAlign = LabelAlign.CENTER
+) {
     val layout = measurer.measure(text, style)
-    drawText(layout, topLeft = Offset(centerX - layout.size.width / 2f, top))
+    val left = when (align) {
+        LabelAlign.START -> x
+        LabelAlign.CENTER -> x - layout.size.width / 2f
+        LabelAlign.END -> x - layout.size.width
+    }
+    drawText(layout, topLeft = Offset(left, baseline - layout.firstBaseline))
 }

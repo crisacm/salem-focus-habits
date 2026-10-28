@@ -23,7 +23,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,14 +31,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.list.HabitTones
 
+// The measures of the chart, in dp
 private val LettersWidth = 16.dp
-private val MonthsHeight = 22.dp
+private val MonthsHeight = 32.dp
+private val RowHeight = 17.dp
+private const val DOT_RATIO = 0.88f
+private const val MONTH_BASELINE = 23.5f
+private const val LETTER_START = 2.8f
 
 /**
  * The days of the history as round dots, a column per week, with the letters of the weekdays at the left and the
@@ -59,40 +62,40 @@ fun CalendarDotsChart(
     val labels = remember(columns) { monthLabels(columns).associateBy { it.column } }
     scroll.bind(columns.size, CALENDAR_COLUMNS_IN_VIEW)
     Row(modifier.fillMaxWidth()) {
-        Canvas(Modifier.width(LettersWidth).height(7 * 18.dp + MonthsHeight)) {
-            val rowHeight = 18.dp.toPx()
+        Canvas(Modifier.width(LettersWidth).height(7 * RowHeight + MonthsHeight)) {
+            val rowHeight = RowHeight.toPx()
             val style = labelStyle(colors.label)
             letters.forEachIndexed { row, letter ->
-                val layout = measurer.measure(letter, style)
-                drawText(layout, topLeft = Offset(0f, MonthsHeight.toPx() + row * rowHeight + (rowHeight - layout.size.height) / 2f))
+                // The baseline of a letter is a third of its height under the centre of its row
+                val center = MonthsHeight.toPx() + row * rowHeight + rowHeight / 2
+                drawLabel(measurer, letter, style, LETTER_START.dp.toPx(), center + 4.3.dp.toPx(), LabelAlign.START)
             }
         }
         Canvas(
             Modifier
                 .weight(1f)
-                .height(7 * 18.dp + MonthsHeight)
-                .padding(start = 4.dp)
+                .height(7 * RowHeight + MonthsHeight)
                 .chartScrollable(scroll)
                 .onSizeChanged { scroll.viewportPx = it.width.toFloat() }
         ) {
             val columnPx = scroll.columnPx
             if (columnPx <= 0f || columns.isEmpty()) return@Canvas
-            val rowHeight = 18.dp.toPx()
-            val diameter = minOf(columnPx, rowHeight) * 0.78f
+            val rowHeight = RowHeight.toPx()
+            val diameter = minOf(columnPx, rowHeight) * DOT_RATIO
             val top = MonthsHeight.toPx()
             clipRect {
                 for (index in scroll.visible()) {
                     val left = columnLeft(index, columnPx, scroll.viewportPx, scroll.offsetPx)
                     val centerX = left + columnPx / 2
                     labels[index]?.let {
-                        drawCentered(measurer, monthName(it.date), labelStyle(colors.label), centerX, 2.dp.toPx())
+                        drawLabel(measurer, monthName(it.date), labelStyle(colors.label), centerX, MONTH_BASELINE.dp.toPx())
                     }
                     columns[index].dots.forEachIndexed { row, dot ->
                         if (dot == null) return@forEachIndexed
                         val center = Offset(centerX, top + row * rowHeight + rowHeight / 2)
                         when (dot.state) {
                             DotState.DONE -> drawCircle(tones.accent, diameter / 2, center)
-                            DotState.SOFT -> drawCircle(tones.accent.copy(alpha = 0.45f), diameter / 2, center)
+                            DotState.SOFT -> drawCircle(tones.muted, diameter / 2, center)
                             DotState.SKIPPED -> drawCircle(
                                 tones.accent.copy(alpha = 0.6f),
                                 diameter / 2 - 1.dp.toPx(),

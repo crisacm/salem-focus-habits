@@ -30,8 +30,14 @@ class BarColumn(val date: LocalDate, val value: Double)
 /** The bars, newest first as the card state has them; entries store thousandths. */
 fun barColumns(entries: List<Entry>): List<BarColumn> = entries.map { BarColumn(it.date, it.value / 1000.0) }
 
-/** The value that fills the whole height of the chart; a chart with nothing in it still has a scale. */
+/** The value of the tallest bar; a chart with nothing in it still has a scale. */
 fun barScaleMax(values: List<Double>): Double = max(values.maxOrNull() ?: 0.0, 1.0)
+
+/** The tallest bar takes this part of the room under the numbers, so the chart keeps some air above it. */
+const val TALLEST_BAR_FRACTION = 0.625f
+
+/** The part of the room that the bar of [value] takes when the tallest one is [max]. */
+fun barHeightFraction(value: Double, max: Double): Float = (value / max).toFloat().coerceIn(0f, 1f) * TALLEST_BAR_FRACTION
 
 /** The number over a bar: a whole number as it is, anything else in the short form of the numbers. */
 fun barValueText(value: Double): String =

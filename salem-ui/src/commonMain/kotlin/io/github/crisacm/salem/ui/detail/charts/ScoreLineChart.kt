@@ -23,7 +23,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -35,15 +34,29 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.list.HabitTones
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+
+// The measures of the chart, in dp (the chart is as wide as the card without its padding)
+private const val CHART_HEIGHT = 226.6f
+private const val PLOT_BOTTOM = 196.8f
+private const val PLOT_HEIGHT = 169.6f
+private const val VIEWPORT_LEFT = 38.2f
+private const val VIEWPORT_RIGHT_INSET = 3f
+private const val LABEL_ABOVE_LINE = 6.3f
+private const val AXIS_BASELINE = 216.3f
+private const val BUBBLE_HEIGHT = 27.6f
+private const val BUBBLE_PADDING = 12f
 
 /**
- * The score of a habit as a line over a filled area, with the grid at 20% steps on the left and a bubble with the
- * value of the newest point in view. [axisLabel] names a column under it; the columns come from [axisMarks].
+ * The score of a habit as a line over a filled area, with the grid at 20% steps and the name of each step over its
+ * line, and a bubble with the value of the newest point in view. Under it, for buckets of a month or less, there are
+ * texts 40 dp apart (the month where it changes, the day in between); for longer buckets each column has its own.
  */
 @Composable
 fun ScoreLineChart(
@@ -51,43 +64,42 @@ fun ScoreLineChart(
     bucketSize: Int,
     scroll: ChartScroll,
     tones: HabitTones,
-    axisLabel: (LocalDate) -> String,
+    monthName: (LocalDate) -> String,
     modifier: Modifier = Modifier
 ) {
     val measurer = rememberTextMeasurer()
     val colors = chartColors()
     val density = LocalDensity.current
-    val axisPx = with(density) { 40.dp.toPx() }
-    val marks = remember(points, bucketSize) { axisMarks(points.map { it.date }, bucketSize).toSet() }
+    val leftPx = with(density) { VIEWPORT_LEFT.dp.toPx() }
+    val rightPx = with(density) { VIEWPORT_RIGHT_INSET.dp.toPx() }
     scroll.bind(points.size, scoreColumnsInView(bucketSize))
     Canvas(
         modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(CHART_HEIGHT.dp)
             .chartScrollable(scroll)
-            .onSizeChanged { scroll.viewportPx = (it.width - axisPx).coerceAtLeast(0f) }
+            .onSizeChanged { scroll.viewportPx = (it.width - leftPx - rightPx).coerceAtLeast(0f) }
     ) {
-        val top = 10.dp.toPx()
-        val bottom = size.height - 26.dp.toPx()
-        val plotHeight = bottom - top
-        fun yOf(value: Float) = top + (1f - value) * plotHeight
+        val plotBottom = PLOT_BOTTOM.dp.toPx()
+        val plotHeight = PLOT_HEIGHT.dp.toPx()
+        fun yOf(value: Float) = plotBottom - value * plotHeight
 
         val label = labelStyle(colors.label)
         for (tick in ScoreTicks) {
             val y = yOf(tick)
-            drawLine(colors.grid, Offset(axisPx, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
-            val layout = measurer.measure(percentText(tick), label)
-            drawText(layout, topLeft = Offset(0f, y - layout.size.height / 2f))
+            drawLine(colors.grid, Offset(0f, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
+            drawLabel(measurer, percentText(tick), label, 0f, y - LABEL_ABOVE_LINE.dp.toPx(), LabelAlign.START)
         }
 
         val columnPx = scroll.columnPx
         if (columnPx <= 0f || points.isEmpty()) return@Canvas
         val range = scroll.visible()
-        val lo = (range.first - 1).coerceAtLeast(0)
-        val hi = (range.last + 1).coerceAtMost(points.lastIndex)
-        fun xOf(index: Int) = axisPx + columnLeft(index, columnPx, scroll.viewportPx, scroll.offsetPx) + columnPx / 2
+        val lo = max(range.first - 1, 0)
+        val hi = min(range.last + 1, points.lastIndex)
+        fun xOf(index: Int) = leftPx + columnLeft(index, columnPx, scroll.viewportPx, scroll.offsetPx) + columnPx / 2
+        val viewportRight = leftPx + scroll.viewportPx
 
-        clipRect(left = axisPx) {
+        clipRect(left = leftPx) {
             val line = Path()
             val area = Path()
             for (index in hi downTo lo) {
@@ -95,38 +107,55 @@ fun ScoreLineChart(
                 val y = yOf(points[index].value)
                 if (index == hi) {
                     line.moveTo(x, y)
-                    area.moveTo(x, bottom)
+                    area.moveTo(x, plotBottom)
                     area.lineTo(x, y)
                 } else {
                     line.lineTo(x, y)
                     area.lineTo(x, y)
                 }
             }
-            area.lineTo(xOf(lo), bottom)
+            area.lineTo(xOf(lo), plotBottom)
             area.close()
-            drawPath(area, tones.accent.copy(alpha = 0.16f))
-            drawPath(line, tones.accent, style = Stroke(3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+            drawPath(area, tones.accent.copy(alpha = 0.14f))
+            drawPath(line, tones.accent, style = Stroke(3.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
             for (index in lo..hi) {
-                drawCircle(tones.accent, radius = 3.5.dp.toPx(), center = Offset(xOf(index), yOf(points[index].value)))
+                drawCircle(tones.accent, radius = 3.2.dp.toPx(), center = Offset(xOf(index), yOf(points[index].value)))
             }
 
-            // The newest point in view is bigger and has the value in a bubble over it
+            // The newest point in view has a larger dot, and the value in a bubble that sits on it
             val newest = points[range.first]
             val center = Offset(xOf(range.first), yOf(newest.value))
-            drawCircle(tones.accent, radius = 6.dp.toPx(), center = center)
-            val bubble = measurer.measure(percentText(newest.value), labelStyle(tones.onAccent, bold = true))
-            val padding = 8.dp.toPx()
-            val bubbleSize = Size(bubble.size.width + 2 * padding, bubble.size.height + 8.dp.toPx())
-            val bubbleLeft = (center.x - bubbleSize.width / 2f).coerceIn(axisPx, size.width - bubbleSize.width)
-            val bubbleTop = (center.y - bubbleSize.height - 10.dp.toPx()).coerceAtLeast(0f)
-            drawRoundRect(tones.accent, Offset(bubbleLeft, bubbleTop), bubbleSize, CornerRadius(bubbleSize.height / 2f))
-            drawText(bubble, topLeft = Offset(bubbleLeft + padding, bubbleTop + 4.dp.toPx()))
+            val dot = 5.3.dp.toPx()
+            drawCircle(tones.accent, radius = dot, center = center)
+            val text = measurer.measure(percentText(newest.value), labelStyle(tones.onAccent, bold = true))
+            val bubbleWidth = text.size.width + 2 * BUBBLE_PADDING.dp.toPx()
+            val bubbleHeight = BUBBLE_HEIGHT.dp.toPx()
+            val bubbleLeft = min(center.x - bubbleWidth / 2f, viewportRight - bubbleWidth).coerceAtLeast(leftPx)
+            val bubbleTop = (center.y - dot - bubbleHeight).coerceAtLeast(0f)
+            drawRoundRect(tones.accent, Offset(bubbleLeft, bubbleTop), Size(bubbleWidth, bubbleHeight), CornerRadius(bubbleHeight / 2f))
+            drawLabel(
+                measurer,
+                percentText(newest.value),
+                labelStyle(tones.onAccent, bold = true),
+                bubbleLeft + bubbleWidth / 2f,
+                bubbleTop + bubbleHeight / 2f + 4.3.dp.toPx()
+            )
         }
 
-        clipRect(left = axisPx) {
+        val axisBaseline = AXIS_BASELINE.dp.toPx()
+        if (bucketSize >= 92) {
             for (index in range) {
-                if (index in marks) drawCentered(measurer, axisLabel(points[index].date), label, xOf(index), bottom + 6.dp.toPx())
+                drawLabel(measurer, scoreAxisLabel(bucketSize, points[index].date, monthName), label, xOf(index), axisBaseline)
             }
+        } else {
+            val spacing = SCORE_AXIS_SPACING_DP.dp.toPx()
+            val xs = generateSequence(leftPx + columnPx / 2 - 2.3.dp.toPx()) { it + spacing }
+                .takeWhile { it + 12.dp.toPx() < viewportRight }
+                .toList()
+            // Each text names the date of the column that is nearest to its place
+            val dates = xs.map { x -> points[range.minByOrNull { abs(xOf(it) - x) } ?: range.first].date }
+            // The oldest is at the left, and the columns of the points are newest first
+            scoreAxisTexts(dates, monthName).forEachIndexed { index, text -> drawLabel(measurer, text, label, xs[index], axisBaseline) }
         }
     }
 }

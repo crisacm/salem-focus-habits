@@ -19,13 +19,14 @@
 
 package io.github.crisacm.salem.ui.detail
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -39,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -50,6 +52,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.views.NotesCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.SubtitleCardState
 import io.github.crisacm.salem.ui.edit.frequencyText
 import io.github.crisacm.salem.ui.edit.rememberTimeFormat
+import io.github.crisacm.salem.ui.list.HabitTones
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.notes
 import io.github.crisacm.salem.ui.resources.reminder_off
@@ -70,13 +73,13 @@ fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier)
     } else {
         stringResource(Res.string.reminder_off)
     }
-    Column(modifier.fillMaxWidth().testTag("subtitleCard"), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier.fillMaxWidth().testTag("subtitleCard"), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         if (state.question.isNotEmpty()) {
             Text(
                 state.question,
                 color = tones.onContainer,
-                fontSize = 28.sp,
-                lineHeight = 32.sp,
+                fontSize = 32.sp,
+                lineHeight = 38.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.5).sp,
                 modifier = Modifier.testTag("subtitleQuestion")
@@ -85,30 +88,32 @@ fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (state.isNumerical) {
                 val icon = if (state.targetType == NumericalHabitType.AT_LEAST) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward
-                InfoPill(icon, targetText(state.targetValue, state.unit), tones.onContainer, Modifier.testTag("subtitleTarget"))
+                InfoPill(icon, targetText(state.targetValue, state.unit), tones, Modifier.testTag("subtitleTarget"))
             }
             InfoPill(
                 Icons.Outlined.CalendarToday,
                 frequencyText(state.frequency.numerator, state.frequency.denominator),
-                tones.onContainer,
+                tones,
                 Modifier.testTag("subtitleFrequency")
             )
-            InfoPill(Icons.Outlined.Notifications, reminderText, tones.onContainer, Modifier.testTag("subtitleReminder"))
+            InfoPill(Icons.Outlined.Notifications, reminderText, tones, Modifier.testTag("subtitleReminder"))
         }
     }
 }
 
-/** An outlined pill with an icon and a short text. */
+/** A pill filled with the chip colour of the card, 40 dp high, with an icon and a short text. */
 @Composable
-private fun InfoPill(icon: ImageVector, text: String, color: Color, modifier: Modifier = Modifier) {
+private fun InfoPill(icon: ImageVector, text: String, tones: HabitTones, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .border(1.dp, color.copy(alpha = 0.4f), CircleShape)
-            .padding(horizontal = 14.dp, vertical = 10.dp)
+            .height(40.dp)
+            .clip(CircleShape)
+            .background(tones.chip)
+            .padding(horizontal = 14.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
-        Text(text, color = color, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
+        Icon(icon, contentDescription = null, tint = tones.onContainer, modifier = Modifier.size(18.dp))
+        Text(text, color = tones.onContainer, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
     }
 }
 
@@ -117,7 +122,7 @@ private fun InfoPill(icon: ImageVector, text: String, color: Color, modifier: Mo
 fun NotesCardContent(state: NotesCardState, color: Color, modifier: Modifier = Modifier) {
     if (state.description.isEmpty()) return
     Column(modifier.fillMaxWidth().testTag("notesCard")) {
-        CardHeader(stringResource(Res.string.notes))
+        CardHeader(stringResource(Res.string.notes), spacing = 12.dp)
         Text(state.description, color = color, fontSize = 16.sp)
     }
 }

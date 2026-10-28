@@ -56,14 +56,14 @@ fun WeekdayBarsChart(
     val scheme = MaterialTheme.colorScheme
     val max = bars.maxOfOrNull { it.total } ?: 0
     val highlighted = highlightedWeekday(bars)
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = modifier.fillMaxWidth()) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier.fillMaxWidth()) {
         bars.forEachIndexed { index, bar ->
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(dayName(bar.day), color = scheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.width(40.dp))
+                Text(dayName(bar.day), color = scheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.width(45.6.dp))
                 Box(
                     Modifier
                         .weight(1f)
-                        .height(28.dp)
+                        .height(32.dp)
                         .clip(CircleShape)
                         .background(scheme.surfaceContainerHighest)
                 ) {
@@ -72,7 +72,7 @@ fun WeekdayBarsChart(
                             .fillMaxHeight()
                             .fillMaxWidth(maxOf(barFraction(bar.total, max), MIN_FILL))
                             .clip(CircleShape)
-                            .background(if (index == highlighted) tones.accent else tones.accent.copy(alpha = 0.45f))
+                            .background(if (index == highlighted) tones.accent else tones.muted)
                     )
                 }
                 Text(

@@ -20,7 +20,9 @@
 package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -70,7 +72,8 @@ fun HistoryCardContent(state: HistoryCardState, onEdit: () -> Unit, dateFormatte
         Button(
             onClick = onEdit,
             colors = ButtonDefaults.buttonColors(containerColor = tones.container, contentColor = tones.accent),
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp).testTag("historyEdit")
+            contentPadding = PaddingValues(horizontal = 28.dp),
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 14.dp).heightIn(min = 48.dp).testTag("historyEdit")
         ) {
             Text(stringResource(Res.string.edit).uppercase(), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
