@@ -21,6 +21,7 @@ attribution.
 
 ### Added
 
+- Android Compose screens use the Material 3 Expressive theme (motion, shapes and typography). The Salem colours stay the same. iOS is unchanged.
 - The iOS app draws its screens in SwiftUI (list, editor, habit detail with charts, settings, about and intro). The habit logic stays in Kotlin (`SalemKit`). Android keeps Compose. Strings for iOS are generated from `strings.xml` by `syncIosStrings`. The habit list was opened on the iPhone 18 Pro Max simulator. Editor, charts, import, export and the notification permission are not fully checked there yet.
 - Add shortcuts to iOS: the Shortcuts app gets the actions Check habit, Uncheck habit, Toggle habit, Add one to habit and Subtract one from habit (the iOS counterpart of the Tasker actions of Android), each on a habit you choose and always for today, and Siri and Spotlight know "Toggle a habit in Salem" and "Add one to a habit in Salem"; they change the database of the app through the App Group and tell the widget to draw again. English and Spanish. Not seen on a device or the simulator yet.
 - Add a widget to iOS with the habits of today (small, medium and large): each habit has a button to check it from the home screen, a numerical habit has a plus button, and it shows the score; it uses the database of the app through the App Group and the app tells it to draw again when the habits change. It needs iOS 17 (the minimum of the app is now 17.0). Not seen on a device or the simulator yet.
