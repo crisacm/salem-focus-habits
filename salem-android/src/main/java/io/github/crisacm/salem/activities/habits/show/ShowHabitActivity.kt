@@ -24,8 +24,8 @@ import android.view.HapticFeedbackConstants
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowCompat
 import io.github.crisacm.salem.AndroidDirFinder
 import io.github.crisacm.salem.HabitsApplication
 import io.github.crisacm.salem.R
@@ -47,11 +47,11 @@ import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.SalemTheme
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.detail.HabitDetailScreen
 import io.github.crisacm.salem.ui.detail.HabitDetailSession
-import io.github.crisacm.salem.ui.detail.barColorFor
 import io.github.crisacm.salem.ui.detail.habitIdFrom
-import io.github.crisacm.salem.utils.StyledResources
+import io.github.crisacm.salem.ui.list.habitTones
 import io.github.crisacm.salem.utils.dismissCurrentAndShow
 import io.github.crisacm.salem.utils.dismissCurrentDialog
 import io.github.crisacm.salem.utils.showMessage
@@ -107,10 +107,8 @@ class ShowHabitActivity : AppCompatActivity() {
         )
         setContent {
             SalemTheme {
-                val state = session.state
                 HabitDetailScreen(
                     session = session,
-                    barColor = state?.let(::barColor) ?: Color.Black,
                     dateFormatter = remember { JavaLocalDateFormatter(Locale.getDefault()) },
                     onBack = { onSupportNavigateUp() }
                 )
@@ -137,23 +135,14 @@ class ShowHabitActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    /** The colour of the top bar: the habit colour or the primary colour, as the old toolbar did. */
-    private fun barColor(state: ShowHabitState): Color {
-        val styled = StyledResources(this)
-        return Color(
-            barColorFor(
-                useHabitColor = styled.getBoolean(R.attr.useHabitColorAsPrimary),
-                habitColor = state.theme.color(state.color).toInt(),
-                primaryColor = styled.getColor(R.attr.colorPrimary)
-            )
-        )
-    }
-
     private inner class Hooks : HabitDetailSession.Hooks {
-        // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the bar.
+        // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the header; on every
+        // version its icons follow the theme: dark on the light one, light on the dark ones.
         @Suppress("DEPRECATION")
         override fun onStateChanged(state: ShowHabitState) {
-            window.statusBarColor = barColor(state).toArgb()
+            val dark = state.theme.usesDarkTones()
+            window.statusBarColor = habitTones(state.color.paletteIndex, dark).container.toArgb()
+            WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !dark
         }
 
         override fun updateWidgets() {

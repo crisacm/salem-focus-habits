@@ -19,95 +19,101 @@
 
 package io.github.crisacm.salem.ui.detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.NotesCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.SubtitleCardState
-import io.github.crisacm.salem.platform.gui.FontAwesome
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.edit.frequencyText
 import io.github.crisacm.salem.ui.edit.rememberTimeFormat
-import io.github.crisacm.salem.ui.list.rememberFontAwesome
+import io.github.crisacm.salem.ui.list.HabitTones
 import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.notes
 import io.github.crisacm.salem.ui.resources.reminder_off
 import org.jetbrains.compose.resources.stringResource
 
-/** The subtitle of the detail screen: the question, the target, the frequency and the reminder of the habit. */
+/**
+ * The subtitle of the detail screen, in its header: the question as a large title, and under it pills with the
+ * target, the frequency and the reminder of the habit.
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier) {
     val timeFormat = rememberTimeFormat()
-    val density = LocalDensity.current
-    val color = state.theme.color(state.color).toCompose()
-    val muted = state.theme.mediumContrastTextColor.toCompose()
-    val glyphs = rememberFontAwesome()
-    // The target text has room for about seven letters, as in the old layout.
-    val targetMaxWidth = with(density) { (SMALL_TEXT * 7).toDp() }
+    val tones = rememberDetailTones(state.theme, state.color)
     val reminder = state.reminder
     val reminderText = if (reminder != null) {
         timeFormat.format(reminder.hour, reminder.minute)
     } else {
         stringResource(Res.string.reminder_off)
     }
-    Column(modifier.fillMaxWidth().testTag("subtitleCard")) {
+    Column(modifier.fillMaxWidth().testTag("subtitleCard"), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         if (state.question.isNotEmpty()) {
             Text(
                 state.question,
-                color = color,
-                fontSize = REGULAR_TEXT,
-                modifier = Modifier.padding(bottom = 8.dp).testTag("subtitleQuestion")
+                color = tones.onContainer,
+                fontSize = 32.sp,
+                lineHeight = 38.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.5).sp,
+                modifier = Modifier.testTag("subtitleQuestion")
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (state.isNumerical) {
-                val icon = if (state.targetType == NumericalHabitType.AT_LEAST) {
-                    FontAwesome.ARROW_CIRCLE_UP
-                } else {
-                    FontAwesome.ARROW_CIRCLE_DOWN
-                }
-                Text(icon, color = muted, fontSize = 16.sp, fontFamily = glyphs)
-                Text(
-                    targetText(state.targetValue, state.unit),
-                    color = muted,
-                    fontSize = SMALL_TEXT,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(start = 4.dp, end = 16.dp).widthIn(max = targetMaxWidth).testTag("subtitleTarget")
-                )
+                val icon = if (state.targetType == NumericalHabitType.AT_LEAST) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward
+                InfoPill(icon, targetText(state.targetValue, state.unit), tones, Modifier.testTag("subtitleTarget"))
             }
-            Text(FontAwesome.CALENDAR, color = muted, fontSize = SMALL_TEXT, fontFamily = glyphs)
-            Text(
+            InfoPill(
+                Icons.Outlined.CalendarToday,
                 frequencyText(state.frequency.numerator, state.frequency.denominator),
-                color = muted,
-                fontSize = SMALL_TEXT,
-                modifier = Modifier.padding(start = 4.dp, end = 16.dp).testTag("subtitleFrequency")
+                tones,
+                Modifier.testTag("subtitleFrequency")
             )
-            Text(FontAwesome.BELL_O, color = muted, fontSize = SMALL_TEXT, fontFamily = glyphs)
-            Text(
-                reminderText,
-                color = muted,
-                fontSize = SMALL_TEXT,
-                modifier = Modifier.padding(start = 4.dp, top = 1.dp).testTag("subtitleReminder")
-            )
+            InfoPill(Icons.Outlined.Notifications, reminderText, tones, Modifier.testTag("subtitleReminder"))
         }
+    }
+}
+
+/** A pill filled with the chip colour of the card, 40 dp high, with an icon and a short text. */
+@Composable
+private fun InfoPill(icon: ImageVector, text: String, tones: HabitTones, modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .height(40.dp)
+            .clip(CircleShape)
+            .background(tones.chip)
+            .padding(horizontal = 14.dp)
+    ) {
+        Icon(icon, contentDescription = null, tint = tones.onContainer, modifier = Modifier.size(18.dp))
+        Text(text, color = tones.onContainer, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
     }
 }
 
@@ -115,9 +121,8 @@ fun SubtitleCardContent(state: SubtitleCardState, modifier: Modifier = Modifier)
 @Composable
 fun NotesCardContent(state: NotesCardState, color: Color, modifier: Modifier = Modifier) {
     if (state.description.isEmpty()) return
-    Text(
-        state.description,
-        color = color,
-        modifier = modifier.fillMaxWidth().testTag("notesCard")
-    )
+    Column(modifier.fillMaxWidth().testTag("notesCard")) {
+        CardHeader(stringResource(Res.string.notes), spacing = 12.dp)
+        Text(state.description, color = color, fontSize = 16.sp)
+    }
 }

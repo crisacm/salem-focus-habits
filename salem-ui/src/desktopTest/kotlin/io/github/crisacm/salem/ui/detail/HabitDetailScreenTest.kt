@@ -20,7 +20,6 @@
 package io.github.crisacm.salem.ui.detail
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
@@ -66,7 +65,7 @@ class HabitDetailScreenTest : BaseUiTest() {
         session.attach()
         setContent {
             MaterialTheme {
-                HabitDetailScreen(session, Color(0xFF388E3C), JavaLocalDateFormatter(Locale.US), onBack = { backs++ })
+                HabitDetailScreen(session, JavaLocalDateFormatter(Locale.US), onBack = { backs++ })
             }
         }
         return session
@@ -159,7 +158,7 @@ class HabitDetailScreenTest : BaseUiTest() {
         val session = sessionFor(habit)
         setContent {
             MaterialTheme {
-                HabitDetailScreen(session, Color(0xFF388E3C), JavaLocalDateFormatter(Locale.US), onBack = { backs++ })
+                HabitDetailScreen(session, JavaLocalDateFormatter(Locale.US), onBack = { backs++ })
             }
         }
         onNodeWithTag("showHabitScreen").assertExists()

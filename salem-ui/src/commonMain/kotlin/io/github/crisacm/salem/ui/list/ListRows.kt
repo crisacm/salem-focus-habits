@@ -18,19 +18,35 @@
  */
 package io.github.crisacm.salem.ui.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,15 +58,18 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +78,7 @@ import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.ui.compose.toCompose
+import io.github.crisacm.salem.ui.compose.usesDarkTones
 
 /** What the rows tell the screen; [onDrop] moves the row at `from` to `to` while it is dragged, and [onDragEnd] ends the drag. Positions are the centre of the touched cell in window coordinates. */
 class ListRowCallbacks(
@@ -72,37 +91,28 @@ class ListRowCallbacks(
     val onDragEnd: () -> Unit
 )
 
-/**
- * The colours of the list: the card behind a row, the highlighted one of a selected row, a dim and a medium
- * one for the cells, and the track of the score ring. Each platform takes them from its own theme.
- */
-class ListColors(
-    val card: Color,
-    val highlighted: Color,
-    val low: Color,
-    val medium: Color,
-    val ringTrack: Color
-)
-
 /** The row being dragged and how far it has moved from its place. */
 private class RowDrag {
     var id by mutableStateOf<Long?>(null)
     var offset by mutableFloatStateOf(0f)
 }
 
-private val SelectedBorder = Color(0xFF9E9E9E)
+/** The space between two cards, and between the cards and the edges of the screen. */
+private val CardGap = 8.dp
+private val ScreenMargin = 16.dp
+private val CardShape = RoundedCornerShape(28.dp)
 
 /**
- * The habit rows: a score ring, the name and one cell per day, with the days of the header ([header]
- * gives the number of columns, the offset, the order and today). Preferences and colours are read each
- * time a row is composed, so a refresh of the rows after the settings screen picks up changes.
+ * The habit cards: the icon of the habit inside its score ring, the name, a button to open the habit and one
+ * cell per day, with the days of the header ([header] gives the number of columns, the offset, the order and
+ * today). Preferences are read each time a card is composed, so a refresh of the rows after the settings screen
+ * picks up changes.
  */
 @Composable
 fun HabitListContent(
     state: HabitListState,
     header: HeaderState,
     theme: Theme,
-    colors: ListColors,
     preferences: Preferences,
     callbacks: ListRowCallbacks,
     modifier: Modifier = Modifier,
@@ -112,10 +122,19 @@ fun HabitListContent(
     val listState = rememberLazyListState()
     val drag = remember { RowDrag() }
     val sortable = state.isSortable
+    val dark = theme.usesDarkTones()
+    val gap = with(LocalDensity.current) { CardGap.roundToPx() }
+    val direction = LocalLayoutDirection.current
     LazyColumn(
         state = listState,
         modifier = modifier.exposeTestTags(),
-        contentPadding = contentPadding
+        verticalArrangement = Arrangement.spacedBy(CardGap),
+        contentPadding = PaddingValues(
+            start = ScreenMargin + contentPadding.calculateStartPadding(direction),
+            end = ScreenMargin + contentPadding.calculateEndPadding(direction),
+            top = contentPadding.calculateTopPadding() + 4.dp,
+            bottom = contentPadding.calculateBottomPadding()
+        )
     ) {
         items(state.rows, key = { it.habit.id!! }) { row ->
             val id = row.habit.id!!
@@ -135,10 +154,11 @@ fun HabitListContent(
                     drag.offset += dy
                     val index = state.rows.indexOfFirst { it.habit.id == id }
                     val height = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == id }?.size ?: 0
-                    val target = dragTargetIndex(index, drag.offset, height.toFloat(), state.rows.size)
+                    val pitch = height + gap
+                    val target = dragTargetIndex(index, drag.offset, pitch.toFloat(), state.rows.size)
                     if (index >= 0 && target != index) {
                         callbacks.onDrop(index, target)
-                        drag.offset -= (target - index) * height
+                        drag.offset -= (target - index) * pitch
                     }
                 },
                 onDragEnd = {
@@ -149,8 +169,9 @@ fun HabitListContent(
                 row = row,
                 header = header,
                 selected = row.habit.id in selected,
-                habitColor = if (row.habit.isArchived) colors.medium else theme.color(row.habit.color).toCompose(),
-                colors = colors,
+                tones = remember(row.habit.color, row.habit.isArchived, dark) {
+                    habitTones(if (row.habit.isArchived) ARCHIVED_TONES else row.habit.color.paletteIndex, dark)
+                },
                 preferences = preferences,
                 callbacks = callbacks
             )
@@ -163,8 +184,7 @@ private fun HabitRow(
     row: HabitRowData,
     header: HeaderState,
     selected: Boolean,
-    habitColor: Color,
-    colors: ListColors,
+    tones: HabitTones,
     preferences: Preferences,
     callbacks: ListRowCallbacks,
     sortable: Boolean,
@@ -178,15 +198,14 @@ private fun HabitRow(
     val currentDragStart by rememberUpdatedState(onDragStart)
     val currentDrag by rememberUpdatedState(onDrag)
     val currentDragEnd by rememberUpdatedState(onDragEnd)
-    val cellColors = CellColors(habitColor, colors.low, colors.medium, colors.card)
     val dates = headerColumns(header.buttonCount, header.dataOffset, header.today, header.reversed)
     Surface(
-        color = if (selected) colors.highlighted else colors.card,
-        shadowElevation = 1.dp,
+        color = tones.container,
+        shape = CardShape,
         modifier = modifier
-            .padding(start = 3.dp, end = 3.dp, bottom = 3.dp)
+            .fillMaxWidth()
             .testTag("habitRow")
-            .then(if (selected) Modifier.border(2.dp, SelectedBorder) else Modifier)
+            .then(if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, CardShape) else Modifier)
             .pointerInput(habit.id, sortable) {
                 // The cells consume their own touches first, so only the rest of the row gets here.
                 awaitEachGesture {
@@ -217,25 +236,47 @@ private fun HabitRow(
                 }
             }
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            ScoreRing(
-                percentage = row.score.toFloat(),
-                color = habitColor,
-                inactiveColor = colors.ringTrack,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Text(
-                habit.name,
-                color = habitColor,
-                fontSize = 14.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            Row(horizontalArrangement = Arrangement.End) {
+        Column(Modifier.padding(12.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                HabitIconRing(
+                    percentage = row.score.toFloat(),
+                    icon = habitIconFor(habit.uuid, habit.id),
+                    tones = tones
+                )
+                Text(
+                    habit.name,
+                    color = tones.onContainer,
+                    fontSize = 21.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(tones.chip)
+                        .clickable { currentCallbacks.onClick(habit) }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = habit.name,
+                        tint = tones.onContainer,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
                 for (date in dates) {
                     val daysAgo = date.daysUntil(header.today)
-                    DayCell(row, date, daysAgo, cellColors, preferences, callbacks)
+                    DayCell(row, date, daysAgo, tones, preferences, callbacks, Modifier.weight(1f))
                 }
             }
         }
@@ -247,15 +288,16 @@ private fun DayCell(
     row: HabitRowData,
     date: LocalDate,
     daysAgo: Int,
-    colors: CellColors,
+    tones: HabitTones,
     preferences: Preferences,
-    callbacks: ListRowCallbacks
+    callbacks: ListRowCallbacks,
+    modifier: Modifier
 ) {
     val habit = row.habit
     val windowInsets = rememberWindowInsetOffset()
     val coordinates = remember { arrayOfNulls<LayoutCoordinates>(1) }
     val locate = { windowCenter(windowInsets(), coordinates[0]) }
-    val modifier = Modifier.onGloballyPositioned { coordinates[0] = it }
+    val cellModifier = modifier.onGloballyPositioned { coordinates[0] = it }
     val notes = noteAt(row.notes, daysAgo)
     if (habit.isNumerical) {
         NumberCell(
@@ -263,19 +305,19 @@ private fun DayCell(
             completed = completedAt(row.completed, daysAgo),
             units = habit.unit,
             notes = notes,
-            colors = colors,
+            tones = tones,
             questionMarksEnabled = preferences.areQuestionMarksEnabled,
             onEdit = {
                 val at = locate()
                 callbacks.onEdit(habit, date, at.x, at.y)
             },
-            modifier = modifier
+            modifier = cellModifier
         )
     } else {
         CheckmarkCell(
             value = checkmarkAt(row.checkmarks, daysAgo),
             notes = notes,
-            colors = colors,
+            tones = tones,
             questionMarksEnabled = preferences.areQuestionMarksEnabled,
             skipEnabled = preferences.isSkipEnabled,
             shortToggle = preferences.isShortToggleEnabled,
@@ -287,7 +329,7 @@ private fun DayCell(
                 val at = locate()
                 callbacks.onEdit(habit, date, at.x, at.y)
             },
-            modifier = modifier
+            modifier = cellModifier
         )
     }
 }

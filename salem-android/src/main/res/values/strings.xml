@@ -33,6 +33,7 @@
     <string name="color_swatch_description_selected" translatable="false">Color %1$d selected</string>
     <string name="randomize">Randomize</string>
     <string name="add_habit">Add habit</string>
+    <string name="new_habit">New habit</string>
     <string name="color_picker_default_title">Change color</string>
     <string name="toast_habit_created">Habit created</string>
     <plurals name="toast_habits_changed">
@@ -131,6 +132,7 @@
     <string name="development">Development</string>
     <string name="enable_developer_mode">Enable developer mode</string>
     <string name="frequency">Frequency</string>
+    <string name="completions_by_weekday">Completions by weekday</string>
     <string name="checkmark">Checkmark</string>
     <string name="checkmark_stack_widget" formatted="false">Checkmark Stack Widget</string>
     <string name="frequency_stack_widget" formatted="false">Frequency Stack Widget</string>
@@ -140,6 +142,9 @@
     <string name="best_streaks">Best streaks</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
+    <string name="per_week">Per week</string>
+    <string name="custom">Custom</string>
+    <string name="yes_no_option">Yes / No</string>
     <string name="help">Help &amp; FAQ</string>
     <string name="could_not_export">Failed to export data.</string>
     <string name="export_not_available">Exporting is not available on iOS yet</string>

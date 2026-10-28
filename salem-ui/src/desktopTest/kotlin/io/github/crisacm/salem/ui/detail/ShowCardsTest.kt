@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import io.github.crisacm.salem.core.models.Entry
@@ -114,6 +115,7 @@ class ShowCardsTest {
         val state = FrequencyCardState(PaletteColor(8), DayOfWeek.MONDAY, frequency, LightTheme(), false)
         setContent { FrequencyCardContent(state, formatter) }
         onNodeWithTag("frequencyChart").assertIsDisplayed()
+        onNodeWithText("Completions by weekday").assertIsDisplayed()
     }
 
     @Test
@@ -135,6 +137,10 @@ class ShowCardsTest {
         val state = OverviewCardState(PaletteColor(8), 0.23f, -0.12f, 0.74f, 44, LightTheme())
         setContent { OverviewCardContent(state) }
         onNodeWithTag("overviewCard").assertIsDisplayed()
+        onNodeWithText("74%").assertIsDisplayed()
+        onNodeWithText("+23%").assertIsDisplayed()
+        onNodeWithText("\u221212%").assertIsDisplayed()
+        onNodeWithText("44").assertIsDisplayed()
     }
 
     @Test

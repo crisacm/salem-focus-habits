@@ -35,13 +35,13 @@ class ShowHabitModelTest {
         assertEquals(
             listOf(
                 ShowCard.SUBTITLE,
-                ShowCard.NOTES,
                 ShowCard.OVERVIEW,
                 ShowCard.SCORE,
                 ShowCard.BAR,
-                ShowCard.HISTORY,
+                ShowCard.FREQUENCY,
                 ShowCard.STREAK,
-                ShowCard.FREQUENCY
+                ShowCard.HISTORY,
+                ShowCard.NOTES
             ),
             visibleCards(isNumerical = false, hasNotes = true)
         )
@@ -72,11 +72,5 @@ class ShowHabitModelTest {
         assertEquals(null, habitIdFrom(null))
         assertEquals(null, habitIdFrom("habit"))
         assertEquals(null, habitIdFrom(""))
-    }
-
-    @Test
-    fun theBarTakesTheColourOfTheHabitOnlyWhenAsked() {
-        assertEquals(0xFF0000, barColorFor(true, 0xFF0000, 0x0000FF))
-        assertEquals(0x0000FF, barColorFor(false, 0xFF0000, 0x0000FF))
     }
 }

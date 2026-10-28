@@ -31,7 +31,6 @@ import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.edit.SaveResult
-import io.github.crisacm.salem.core.ui.views.DarkTheme
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 import io.github.crisacm.salem.ui.compose.toCompose
@@ -84,7 +83,6 @@ fun ListOverlayHost(
                         initial = habit?.let { EditHabitForm.from(it) } ?: EditHabitForm.new(overlay.type),
                         isEditing = habit != null,
                         theme = theme,
-                        isNight = theme is DarkTheme,
                         dateFormatter = dateFormatter,
                         onSave = { form -> if (saver.save(form, overlay.habitId) != SaveResult.ALREADY_SAVING) dismiss() },
                         onBack = dismiss,

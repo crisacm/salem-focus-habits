@@ -79,18 +79,4 @@ object EditHabitSteps {
         clickTag("reminderTimePicker")
         clickTag("timePickerOk")
     }
-
-    fun clickReminderDays() {
-        clickTag("reminderDatePicker")
-    }
-
-    fun unselectAllDays() {
-        clickComposeText("Saturday")
-        clickComposeText("Sunday")
-        clickComposeText("Monday")
-        clickComposeText("Tuesday")
-        clickComposeText("Wednesday")
-        clickComposeText("Thursday")
-        clickComposeText("Friday")
-    }
 }

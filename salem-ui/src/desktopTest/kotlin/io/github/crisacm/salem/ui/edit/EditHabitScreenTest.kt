@@ -26,6 +26,8 @@ import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -37,6 +39,7 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import io.github.crisacm.salem.core.models.HabitType
+import io.github.crisacm.salem.core.models.NumericalHabitType
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.screens.habits.edit.EditHabitForm
 import io.github.crisacm.salem.core.ui.views.LightTheme
@@ -65,7 +68,10 @@ class EditHabitScreenTest {
     private var saved: EditHabitForm? = null
     private var backs = 0
 
-    private fun androidx.compose.ui.test.ComposeUiTest.show(initial: EditHabitForm = EditHabitForm.new(HabitType.YES_NO)) =
+    private fun androidx.compose.ui.test.ComposeUiTest.show(
+        initial: EditHabitForm = EditHabitForm.new(HabitType.YES_NO),
+        isEditing: Boolean = false
+    ) =
         setContent {
             val owner = object : NavigationEventDispatcherOwner {
                 override val navigationEventDispatcher = dispatcher
@@ -74,9 +80,8 @@ class EditHabitScreenTest {
                 MaterialTheme {
                     EditHabitScreen(
                         initial = initial,
-                        isEditing = false,
+                        isEditing = isEditing,
                         theme = LightTheme(),
-                        isNight = false,
                         dateFormatter = FakeFormatter(),
                         onSave = { saved = it },
                         onBack = { backs++ }
@@ -165,5 +170,102 @@ class EditHabitScreenTest {
         runOnIdle { sendBack() }
         onNodeWithTag("buttonSave").assertIsDisplayed()
         assertEquals(0, backs)
+    }
+
+    @Test
+    fun theMeasurableOptionShowsTheTargetFieldsAndCreatesANumericalHabit() = runComposeUiTest {
+        show()
+        onNodeWithTag("targetInput").assertDoesNotExist()
+        onNodeWithTag("typeMeasurable").performClick()
+        onNodeWithTag("targetInput").assertIsDisplayed()
+        onNodeWithTag("nameInput").performTextInput("Run")
+        onNodeWithTag("targetInput").performTextInput("5")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(HabitType.NUMERICAL, saved?.type)
+    }
+
+    @Test
+    fun thePerWeekChipSetsTheFrequency() = runComposeUiTest {
+        show()
+        onNodeWithText("Per week").performClick()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(1 to 7, saved?.let { it.freqNum to it.freqDen })
+    }
+
+    @Test
+    fun aSwatchChangesTheColourOfTheForm() = runComposeUiTest {
+        show()
+        onNodeWithContentDescription("Color 16").performClick()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(PaletteColor(15), saved?.color)
+    }
+
+    @Test
+    fun anExistingReminderShowsItsTimeAndDaysAndIsKept() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(reminderHour = 7, reminderMin = 30))
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+        onNodeWithTag("reminderTimePicker").assertIsDisplayed()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(7 to 30, saved?.let { it.reminderHour to it.reminderMin })
+    }
+
+    @Test
+    fun aNewHabitStartsWithTheCursorInItsName() = runComposeUiTest {
+        show()
+        onNodeWithTag("nameInput").assertIsFocused()
+    }
+
+    @Test
+    fun anExistingHabitDoesNotTakeTheFocus() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(name = "Meditate"), isEditing = true)
+        onNodeWithTag("nameInput").assertIsNotFocused()
+    }
+
+    @Test
+    fun theColourCardOpensThePalette() = runComposeUiTest {
+        show()
+        onNodeWithText("Color").performClick()
+        onNodeWithText("Change color").assertIsDisplayed()
+    }
+
+    @Test
+    fun theSwitchOfTheReminderTurnsItOffAndTheDaysGo() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(reminderHour = 7, reminderMin = 30))
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+        onNodeWithTag("reminderSwitch").performClick()
+        onNodeWithTag("reminderDatePicker").assertDoesNotExist()
+        onNodeWithTag("nameInput").performTextInput("Meditate")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(false, saved?.hasReminder)
+    }
+
+    @Test
+    fun theSwitchOfTheReminderAsksForTheTimeWhenItIsTurnedOn() = runComposeUiTest {
+        show()
+        onNodeWithTag("reminderSwitch").performClick()
+        onNodeWithTag("timePickerOk").performClick()
+        onNodeWithTag("reminderDatePicker").assertIsDisplayed()
+    }
+
+    @Test
+    fun theMeasurableTypeShowsTheUnitTheTargetAndTheTargetType() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.NUMERICAL))
+        onNodeWithTag("unitInput").assertIsDisplayed()
+        onNodeWithTag("targetInput").assertIsDisplayed()
+        onNodeWithText("Target Type").assertIsDisplayed()
+        onNodeWithTag("targetTypeAtLeast").assertIsDisplayed()
+    }
+
+    @Test
+    fun atMostIsReportedOnSave() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.NUMERICAL))
+        onNodeWithTag("targetTypeAtMost").performClick()
+        onNodeWithTag("nameInput").performTextInput("Coffee")
+        onNodeWithTag("targetInput").performTextInput("2")
+        onNodeWithTag("buttonSave").performClick()
+        assertEquals(NumericalHabitType.AT_MOST, saved?.targetType)
     }
 }

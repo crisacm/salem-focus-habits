@@ -21,14 +21,11 @@ package io.github.crisacm.salem.activities.habits.list
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Typeface
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.font.FontFamily
+import androidx.core.view.WindowCompat
 import io.github.crisacm.salem.R
 import io.github.crisacm.salem.core.models.ModelObservable
-import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.ThemeSwitcher
@@ -37,24 +34,21 @@ import io.github.crisacm.salem.core.ui.screens.habits.list.ListHabitsBehavior
 import io.github.crisacm.salem.core.utils.MidnightTimer
 import io.github.crisacm.salem.inject.ActivityContext
 import io.github.crisacm.salem.inject.ActivityScope
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.getToday
-import io.github.crisacm.salem.ui.list.CondensedFonts
+import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
+import io.github.crisacm.salem.ui.compose.usesDarkTones
+import io.github.crisacm.salem.ui.list.DAY_COLUMNS
 import io.github.crisacm.salem.ui.list.EmptyListState
 import io.github.crisacm.salem.ui.list.HabitListController
 import io.github.crisacm.salem.ui.list.HabitListState
 import io.github.crisacm.salem.ui.list.HeaderState
-import io.github.crisacm.salem.ui.list.ListColors
 import io.github.crisacm.salem.ui.list.ListHabitsMenu
 import io.github.crisacm.salem.ui.list.ListHabitsSelectionMenu
 import io.github.crisacm.salem.ui.list.ListRowCallbacks
-import io.github.crisacm.salem.ui.list.ListScreenColors
 import io.github.crisacm.salem.ui.list.ListScreenModel
 import io.github.crisacm.salem.ui.list.MAX_CHECKMARK_COUNT
-import io.github.crisacm.salem.ui.list.checkmarkColumns
 import io.github.crisacm.salem.ui.list.emptyListState
-import io.github.crisacm.salem.utils.StyledResources
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.xml.KonfettiView
 import java.util.Locale
@@ -86,7 +80,8 @@ class ListHabitsHost(
     override val hintList = hintListFactory.create(context.resources.getStringArray(R.array.hints))
 
     // The rows read the offset from the header state, so nobody needs to be told when it changes.
-    override val headerState = HeaderState(context.resources.getDimension(R.dimen.checkmarkWidth)) {}
+    // One day is scrolled for every 64 dp that the header is dragged, about the width of a column.
+    override val headerState = HeaderState(context.resources.displayMetrics.density * 64f) {}
 
     override val rowCallbacks = ListRowCallbacks(
         onClick = controller::onClick,
@@ -98,49 +93,8 @@ class ListHabitsHost(
         onDragEnd = controller::onDragFinished
     )
 
-    private val styled = StyledResources(context)
-    val windowBackground = Color(styled.getColor(R.attr.windowBackgroundColor))
-    val headerBackground = Color(styled.getColor(R.attr.headerBackgroundColor))
-    val headerText = Color(styled.getColor(R.attr.contrast60))
-
-    /** The colours of the rows, from the theme of the activity. */
-    val listColors = ListColors(
-        card = Color(styled.getColor(R.attr.cardBgColor)),
-        highlighted = Color(styled.getColor(R.attr.highlightedBackgroundColor)),
-        low = Color(styled.getColor(R.attr.contrast40)),
-        medium = Color(styled.getColor(R.attr.contrast60)),
-        ringTrack = Color(styled.getColor(R.attr.contrast100)).copy(alpha = 0.15f)
-    )
-
     /** The names of the weekdays in the header. */
     override val dateFormatter = JavaLocalDateFormatter(Locale.getDefault())
-
-    /** The condensed font of the number cells, which only Android has by name. */
-    val condensedFonts = CondensedFonts(
-        regular = FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL)),
-        bold = FontFamily(Typeface.create("sans-serif-condensed", Typeface.BOLD))
-    )
-
-    /** The colour of the top bar: the habit palette colour in the light theme, the primary colour otherwise. */
-    val barColor: Color by lazy {
-        if (styled.getBoolean(R.attr.useHabitColorAsPrimary)) {
-            Color(themeSwitcher.currentTheme!!.color(PaletteColor(17)).toInt())
-        } else {
-            Color(styled.getColor(R.attr.colorPrimary))
-        }
-    }
-
-    /** The colours of the screen, from the theme of the activity. */
-    override val colors: ListScreenColors by lazy {
-        ListScreenColors(
-            windowBackground = windowBackground,
-            barColor = barColor,
-            onBarColor = Color.White,
-            headerBackground = headerBackground,
-            headerText = headerText,
-            list = listColors
-        )
-    }
 
     // Compose state can be written from any thread, so the listeners need no handler.
     private val preferencesListener = object : Preferences.Listener {
@@ -160,10 +114,13 @@ class ListHabitsHost(
 
     fun restoreDataOffset(offset: Int) = headerState.restoreOffset(offset)
 
-    // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the bar.
+    // Before Android 15 the window is not edge to edge, so the status bar needs the colour of the screen; on every
+    // version its icons follow the theme of the list: dark on the light one, light on the dark ones.
     @Suppress("DEPRECATION")
     fun paintStatusBar(activity: Activity) {
-        activity.window.statusBarColor = barColor.toArgb()
+        val theme = themeSwitcher.currentTheme ?: return
+        activity.window.statusBarColor = theme.toExpressiveColorScheme().background.toArgb()
+        WindowCompat.getInsetsController(activity.window, activity.window.decorView).isAppearanceLightStatusBars = !theme.usesDarkTones()
     }
 
     /** Called when the screen enters the composition, which happens when its window is attached. */
@@ -190,16 +147,10 @@ class ListHabitsHost(
         onSideInsetsChanged?.invoke(left, right)
     }
 
-    /** Called with the width in pixels of the screen, so the header and the rows know how many days to show. */
+    /** Called with the width in pixels of the screen: the header always shows [DAY_COLUMNS] days and can scroll back to the oldest one. */
     override fun onWidthChanged(width: Int) {
-        val resources = context.resources
-        val count = checkmarkColumns(
-            width = width.toFloat(),
-            nameWidth = resources.getDimension(R.dimen.habitNameWidth),
-            buttonWidth = resources.getDimension(R.dimen.checkmarkWidth)
-        )
-        headerState.buttonCount = count
-        headerState.setMaxDataOffset(max(MAX_CHECKMARK_COUNT - count, 0))
+        headerState.buttonCount = DAY_COLUMNS
+        headerState.setMaxDataOffset(max(MAX_CHECKMARK_COUNT - DAY_COLUMNS, 0))
     }
 
     override fun onModelChange() {

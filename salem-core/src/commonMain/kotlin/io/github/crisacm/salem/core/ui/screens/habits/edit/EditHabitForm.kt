@@ -53,6 +53,20 @@ data class EditHabitForm(
 ) {
     val hasReminder get() = reminderHour >= 0
 
+    /**
+     * The form as a habit of [newType]. A numerical habit only has a frequency per day, week or month, so a
+     * frequency of a yes or no habit that is not one of them (such as 3 times per week) becomes every day.
+     */
+    fun withType(newType: HabitType): EditHabitForm = when {
+        newType == type -> this
+        newType == HabitType.NUMERICAL -> copy(
+            type = newType,
+            freqNum = 1,
+            freqDen = if (freqDen in NUMERICAL_DENOMINATORS) freqDen else 1
+        )
+        else -> copy(type = newType)
+    }
+
     fun clearReminder() = copy(reminderHour = -1, reminderMin = -1, reminderDays = WeekdayList.EVERY_DAY)
 
     fun validate() = EditHabitErrors(
@@ -81,6 +95,9 @@ data class EditHabitForm(
 
     companion object {
         val DEFAULT_COLOR = PaletteColor(11)
+
+        /** The periods a numerical habit can have: a day, a week and a month. */
+        private val NUMERICAL_DENOMINATORS = listOf(1, 7, 30)
 
         fun new(type: HabitType) = EditHabitForm(type)
 

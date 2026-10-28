@@ -20,25 +20,14 @@
 package io.github.crisacm.salem.ui.list
 
 import androidx.compose.runtime.State
-import androidx.compose.ui.graphics.Color
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.tasks.TaskRunner
 import io.github.crisacm.salem.core.ui.screens.habits.list.HintList
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 
-/** The colours of the screen of the list: behind it, the bar, the day header, and the colours of the rows. */
-class ListScreenColors(
-    val windowBackground: Color,
-    val barColor: Color,
-    val onBarColor: Color,
-    val headerBackground: Color,
-    val headerText: Color,
-    val list: ListColors
-)
-
 /**
- * What [ListHabitsContent] needs from the platform: the state holders it draws, the colours and names that
- * depend on the theme and the locale, and the moments in which the screen is shown and its width is known.
+ * What [ListHabitsContent] needs from the platform: the state holders it draws, the names that
+ * depend on the locale, and the moments in which the screen is shown and its width is known.
  */
 interface ListScreenModel {
     val menu: ListHabitsMenu
@@ -51,7 +40,6 @@ interface ListScreenModel {
     val hintList: HintList
     val taskRunner: TaskRunner
     val dateFormatter: LocalDateFormatter
-    val colors: ListScreenColors
 
     /** The screen entered the composition: start listening to the model. */
     fun onAttached()
@@ -59,6 +47,6 @@ interface ListScreenModel {
     /** The screen left the composition. */
     fun onDetached()
 
-    /** The width in pixels of the whole screen, to decide how many days fit. */
+    /** The width in pixels of the whole screen, which tells the model that the screen has a size. */
     fun onWidthChanged(width: Int)
 }
