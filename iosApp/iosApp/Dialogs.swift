@@ -23,6 +23,64 @@ private func LF(_ key: String, _ fallback: String, _ args: CVarArg...) -> String
     String(format: L(key, fallback), locale: Locale.current, arguments: args)
 }
 
+// MARK: - Sheet pieces
+
+/// The close button of a sheet: the close button of the system in iOS 26, a round cross on a material before.
+struct SheetCloseButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            Button(role: .close, action: action)
+        } else {
+            legacy
+        }
+        #else
+        legacy
+        #endif
+    }
+
+    private var legacy: some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(Color.primary)
+                .frame(width: 44, height: 44)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .accessibilityLabel(L("cancel", "Cancel"))
+    }
+}
+
+private struct SheetHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = max(value, nextValue()) }
+}
+
+private struct FittedSheet: ViewModifier {
+    @State private var height: CGFloat = 340
+
+    func body(content: Content) -> some View {
+        content
+            .fixedSize(horizontal: false, vertical: true)
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(key: SheetHeightKey.self, value: proxy.size.height)
+                }
+            )
+            .onPreferenceChange(SheetHeightKey.self) { if $0 > 0 { height = $0 } }
+            .presentationDetents([.height(height)])
+            .presentationDragIndicator(.visible)
+            .presentationBackground(Color(.systemGroupedBackground))
+    }
+}
+
+extension View {
+    /// Makes a sheet as tall as its content.
+    func fittedSheet() -> some View { modifier(FittedSheet()) }
+}
+
 // MARK: - Habit type
 
 struct HabitTypeDialog: View {
@@ -30,34 +88,73 @@ struct HabitTypeDialog: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            List {
-                Button {
-                    onSelected(0)
-                    dismiss()
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(L("yes_or_no", "Yes or No")).font(.headline)
-                        Text(L("yes_or_no_example", "e.g. Did you exercise today?")).font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
-                Button {
-                    onSelected(1)
-                    dismiss()
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(L("measurable", "Measurable")).font(.headline)
-                        Text(L("measurable_example", "e.g. How many miles did you run today? How many pages did you read?"))
-                            .font(.subheadline).foregroundStyle(.secondary)
-                    }
+        VStack(spacing: 0) {
+            ZStack {
+                Text(L("habit_type", "Habit Type"))
+                    .font(.system(size: 17, weight: .semibold))
+                HStack {
+                    SheetCloseButton { dismiss() }
+                    Spacer()
                 }
             }
-            .navigationTitle(L("type", "Type"))
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button(L("cancel", "Cancel")) { dismiss() } }
+            .frame(height: 44)
+            .padding(.top, 23)
+            .padding(.horizontal, 16)
+            VStack(spacing: 0) {
+                row(
+                    symbol: "checkmark",
+                    title: L("yes_no_option", "Yes / No"),
+                    text: L("yes_or_no_example", "e.g. Did you wake up early today? Did you exercise? Did you play chess?"),
+                    type: 0
+                )
+                Divider().padding(.leading, 74)
+                row(
+                    symbol: "chart.bar.fill",
+                    title: L("measurable", "Measurable"),
+                    text: L("measurable_example", "e.g. How many miles did you run today? How many pages did you read?"),
+                    type: 1
+                )
             }
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 24)
         }
-        .presentationDetents([.medium, .large])
+        .fittedSheet()
+    }
+
+    private func row(symbol: String, title: String, text: String, type: Int32) -> some View {
+        Button {
+            onSelected(type)
+            dismiss()
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: symbol)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(dynamicColor(light: 0x5856D6, dark: 0x8E8CFF))
+                    .frame(width: 44, height: 44)
+                    .background(
+                        dynamicColor(light: 0xEBEAFA, dark: 0x3E3D5C),
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    )
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title).font(.system(size: 17, weight: .semibold)).foregroundStyle(Color.primary)
+                    Text(text)
+                        .font(.system(size: 15))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color(.tertiaryLabel))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 15)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -432,6 +529,9 @@ struct CheckmarkPopup: View {
 }
 
 struct NumberPopup: View {
+    let title: String
+    let day: Int32
+    let unit: String
     let notes: String
     let number: Double
     let skipEnabled: Bool
@@ -440,14 +540,21 @@ struct NumberPopup: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draftNotes: String
     @State private var amount: String
+    @FocusState private var amountFocused: Bool
 
     init(
+        title: String,
+        day: Int32,
+        unit: String,
         notes: String,
         number: Double,
         skipEnabled: Bool,
         unknownEnabled: Bool,
         onSave: @escaping (Int32, String) -> Void
     ) {
+        self.title = title
+        self.day = day
+        self.unit = unit
         self.notes = notes
         self.number = number
         self.skipEnabled = skipEnabled
@@ -459,19 +566,54 @@ struct NumberPopup: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                TextField(L("notes", "Notes"), text: $draftNotes, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
-                TextField(L("value", "Value"), text: $amount)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.center)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
+        VStack(spacing: 0) {
+            ZStack {
+                VStack(spacing: 2) {
+                    Text(title).font(.system(size: 17, weight: .semibold)).lineLimit(1)
+                    Text(dateText).font(.system(size: 13)).foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 76)
                 HStack {
-                    Button(L("save", "Save")) { saveNumber() }
-                        .buttonStyle(.borderedProminent)
+                    SheetCloseButton { dismiss() }
+                    Spacer()
+                    Button { saveNumber() } label: {
+                        Text(L("save", "Save"))
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(dynamicColor(light: 0xFFFFFF, dark: 0x0B0B14))
+                            .padding(.horizontal, 18)
+                            .frame(height: 44)
+                            .background(dynamicColor(light: 0x5856D6, dark: 0x7D7AFE), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(height: 44)
+            .padding(.top, 23)
+            .padding(.horizontal, 16)
+            HStack(spacing: 8) {
+                TextField("", text: $amount, prompt: Text("0").foregroundStyle(Color.primary))
+                    .keyboardType(.decimalPad)
+                    .focused($amountFocused)
+                    .font(.system(size: 17))
+                if !unit.isEmpty {
+                    Text(unit).font(.system(size: 17)).foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 17)
+            .frame(height: 56)
+            .background(Color(.secondarySystemGroupedBackground), in: Capsule())
+            .padding(.horizontal, 20)
+            .padding(.top, 26)
+            TextField("", text: $draftNotes, prompt: Text(L("notes", "Notes")).foregroundStyle(Color.secondary), axis: .vertical)
+                .font(.system(size: 17))
+                .padding(.horizontal, 17)
+                .padding(.top, 16)
+                .frame(maxWidth: .infinity, minHeight: 100, alignment: .topLeading)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            if skipEnabled || unknownEnabled {
+                HStack(spacing: 24) {
                     if skipEnabled {
                         Button(L("skip_day", "Skip")) { saveValue(Int32(EntryValue.skip)) }
                     }
@@ -479,14 +621,20 @@ struct NumberPopup: View {
                         Button(L("unknown", "Unknown")) { saveValue(Int32(EntryValue.unknown)) }
                     }
                 }
-                .padding(.horizontal)
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .padding(.top, 12)
             }
-            .padding(.vertical)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button(L("cancel", "Cancel")) { dismiss() } }
-            }
+            Spacer().frame(height: 24)
         }
-        .presentationDetents([.medium])
+        .fittedSheet()
+        .task { amountFocused = true }
+    }
+
+    private var dateText: String {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEEEMMMd")
+        return formatter.string(from: date(fromDaysSince2000: Int(day)))
     }
 
     private func saveNumber() {

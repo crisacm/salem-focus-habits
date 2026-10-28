@@ -68,6 +68,9 @@ struct ListScreen: View {
             let unknown = model.list?.questionMarks == true
             if target.numerical {
                 NumberPopup(
+                    title: target.row.name,
+                    day: target.cell.day,
+                    unit: target.row.unit,
                     notes: target.cell.notes,
                     number: target.cell.number,
                     skipEnabled: skip,
