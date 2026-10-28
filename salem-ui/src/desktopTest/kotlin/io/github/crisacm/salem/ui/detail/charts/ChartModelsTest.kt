@@ -75,6 +75,16 @@ class ChartModelsTest {
     }
 
     @Test
+    fun theScoreNamesItsColumnsByMonthQuarterOrYear() {
+        val name = { _: LocalDate -> "Mar" }
+        val date = LocalDate(2021, 3, 8)
+        assertEquals("Mar", scoreAxisLabel(7, date, name))
+        assertEquals("Mar", scoreAxisLabel(31, date, name))
+        assertEquals("Q1", scoreAxisLabel(92, date, name))
+        assertEquals("2021", scoreAxisLabel(365, date, name))
+    }
+
+    @Test
     fun theDaysOfTheWeekAreAddedUpAcrossTheMonths() {
         // Saturday first: Sat, Sun, Mon, Tue, Wed, Thu, Fri
         val frequency = hashMapOf(

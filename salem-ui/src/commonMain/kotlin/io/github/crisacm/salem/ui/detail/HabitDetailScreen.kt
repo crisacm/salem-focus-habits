@@ -29,38 +29,48 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
+import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
 import io.github.crisacm.salem.ui.list.exposeTestTags
 
 /**
- * The whole detail screen of a habit in one composition: the top bar and the cards. [barColor] is the colour of the
- * top bar, which the platform chooses; [onBack] leaves the screen.
+ * The whole detail screen of a habit in one composition: the header with the actions and the cards. [onBack] leaves
+ * the screen. The colours come from the theme of the state, so nothing is drawn but black until the state exists.
  */
 @Composable
 fun HabitDetailScreen(
     session: HabitDetailSession,
-    barColor: Color,
     dateFormatter: LocalDateFormatter,
     onBack: () -> Unit
 ) {
     val state = session.state
     val sideInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
-    // The black screen is drawn from the first frame, before the state exists, so it covers what is under it
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .windowInsetsPadding(sideInsets)
-            .exposeTestTags()
-            .testTag("showHabitScreen")
-    ) {
-        if (state != null) {
-            HabitDetailBar(session, state.title, barColor, onBack)
-            HabitDetailContent(state, session.callbacks, dateFormatter, Modifier.weight(1f))
+    if (state == null) {
+        // The black screen is drawn from the first frame, before the state exists, so it covers what is under it
+        Column(Modifier.fillMaxSize().background(Color.Black).exposeTestTags().testTag("showHabitScreen")) {}
+        return
+    }
+    MaterialTheme(colorScheme = state.theme.toExpressiveColorScheme()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .windowInsetsPadding(sideInsets)
+                .exposeTestTags()
+                .testTag("showHabitScreen")
+        ) {
+            HabitDetailContent(
+                state,
+                session.callbacks,
+                dateFormatter,
+                Modifier.weight(1f),
+                header = { HabitDetailHeader(session, state, onBack) }
+            )
         }
     }
 }

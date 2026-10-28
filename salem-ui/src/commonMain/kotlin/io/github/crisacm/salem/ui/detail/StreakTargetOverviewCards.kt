@@ -19,19 +19,32 @@
 
 package io.github.crisacm.salem.ui.detail
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.OverviewCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.StreakCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.TargetCardState
@@ -42,8 +55,6 @@ import io.github.crisacm.salem.platform.io.formatInvariant
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 import io.github.crisacm.salem.ui.canvas.CoreCanvasView
 import io.github.crisacm.salem.ui.canvas.rememberSalemFonts
-import io.github.crisacm.salem.ui.compose.toCompose
-import io.github.crisacm.salem.ui.list.ScoreRing
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.best_streaks
 import io.github.crisacm.salem.ui.resources.month
@@ -56,26 +67,24 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 
-/** A change of the score as a signed percentage: "+23%" or "−23%". */
+/** A change of the score as a signed percentage: "+23%" or "\u221223%". */
 fun formatPercentageDiff(percentageDiff: Float): String =
-    (if (percentageDiff >= 0) "+" else "−") + formatInvariant("%.0f", abs(percentageDiff) * 100.0) + "%"
+    (if (percentageDiff >= 0) "+" else "\u2212") + formatInvariant("%.0f", abs(percentageDiff) * 100.0) + "%"
 
 @Composable
 fun StreakCardContent(state: StreakCardState, dateFormatter: LocalDateFormatter) {
-    val color = state.theme.color(state.color).toCompose()
     val fonts = rememberSalemFonts()
     val chart = remember(state) {
         StreakChart(state.theme, dateFormatter::longFormat, state.bestStreaks, state.theme.color(state.color))
     }
     Column(Modifier.fillMaxWidth().testTag("streakCard")) {
-        CardTitle(stringResource(Res.string.best_streaks), color)
+        CardHeader(stringResource(Res.string.best_streaks))
         CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("streakChart"))
     }
 }
 
 @Composable
 fun TargetCardContent(state: TargetCardState) {
-    val color = state.theme.color(state.color).toCompose()
     val fonts = rememberSalemFonts()
     val labels = state.intervals.map { stringResource(intervalLabelRes(it)) }
     val chart = remember(state, labels) {
@@ -89,58 +98,75 @@ fun TargetCardContent(state: TargetCardState) {
         )
     }
     Column(Modifier.fillMaxWidth().testTag("targetCard")) {
-        CardTitle(stringResource(Res.string.target), color)
+        CardHeader(stringResource(Res.string.target))
         CoreCanvasView(chart, fonts, Modifier.fillMaxWidth().height(chart.height.dp).testTag("targetChart"))
     }
 }
 
+/**
+ * The overview of a yes or no habit: the score in a large card in the colour of the habit with a ring, and under it the
+ * change of the score in the last month and year and the total of completions. It has its own margins, as it is not in a card.
+ */
 @Composable
 fun OverviewCardContent(state: OverviewCardState) {
-    val color = state.theme.color(state.color).toCompose()
-    val muted = state.theme.mediumContrastTextColor.toCompose()
-    Column(Modifier.fillMaxWidth().testTag("overviewCard")) {
-        CardTitle(stringResource(Res.string.overview), color)
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(5f), contentAlignment = Alignment.Center) {
-                ScoreRing(
-                    percentage = state.scoreToday,
-                    color = color,
-                    inactiveColor = state.theme.highContrastTextColor.withAlpha(0.15).toCompose(),
-                    diameter = 30.dp,
-                    thickness = 5.dp,
-                    precision = 0.01f
-                )
+    val tones = rememberDetailTones(state.theme, state.color)
+    val scheme = MaterialTheme.colorScheme
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("overviewCard"),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            stringResource(Res.string.overview),
+            color = scheme.onSurface,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 4.dp)
+        )
+        Surface(color = tones.accent, shape = RoundedCornerShape(32.dp), modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 24.dp, end = 28.dp, top = 20.dp, bottom = 20.dp)
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(Res.string.score), color = tones.onAccent, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        formatInvariant("%.0f", state.scoreToday * 100.0) + "%",
+                        color = tones.onAccent,
+                        fontSize = 64.sp,
+                        lineHeight = 68.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = (-2).sp
+                    )
+                }
+                ScoreDonut(state.scoreToday, tones.onAccent)
             }
-            OverviewValue(
-                formatInvariant("%.0f", state.scoreToday * 100.0) + "%",
-                color,
-                Res.string.score,
-                muted,
-                Modifier.weight(4f)
-            )
-            OverviewValue(
-                formatPercentageDiff(state.scoreMonthDiff),
-                if (state.scoreMonthDiff >= 0) color else muted,
-                Res.string.month,
-                muted,
-                Modifier.weight(4f)
-            )
-            OverviewValue(
-                formatPercentageDiff(state.scoreYearDiff),
-                if (state.scoreYearDiff >= 0) color else muted,
-                Res.string.year,
-                muted,
-                Modifier.weight(4f)
-            )
-            OverviewValue(state.totalCount.toString(), color, Res.string.total, muted, Modifier.weight(4f))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            StatCard(formatPercentageDiff(state.scoreMonthDiff), Res.string.month, scheme.surfaceContainer, scheme.onSurface, scheme.onSurfaceVariant)
+            StatCard(formatPercentageDiff(state.scoreYearDiff), Res.string.year, scheme.surfaceContainer, scheme.onSurface, scheme.onSurfaceVariant)
+            StatCard(state.totalCount.toString(), Res.string.total, tones.container, tones.onContainer, tones.onContainer)
         }
     }
 }
 
 @Composable
-private fun OverviewValue(value: String, valueColor: Color, label: StringResource, labelColor: Color, modifier: Modifier) {
-    Column(modifier) {
-        Text(value, color = valueColor, fontSize = SMALL_TEXT)
-        Text(stringResource(label), color = labelColor, fontSize = SMALL_TEXT)
+private fun RowScope.StatCard(value: String, label: StringResource, container: Color, valueColor: Color, labelColor: Color) {
+    Surface(color = container, shape = RoundedCornerShape(24.dp), modifier = Modifier.weight(1f)) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(value, color = valueColor, fontSize = 24.sp, fontWeight = FontWeight.Black, maxLines = 1)
+            Text(stringResource(label), color = labelColor, fontSize = 14.sp)
+        }
+    }
+}
+
+/** The ring of the score of the overview: a track and an arc from the top, as thick as the large number is bold. */
+@Composable
+private fun ScoreDonut(score: Float, color: Color) {
+    Canvas(Modifier.size(88.dp)) {
+        val stroke = 14.dp.toPx()
+        val topLeft = Offset(stroke / 2, stroke / 2)
+        val arcSize = Size(size.width - stroke, size.height - stroke)
+        drawArc(color.copy(alpha = 0.3f), -90f, 360f, useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke))
+        drawArc(color, -90f, 360f * score.coerceIn(0f, 1f), useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
     }
 }

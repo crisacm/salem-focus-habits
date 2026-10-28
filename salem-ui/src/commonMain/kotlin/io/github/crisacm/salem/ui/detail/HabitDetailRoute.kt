@@ -52,7 +52,6 @@ import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.list.ListOverlayHost
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.could_not_export
@@ -128,7 +127,7 @@ fun HabitDetailRoute(
                 .fillMaxSize()
                 .then(if (layers.isCovering) Modifier.clearAndSetSemantics { } else Modifier)
         ) {
-            HabitDetailScreen(session, theme.color(habit.color).toCompose(), dateFormatter, currentOnClose)
+            HabitDetailScreen(session, dateFormatter, currentOnClose)
         }
         HistoryEditorHost(layers.historyEditor, session.state?.history, dateFormatter)
         ListOverlayHost(

@@ -19,74 +19,62 @@
 
 package io.github.crisacm.salem.ui.detail
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.FrequencyCardState
 import io.github.crisacm.salem.core.ui.screens.habits.show.views.ScoreCardState
-import io.github.crisacm.salem.core.ui.views.FrequencyChart
-import io.github.crisacm.salem.core.ui.views.ScoreChart
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.ui.canvas.CoreChart
-import io.github.crisacm.salem.ui.compose.ChartScrollState
-import io.github.crisacm.salem.ui.compose.toCompose
+import io.github.crisacm.salem.ui.detail.charts.ScoreLineChart
+import io.github.crisacm.salem.ui.detail.charts.WeekdayBarsChart
+import io.github.crisacm.salem.ui.detail.charts.rangeLabel
+import io.github.crisacm.salem.ui.detail.charts.rememberChartScroll
+import io.github.crisacm.salem.ui.detail.charts.scoreAxisLabel
+import io.github.crisacm.salem.ui.detail.charts.scorePoints
+import io.github.crisacm.salem.ui.detail.charts.weekdayBars
 import io.github.crisacm.salem.ui.resources.Res
+import io.github.crisacm.salem.ui.resources.completions_by_weekday
 import io.github.crisacm.salem.ui.resources.frequency
 import io.github.crisacm.salem.ui.resources.score
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ScoreCardContent(state: ScoreCardState, onSpinner: (Int) -> Unit, dateFormatter: LocalDateFormatter) {
-    val color = state.theme.color(state.color).toCompose()
-    val scroll = remember { ChartScrollState() }
-    val chart = remember(state) {
-        scroll.reset()
-        ScoreChart(
-            theme = state.theme,
-            dateFormatter = dateFormatter,
-            scores = state.scores,
-            color = state.theme.color(state.color),
-            bucketSize = state.bucketSize
-        )
+    val tones = rememberDetailTones(state.theme, state.color)
+    val points = remember(state.scores) { scorePoints(state.scores) }
+    // The chart starts at the newest data again when the bucket changes
+    val scroll = rememberChartScroll(state.bucketSize)
+    val visible = scroll.visible()
+    val period = if (points.isEmpty() || visible.isEmpty()) {
+        null
+    } else {
+        rangeLabel(points[visible.last].date, points[visible.first].date, dateFormatter::shortMonthName)
     }
-    Box(Modifier.fillMaxWidth().testTag("scoreCard")) {
-        Column {
-            CardTitle(stringResource(Res.string.score), color)
-            CoreChart(chart, scroll, modifier = Modifier.fillMaxWidth().height(220.dp).testTag("scoreChart"))
+    val entries = intervalNames(withDay = true).map { stringResource(it) }
+    Column(Modifier.fillMaxWidth().testTag("scoreCard")) {
+        CardHeader(stringResource(Res.string.score), period) {
+            PillSpinner(entries, state.spinnerPosition, onSpinner)
         }
-        CardSpinner(
-            entries = intervalNames(withDay = true).map { stringResource(it) },
-            selected = state.spinnerPosition,
-            onSelected = onSpinner,
-            color = color,
-            modifier = Modifier.align(Alignment.TopEnd)
+        ScoreLineChart(
+            points = points,
+            bucketSize = state.bucketSize,
+            scroll = scroll,
+            tones = tones,
+            axisLabel = { scoreAxisLabel(state.bucketSize, it, dateFormatter::shortMonthName) },
+            modifier = Modifier.testTag("scoreChart")
         )
     }
 }
 
 @Composable
 fun FrequencyCardContent(state: FrequencyCardState, dateFormatter: LocalDateFormatter) {
-    val color = state.theme.color(state.color).toCompose()
-    val scroll = remember { ChartScrollState() }
-    val chart = remember(state) {
-        FrequencyChart(
-            theme = state.theme,
-            dateFormatter = dateFormatter,
-            frequency = state.frequency,
-            color = state.theme.color(state.color),
-            isNumerical = state.isNumerical,
-            firstWeekday = state.firstWeekday
-        )
-    }
+    val tones = rememberDetailTones(state.theme, state.color)
+    val bars = remember(state) { weekdayBars(state.frequency, state.isNumerical, state.firstWeekday) }
     Column(Modifier.fillMaxWidth().testTag("frequencyCard")) {
-        CardTitle(stringResource(Res.string.frequency), color)
-        CoreChart(chart, scroll, modifier = Modifier.fillMaxWidth().height(200.dp).testTag("frequencyChart"))
+        CardHeader(stringResource(Res.string.frequency), stringResource(Res.string.completions_by_weekday))
+        WeekdayBarsChart(bars, tones, dateFormatter::shortWeekdayName, Modifier.testTag("frequencyChart"))
     }
 }

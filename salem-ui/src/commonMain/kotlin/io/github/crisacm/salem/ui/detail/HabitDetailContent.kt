@@ -19,104 +19,72 @@
 
 package io.github.crisacm.salem.ui.detail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.list.exposeTestTags
 
-/** The cards of the detail screen of a habit in a column that scrolls, as the old layout had them. */
+/**
+ * The detail screen of a habit in a column that scrolls: the [header] first, then the cards in the order of
+ * [visibleCards], each one in a rounded panel (the overview has its own).
+ */
 @Composable
 fun HabitDetailContent(
     state: ShowHabitState,
     callbacks: ShowHabitCallbacks,
     dateFormatter: LocalDateFormatter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    header: @Composable () -> Unit = {}
 ) {
-    val theme = state.theme
-    val card = theme.cardBackgroundColor.toCompose()
     Column(
         modifier
             .fillMaxSize()
-            .background(theme.appBackgroundColor.toCompose())
             .verticalScroll(rememberScrollState())
             .exposeTestTags()
-            .testTag("showHabitCards")
+            .testTag("showHabitCards"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         for (shown in visibleCards(state.isNumerical, state.notes.description.isNotEmpty())) {
             when (shown) {
-                ShowCard.SUBTITLE -> Box(
-                    Modifier
-                        .shadow(2.dp)
-                        .background(theme.headerBackgroundColor.toCompose())
-                        .fillMaxWidth()
-                        .padding(start = 60.dp, top = 15.dp, end = 10.dp, bottom = 10.dp)
-                ) { SubtitleCardContent(state.subtitle) }
+                ShowCard.SUBTITLE -> header()
 
-                ShowCard.NOTES -> HabitCard(card) {
-                    NotesCardContent(state.notes, theme.highContrastTextColor.toCompose())
-                }
+                ShowCard.OVERVIEW -> OverviewCardContent(state.overview)
 
-                ShowCard.OVERVIEW -> HabitCard(card, top = 12.dp) { OverviewCardContent(state.overview) }
+                ShowCard.TARGET -> ExpressiveCard { TargetCardContent(state.target) }
 
-                ShowCard.TARGET -> HabitCard(card, top = 12.dp) { TargetCardContent(state.target) }
+                ShowCard.SCORE -> ExpressiveCard { ScoreCardContent(state.scores, callbacks.onScoreSpinner, dateFormatter) }
 
-                ShowCard.SCORE -> HabitCard(card) {
-                    ScoreCardContent(state.scores, callbacks.onScoreSpinner, dateFormatter)
-                }
-
-                ShowCard.BAR -> HabitCard(card) {
+                ShowCard.BAR -> ExpressiveCard {
                     BarCardContent(state.bar, callbacks.onBoolSpinner, callbacks.onNumericalSpinner, dateFormatter)
                 }
 
-                ShowCard.HISTORY -> HabitCard(card, bottom = 0.dp) {
-                    HistoryCardContent(state.history, callbacks.onHistoryEdit, dateFormatter)
+                ShowCard.FREQUENCY -> ExpressiveCard { FrequencyCardContent(state.frequency, dateFormatter) }
+
+                ShowCard.STREAK -> ExpressiveCard { StreakCardContent(state.streaks, dateFormatter) }
+
+                ShowCard.HISTORY -> ExpressiveCard { HistoryCardContent(state.history, callbacks.onHistoryEdit, dateFormatter) }
+
+                ShowCard.NOTES -> ExpressiveCard {
+                    NotesCardContent(state.notes, MaterialTheme.colorScheme.onSurface)
                 }
-
-                ShowCard.STREAK -> HabitCard(card) { StreakCardContent(state.streaks, dateFormatter) }
-
-                ShowCard.FREQUENCY -> HabitCard(card) { FrequencyCardContent(state.frequency, dateFormatter) }
             }
         }
         // The last card stays above the navigation bar and the keyboard.
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars.union(WindowInsets.ime)))
     }
-}
-
-/** A card of the detail screen: the colour of the card, a little elevation and the padding of the old `Card` style. */
-@Composable
-private fun HabitCard(
-    background: Color,
-    top: Dp = 16.dp,
-    bottom: Dp = 16.dp,
-    content: @Composable () -> Unit
-) {
-    Box(
-        Modifier
-            .padding(start = 3.dp, end = 3.dp, bottom = 1.dp)
-            .shadow(1.dp)
-            .background(background)
-            .fillMaxWidth()
-            .padding(start = 16.dp, top = top, end = 4.dp, bottom = bottom)
-    ) { content() }
 }

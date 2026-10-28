@@ -57,7 +57,10 @@ data class ShowHabitState(
     val frequency: FrequencyCardState,
     val history: HistoryCardState,
     val bar: BarCardState,
-    val theme: Theme
+    val theme: Theme,
+    // What the icon of the habit is chosen from, so the detail shows the same icon as the list
+    val habitUuid: String? = null,
+    val habitId: Long? = null
 )
 
 class ShowHabitPresenter(
@@ -93,6 +96,8 @@ class ShowHabitPresenter(
         ): ShowHabitState {
             return ShowHabitState(
                 title = habit.name,
+                habitUuid = habit.uuid,
+                habitId = habit.id,
                 color = habit.color,
                 isNumerical = habit.isNumerical,
                 theme = theme,

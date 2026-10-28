@@ -22,7 +22,7 @@ package io.github.crisacm.salem.ui.detail
 import io.github.crisacm.salem.core.ui.views.toShortString
 
 /** The cards of the detail screen, in the order they are shown. */
-enum class ShowCard { SUBTITLE, NOTES, OVERVIEW, TARGET, SCORE, BAR, HISTORY, STREAK, FREQUENCY }
+enum class ShowCard { SUBTITLE, OVERVIEW, TARGET, SCORE, BAR, FREQUENCY, STREAK, HISTORY, NOTES }
 
 /**
  * The cards to show: a numerical habit has a target card and no overview, a yes or no habit the other way
@@ -45,7 +45,3 @@ fun targetText(value: Double, unit: String): String = "${value.toShortString()} 
  * address has none, so a wrong or missing address does not crash the screen.
  */
 fun habitIdFrom(lastPathSegment: String?): Long? = lastPathSegment?.toLongOrNull()
-
-/** The colour of the top bar: the colour of the habit when the theme asks for it, the primary colour otherwise. */
-fun barColorFor(useHabitColor: Boolean, habitColor: Int, primaryColor: Int): Int =
-    if (useHabitColor) habitColor else primaryColor

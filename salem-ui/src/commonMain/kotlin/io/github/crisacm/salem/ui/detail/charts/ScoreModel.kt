@@ -34,3 +34,7 @@ fun scorePoints(scores: List<Score>): List<ScorePoint> =
 val ScoreTicks = listOf(0.2f, 0.4f, 0.6f, 0.8f, 1f)
 
 fun percentText(value: Float): String = "${(value * 100).roundToInt()}%"
+
+/** The name under a column of the score: the month for buckets of a month or less, the quarter or the year for longer ones. */
+fun scoreAxisLabel(bucketSize: Int, date: LocalDate, monthName: (LocalDate) -> String): String =
+    if (bucketSize >= 92) barAxisLabel(bucketSize, date, monthName) else monthName(date)

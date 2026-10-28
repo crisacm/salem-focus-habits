@@ -132,6 +132,7 @@
     <string name="development">Development</string>
     <string name="enable_developer_mode">Enable developer mode</string>
     <string name="frequency">Frequency</string>
+    <string name="completions_by_weekday">Completions by weekday</string>
     <string name="checkmark">Checkmark</string>
     <string name="checkmark_stack_widget" formatted="false">Checkmark Stack Widget</string>
     <string name="frequency_stack_widget" formatted="false">Frequency Stack Widget</string>

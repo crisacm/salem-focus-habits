@@ -67,6 +67,22 @@ class ChartWindowTest {
     }
 
     @Test
+    fun theScoreNamesTheOldestColumnOfEachMonth() {
+        // Newest first: two weeks of February, three of January
+        val dates = listOf(
+            LocalDate(2021, 2, 15), LocalDate(2021, 2, 8), LocalDate(2021, 1, 25),
+            LocalDate(2021, 1, 18), LocalDate(2021, 1, 11)
+        )
+        assertEquals(listOf(1, 4), axisMarks(dates, bucketSize = 7))
+    }
+
+    @Test
+    fun aQuarterOrYearBucketNamesEveryColumn() {
+        val dates = listOf(LocalDate(2021, 1, 1), LocalDate(2020, 1, 1), LocalDate(2019, 1, 1))
+        assertEquals(listOf(0, 1, 2), axisMarks(dates, bucketSize = 365))
+    }
+
+    @Test
     fun everyBucketHasAColumnCount() {
         for (bucket in listOf(1, 7, 31, 92, 365)) {
             assertTrue(scoreColumnsInView(bucket) > 0)
