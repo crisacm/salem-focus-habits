@@ -220,9 +220,9 @@ fun EditHabitScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             ColorSwatches(
-                                swatches = swatches.map { habitTones(theme.color(it).toCompose(), dark).accent },
+                                swatches = swatches.map { habitTones(it, dark).accent },
                                 selectedIndex = swatches.indexOf(form.color.paletteIndex),
-                                checkColor = habitTones(habitColor, dark).onAccent,
+                                checkColor = habitTones(form.color.paletteIndex, dark).onAccent,
                                 moreColor = scheme.onSurfaceVariant,
                                 onPick = { form = form.copy(color = PaletteColor(swatches[it])) },
                                 onMore = { picker = EditPicker.Color },

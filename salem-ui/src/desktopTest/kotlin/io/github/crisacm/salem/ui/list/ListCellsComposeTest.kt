@@ -20,7 +20,6 @@
 package io.github.crisacm.salem.ui.list
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -40,7 +39,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class ListCellsComposeTest {
-    private val tones = habitTones(Color.Blue, dark = false)
+    private val tones = habitTones(11, dark = false)
 
     // The header counts the days back from today, which the app sets when it starts
     @BeforeTest

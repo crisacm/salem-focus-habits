@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.views.Theme
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.list.HabitTones
 import io.github.crisacm.salem.ui.list.habitTones
@@ -58,7 +57,7 @@ import io.github.crisacm.salem.ui.list.habitTones
 /** The tones of the cards of a habit: the same ones the habit list gives its card. */
 @Composable
 internal fun rememberDetailTones(theme: Theme, color: PaletteColor): HabitTones =
-    remember(theme, color) { habitTones(theme.color(color).toCompose(), theme.usesDarkTones()) }
+    remember(theme, color) { habitTones(color.paletteIndex, theme.usesDarkTones()) }
 
 /** A card of the detail screen: a rounded panel with room around its content. */
 @Composable

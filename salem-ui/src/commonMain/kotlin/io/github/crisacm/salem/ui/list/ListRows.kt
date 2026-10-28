@@ -60,7 +60,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
@@ -79,7 +78,6 @@ import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.preferences.Preferences
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDate
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.compose.usesDarkTones
 
 /** What the rows tell the screen; [onDrop] moves the row at `from` to `to` while it is dragged, and [onDragEnd] ends the drag. Positions are the centre of the touched cell in window coordinates. */
@@ -100,12 +98,9 @@ private class RowDrag {
 }
 
 /** The space between two cards, and between the cards and the edges of the screen. */
-private val CardGap = 12.dp
+private val CardGap = 8.dp
 private val ScreenMargin = 16.dp
 private val CardShape = RoundedCornerShape(28.dp)
-
-/** The colour that a habit with no colour of its own, an archived one, takes. */
-private val ArchivedColor = Color(0xFF9E9E9E)
 
 /**
  * The habit cards: the icon of the habit inside its score ring, the name, a button to open the habit and one
@@ -174,7 +169,9 @@ fun HabitListContent(
                 row = row,
                 header = header,
                 selected = row.habit.id in selected,
-                tones = habitTones(if (row.habit.isArchived) ArchivedColor else theme.color(row.habit.color).toCompose(), dark),
+                tones = remember(row.habit.color, row.habit.isArchived, dark) {
+                    habitTones(if (row.habit.isArchived) ARCHIVED_TONES else row.habit.color.paletteIndex, dark)
+                },
                 preferences = preferences,
                 callbacks = callbacks
             )
@@ -242,7 +239,7 @@ private fun HabitRow(
         Column(Modifier.padding(12.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
                 HabitIconRing(
@@ -253,7 +250,7 @@ private fun HabitRow(
                 Text(
                     habit.name,
                     color = tones.onContainer,
-                    fontSize = 20.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -262,7 +259,7 @@ private fun HabitRow(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
                         .background(tones.chip)
                         .clickable { currentCallbacks.onClick(habit) }
@@ -275,7 +272,7 @@ private fun HabitRow(
                     )
                 }
             }
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
                 for (date in dates) {
                     val daysAgo = date.daysUntil(header.today)

@@ -47,7 +47,6 @@ import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.ui.compose.SalemTheme
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.detail.HabitDetailScreen
 import io.github.crisacm.salem.ui.detail.HabitDetailSession
@@ -142,7 +141,7 @@ class ShowHabitActivity : AppCompatActivity() {
         @Suppress("DEPRECATION")
         override fun onStateChanged(state: ShowHabitState) {
             val dark = state.theme.usesDarkTones()
-            window.statusBarColor = habitTones(state.theme.color(state.color).toCompose(), dark).container.toArgb()
+            window.statusBarColor = habitTones(state.color.paletteIndex, dark).container.toArgb()
             WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !dark
         }
 

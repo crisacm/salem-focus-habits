@@ -153,11 +153,11 @@ private fun MainBar(menu: ListHabitsMenu) {
         modifier = Modifier
             .fillMaxWidth()
             .windowInsetsPadding(barInsets())
-            .padding(start = 24.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)
+            .padding(start = 24.dp, end = 16.dp, top = 12.dp, bottom = 16.dp)
     ) {
         Text(
             stringResource(Res.string.main_activity_title),
-            fontSize = 40.sp,
+            fontSize = 44.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = (-1).sp,
             modifier = Modifier.weight(1f)

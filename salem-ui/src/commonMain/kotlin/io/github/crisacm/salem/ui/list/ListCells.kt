@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -188,14 +187,14 @@ fun NumberCell(
                     display.text,
                     color = content,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Clip
                 )
                 if (units.isNotBlank()) {
                     Text(
                         units,
-                        color = content,
+                        color = content.copy(alpha = 0.8f),
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -208,8 +207,8 @@ fun NumberCell(
 }
 
 /**
- * The icon of a habit inside a ring that shows its score: a pale disc, the track in the soft accent and the
- * score on top of it in the accent, starting at the top.
+ * The icon of a habit inside a ring that shows its score: the track in the soft tone and the score on top of it in the
+ * accent, starting at the top, with rounded ends.
  */
 @Composable
 fun HabitIconRing(
@@ -217,16 +216,14 @@ fun HabitIconRing(
     icon: ImageVector,
     tones: HabitTones,
     modifier: Modifier = Modifier,
-    diameter: Dp = 48.dp,
-    thickness: Dp = 4.dp
+    diameter: Dp = 50.dp,
+    thickness: Dp = 6.dp
 ) {
     val sweep = 360f * percentage.coerceIn(0f, 1f)
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(diameter)
-            .clip(CircleShape)
-            .background(tones.chip)
             .drawBehind {
                 val stroke = thickness.toPx()
                 val topLeft = Offset(stroke / 2, stroke / 2)
@@ -235,7 +232,7 @@ fun HabitIconRing(
                 drawArc(tones.accent, -90f, sweep, useCenter = false, topLeft = topLeft, size = arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
             }
     ) {
-        Icon(icon, contentDescription = null, tint = tones.accent, modifier = Modifier.size(diameter / 2.2f))
+        Icon(icon, contentDescription = null, tint = tones.accent, modifier = Modifier.size(24.dp))
     }
 }
 

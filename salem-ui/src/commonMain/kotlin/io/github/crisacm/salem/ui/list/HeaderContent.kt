@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
 
-private val DayShape = RoundedCornerShape(18.dp)
+private val DayShape = RoundedCornerShape(16.dp)
 
 /**
  * The days above the habit cards; [formatter] gives the names of the weekdays and today is the one in a tonal
@@ -68,7 +68,7 @@ fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, modifier: M
                 orientation = Orientation.Horizontal,
                 onDragStopped = { velocity -> state.fling(direction * velocity / 2) }
             )
-            .padding(horizontal = 28.dp, vertical = 8.dp)
+            .padding(start = 28.dp, end = 28.dp, top = 9.dp, bottom = 8.dp)
     ) {
         dates.forEach { date ->
             val isToday = date.daysUntil(state.today) == 0
@@ -78,7 +78,7 @@ fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, modifier: M
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .weight(1f)
-                    .height(52.dp)
+                    .height(50.dp)
                     .clip(DayShape)
                     .background(if (isToday) colors.secondaryContainer else colors.background)
             ) {
@@ -87,7 +87,7 @@ fun HeaderContent(state: HeaderState, formatter: LocalDateFormatter, modifier: M
                     colors.background.luminance() < 0.5f -> colors.onSecondaryContainer
                     else -> colors.primary
                 }
-                Text(formatter.shortWeekdayName(date).uppercase(), color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(formatter.shortWeekdayName(date).uppercase(), color = color, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 Text(date.day.toString(), color = color, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }

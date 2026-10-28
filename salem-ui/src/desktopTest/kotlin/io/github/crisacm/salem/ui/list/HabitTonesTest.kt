@@ -26,37 +26,84 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class HabitTonesTest {
-    private val blue = Color(0xFF1976D2)
+    private fun argb(hex: Long) = Color(0xFF000000 or hex)
 
     @Test
-    fun theLightCardIsPaleAndTheAccentIsStrong() {
-        val tones = habitTones(blue, dark = false)
-        assertTrue(tones.container.luminance() > 0.7f)
-        assertTrue(tones.accent.luminance() < 0.25f)
-        assertEquals(Color.White, tones.onAccent)
+    fun theBlueOfTheDesignHasItsMeasuredTonesInTheLightTheme() {
+        val tones = habitTones(11, dark = false)
+        assertEquals(argb(0xDDE8FB), tones.container)
+        assertEquals(argb(0x0A2958), tones.onContainer)
+        assertEquals(argb(0x1B5FC1), tones.accent)
+        assertEquals(argb(0xFFFFFF), tones.onAccent)
+        assertEquals(argb(0xF5F8FE), tones.soft)
     }
 
     @Test
-    fun theDarkCardIsDeepAndTheAccentIsPale() {
-        val tones = habitTones(blue, dark = true)
-        assertTrue(tones.container.luminance() < 0.15f)
-        assertTrue(tones.accent.luminance() > 0.4f)
-        assertTrue(tones.onAccent.luminance() < 0.1f)
+    fun theBlueOfTheDesignHasItsMeasuredTonesInTheDarkTheme() {
+        val tones = habitTones(11, dark = true)
+        assertEquals(argb(0x1C3460), tones.container)
+        assertEquals(argb(0xDBEEFF), tones.onContainer)
+        assertEquals(argb(0xAAC7FF), tones.accent)
+        assertEquals(argb(0x012C62), tones.onAccent)
+        assertEquals(argb(0x132340), tones.soft)
     }
 
     @Test
-    fun theTonesKeepTheHueOfTheHabit() {
-        // Blue stays blue: the blue channel dominates in every tone of the card
-        val tones = habitTones(blue, dark = false)
-        for (tone in listOf(tones.container, tones.accent, tones.onContainer)) assertTrue(tone.blue >= tone.red)
+    fun thePinkOrangeAndPurpleOfTheDesignHaveTheirAccent() {
+        assertEquals(argb(0xB5135A), habitTones(15, dark = false).accent)
+        assertEquals(argb(0xFFB2CC), habitTones(15, dark = true).accent)
+        assertEquals(argb(0xA95500), habitTones(2, dark = false).accent)
+        assertEquals(argb(0xFFB86C), habitTones(2, dark = true).accent)
+        assertEquals(argb(0x6A40B4), habitTones(13, dark = false).accent)
+        assertEquals(argb(0xD0BCFF), habitTones(13, dark = true).accent)
     }
 
     @Test
-    fun aGreyHabitGivesGreyTones() {
-        val tones = habitTones(Color(0xFF9E9E9E), dark = false)
-        for (tone in listOf(tones.container, tones.accent, tones.soft)) {
-            assertEquals(tone.red, tone.green, 0.01f)
-            assertEquals(tone.green, tone.blue, 0.01f)
+    fun theRingTrackIsTheSoftTone() {
+        for (index in listOf(11, 8)) for (dark in listOf(false, true)) {
+            val tones = habitTones(index, dark)
+            assertEquals(tones.soft, tones.ringTrack)
+        }
+    }
+
+    @Test
+    fun theTextOfAnEmptyDayIsBetweenTheSoftToneAndTheTextOfTheCard() {
+        val tones = habitTones(11, dark = true)
+        assertTrue(tones.onSoft.luminance() > tones.soft.luminance())
+        assertTrue(tones.onSoft.luminance() < tones.onContainer.luminance())
+    }
+
+    @Test
+    fun aColourWithoutAFamilyGetsTonesInTheSameBands() {
+        // Teal, green, red and brown are not in the design
+        for (index in listOf(8, 7, 0, 16)) {
+            val light = habitTones(index, dark = false)
+            assertTrue(light.container.luminance() > 0.7f, "container of $index")
+            assertTrue(light.accent.luminance() < 0.3f, "accent of $index")
+            assertTrue(light.soft.luminance() > light.container.luminance(), "soft of $index")
+            val dark = habitTones(index, dark = true)
+            assertTrue(dark.container.luminance() < 0.1f, "dark container of $index")
+            assertTrue(dark.accent.luminance() > 0.4f, "dark accent of $index")
+            assertTrue(dark.onAccent.luminance() < 0.05f, "dark onAccent of $index")
+        }
+    }
+
+    @Test
+    fun theTonesOfAColourAreAlwaysTheSame() {
+        val first = habitTones(8, dark = false)
+        val second = habitTones(8, dark = false)
+        assertEquals(first.container, second.container)
+        assertEquals(first.accent, second.accent)
+    }
+
+    @Test
+    fun theColourOfAnArchivedHabitIsGrey() {
+        for (dark in listOf(false, true)) {
+            val tones = habitTones(ARCHIVED_TONES, dark)
+            for (tone in listOf(tones.container, tones.accent, tones.soft, tones.onContainer)) {
+                assertEquals(tone.red, tone.green, 0.01f)
+                assertEquals(tone.green, tone.blue, 0.01f)
+            }
         }
     }
 }
