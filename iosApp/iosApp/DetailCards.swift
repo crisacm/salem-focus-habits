@@ -36,6 +36,7 @@ struct CardTitle: View {
     let title: String
     var subtitle: String?
     var value: String?
+    var unit: String?
     var caption: String?
 
     var body: some View {
@@ -51,12 +52,20 @@ struct CardTitle: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(value)
                         .font(.system(size: 28, weight: .bold))
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 90, alignment: .trailing)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    if let unit, !unit.isEmpty {
+                        Text(unit)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
                     if let caption {
                         Text(caption).font(.system(size: 12)).foregroundStyle(.secondary)
                     }
                 }
+                .layoutPriority(1)
             }
         }
     }

@@ -87,7 +87,9 @@ struct DetailScreen: View {
             DetailHeader(detail: detail, tone: tone)
                 .padding(.top, 4)
                 .padding(.bottom, 8)
-            OverviewCard(detail: detail, tone: tone)
+            if !detail.numerical {
+                OverviewCard(detail: detail, tone: tone)
+            }
             if detail.numerical {
                 TargetCard(
                     rows: charts.targets.compactMap { $0 as? TargetRow },
@@ -127,7 +129,8 @@ struct DetailScreen: View {
                     CardTitle(
                         title: L("history", "History"),
                         subtitle: "\(historyKind(detail, weekly: weekly)) \u{00B7} \(range)",
-                        value: bars.last.map { amount($0.value, detail) },
+                        value: bars.last.map { amount($0.value) },
+                        unit: historyUnit(detail, bars.last?.value ?? 0),
                         caption: weekly ? L("this_week", "This week") : L("this_month", "This month")
                     )
                     HistoryBarsChart(bars: bars, start: start, end: today, palette: palette)
@@ -240,11 +243,15 @@ struct DetailScreen: View {
         return weekly ? L("days_done_per_week", "Days done per week") : L("days_done_per_month", "Days done per month")
     }
 
-    /// The amount of a bar: days for a yes or no habit, the number and the unit for a measurable one.
-    private func amount(_ value: Double, _ detail: DetailSnapshot) -> String {
-        let text = value == value.rounded() ? String(Int(value)) : String(format: "%.1f", value)
-        if detail.numerical { return detail.unit.isEmpty ? text : "\(text) \(detail.unit)" }
-        return "\(text) \(Int(value) == 1 ? L("day_one", "day") : L("day_other", "days"))"
+    /// The amount of a bar, without its unit.
+    private func amount(_ value: Double) -> String {
+        value == value.rounded() ? String(Int(value)) : String(format: "%.1f", value)
+    }
+
+    /// What the amount of a bar counts: the unit of a measurable habit, days for a yes or no one.
+    private func historyUnit(_ detail: DetailSnapshot, _ value: Double) -> String {
+        if detail.numerical { return detail.unit }
+        return Int(value) == 1 ? L("day_one", "day") : L("day_other", "days")
     }
 
     private func dayCount(_ days: Int) -> String {
