@@ -21,85 +21,183 @@ import SwiftUI
 import UserNotifications
 
 private enum EditorPicker: Identifiable {
-    case type, color, frequency, weekdays, time
+    case color, frequency, time
     var id: Self { self }
 }
 
 struct EditorScreen: View {
     @Bindable var model: SessionModel
     @State var form: EditorSnapshot
-    @State private var attempted = false
     @State private var picker: EditorPicker?
-    private let blankMessage = L("validation_cannot_be_blank", "Cannot be blank")
+    /// The numbers the frequency dialog starts from.
+    @State private var frequencySeed: (Int, Int) = (1, 1)
+    @FocusState private var nameFocused: Bool
 
     var body: some View {
         NavigationStack {
             Form {
-                Button { picker = .type } label: {
-                    LabeledContent(L("type", "Type"), value: form.type == 1 ? L("numerical", "Numerical") : L("yes_or_no", "Yes or No"))
+                Section {
+                    Picker("", selection: typeBinding) {
+                        Text(L("yes_no_option", "Yes / No")).tag(Int32(0))
+                        Text(L("measurable", "Measurable")).tag(Int32(1))
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
                 }
-                TextField(L("name", "Name"), text: name)
-                if nameShowsBlankError { Text(blankMessage).foregroundStyle(.red).font(.caption) }
-                TextField(L("question", "Question"), text: question)
-                TextField(L("notes", "Notes"), text: notes)
-                Button { picker = .frequency } label: {
-                    LabeledContent(
-                        L("frequency", "Frequency"),
-                        value: frequencySummaryText(numerator: Int(form.freqNum), denominator: Int(form.freqDen))
-                    )
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+
+                Section {
+                    TextField(L("name", "Name"), text: name)
+                        .focused($nameFocused)
+                        .formRow()
+                    TextField(L("question", "Question"), text: question)
+                        .formRow()
                 }
                 if form.type == 1 {
-                    TextField(L("target", "Target"), text: target)
-                        .keyboardType(.decimalPad)
-                    if targetShowsBlankError { Text(blankMessage).foregroundStyle(.red).font(.caption) }
-                    TextField(L("unit", "Unit"), text: unit)
-                    Picker(L("target", "Target"), selection: targetType) {
-                        Text(L("at_least", "At least")).tag(Int32(0))
-                        Text(L("at_most", "At most")).tag(Int32(1))
+                    Section {
+                        TextField(L("unit", "Unit"), text: unit)
+                            .formRow()
+                        TextField(L("target", "Target"), text: target)
+                            .keyboardType(.decimalPad)
+                            .formRow()
+                        Picker(L("target_type", "Target type"), selection: targetType) {
+                            Text(L("target_type_at_least", "At least")).tag(Int32(0))
+                            Text(L("target_type_at_most", "At most")).tag(Int32(1))
+                        }
+                        .pickerStyle(.menu)
+                        .formRow()
                     }
                 }
-                Button { picker = .color } label: {
-                    LabeledContent(L("color", "Color")) {
-                        Circle().fill(editorPalette(Int(form.color))).frame(width: 24, height: 24)
+                Section {
+                    HStack(spacing: 0) {
+                        Button { picker = .color } label: {
+                            Text(L("color", "Color")).foregroundStyle(Color.primary)
+                        }
+                        .buttonStyle(.plain)
+                        Spacer(minLength: 8)
+                        ColorSwatchRow(selected: Int(form.color)) { form = copy(color: Int32($0)) }
+                            .padding(.trailing, -8)
+                    }
+                    .formRow()
+                }
+                Section {
+                    frequencyMenu.formRow()
+                }
+                Section {
+                    reminderRow.formRow()
+                    if form.reminderHour >= 0 {
+                        Button { picker = .time } label: {
+                            HStack {
+                                Text(L("reminder_time", "Time")).foregroundStyle(Color.primary)
+                                Spacer()
+                                Text(reminderTimeText).foregroundStyle(.secondary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .formRow()
+                        WeekdayCircles(days: Int(form.reminderDays), tone: tone) { form = copy(reminderDays: Int32($0)) }
+                            .padding(.vertical, 8)
                     }
                 }
-                Toggle(L("reminder", "Reminder"), isOn: reminderOn)
-                if form.reminderHour >= 0 {
-                    Button { picker = .time } label: {
-                        LabeledContent(L("reminder", "Reminder"), value: reminderTimeText)
-                    }
-                    Button { picker = .weekdays } label: {
-                        LabeledContent(L("select_weekdays", "Select weekdays"), value: weekdaySummary)
+                Section {
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: notes)
+                            .scrollContentBackground(.hidden)
+                            .frame(minHeight: 120)
+                            .padding(.horizontal, -5)
+                        if form.notes.isEmpty {
+                            Text(L("notes", "Notes"))
+                                .foregroundStyle(Color(.placeholderText))
+                                .padding(.top, 8)
+                                .allowsHitTesting(false)
+                        }
                     }
                 }
             }
-            .navigationTitle(form.id < 0 ? L("create_habit", "Create habit") : L("edit", "Edit"))
+            .scrollDismissesKeyboard(.interactively)
+            .navigationTitle(form.id < 0 ? L("new_habit", "New Habit") : L("edit_habit", "Edit habit"))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L("cancel", "Cancel")) { model.editor = nil }
+                    EditorCloseButton { model.editor = nil }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(L("save", "Save")) { save() }
+                        .fontWeight(.semibold)
+                        .disabled(!isValid)
                 }
             }
             .sheet(item: $picker) { active in
                 switch active {
-                case .type:
-                    HabitTypeDialog { form = copy(type: $0) }
                 case .color:
                     ColorPickerDialog(selected: form.color) { form = copy(color: $0) }
                 case .frequency:
-                    FrequencyPickerDialog(numerator: Int(form.freqNum), denominator: Int(form.freqDen)) { n, d in
+                    FrequencyPickerDialog(numerator: frequencySeed.0, denominator: frequencySeed.1) { n, d in
                         form = copy(freqNum: Int32(n), freqDen: Int32(d))
                     }
-                case .weekdays:
-                    WeekdayPickerDialog(selectedDays: form.reminderDays) { form = copy(reminderDays: $0) }
                 case .time:
                     TimePickerDialog(hour: Int(form.reminderHour), minute: Int(form.reminderMin)) { h, m in
                         form = copy(reminderHour: Int32(h), reminderMin: Int32(m))
                     }
                 }
             }
+            .onAppear { if form.id < 0 { nameFocused = true } }
+        }
+    }
+
+    private var tone: HabitTone {
+        habitTone(palette: Int(form.color), colorArgb: paletteArgb(Int(form.color)))
+    }
+
+    private var frequencyMenu: some View {
+        Menu {
+            Button(L("every_day", "Every day")) { form = copy(freqNum: 1, freqDen: 1) }
+            Button(L("per_week", "Per week")) {
+                frequencySeed = form.freqDen == 7 ? (Int(form.freqNum), 7) : (3, 7)
+                picker = .frequency
+            }
+            Button(L("custom", "Custom")) {
+                frequencySeed = (Int(form.freqNum), Int(form.freqDen))
+                picker = .frequency
+            }
+        } label: {
+            HStack {
+                Text(L("frequency", "Frequency")).foregroundStyle(Color.primary)
+                Spacer()
+                Text(frequencySummaryText(numerator: Int(form.freqNum), denominator: Int(form.freqDen)))
+                    .foregroundStyle(.secondary)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .contentShape(Rectangle())
+        }
+    }
+
+    private var reminderRow: some View {
+        Toggle(isOn: reminderOn) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(L("reminder", "Reminder"))
+                Text(form.reminderHour >= 0 ? reminderTimeText : L("reminder_off", "Off"))
+                    .font(.system(size: 17))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var typeBinding: Binding<Int32> {
+        Binding(get: { form.type }, set: { changeType($0) })
+    }
+
+    /// A numerical habit only has a frequency per day, week or month, so another one becomes every day.
+    private func changeType(_ newType: Int32) {
+        guard newType != form.type else { return }
+        if newType == 1 {
+            let denominator = [1, 7, 30].contains(Int(form.freqDen)) ? form.freqDen : 1
+            form = copy(type: newType, freqNum: 1, freqDen: denominator)
+        } else {
+            form = copy(type: newType)
         }
     }
 
@@ -107,31 +205,24 @@ struct EditorScreen: View {
         Binding(
             get: { form.reminderHour >= 0 },
             set: { on in
-                form = copy(reminderHour: on ? 8 : -1, reminderMin: on ? 0 : -1, reminderDays: on ? form.reminderDays : 0)
+                form = copy(
+                    reminderHour: on ? 8 : -1,
+                    reminderMin: on ? 0 : -1,
+                    reminderDays: form.reminderDays == 0 ? 127 : form.reminderDays
+                )
             }
         )
     }
 
     private var reminderTimeText: String {
-        let hour = Int(form.reminderHour)
-        let minute = Int(form.reminderMin)
         var parts = DateComponents()
-        parts.hour = hour
-        parts.minute = minute
+        parts.hour = Int(form.reminderHour)
+        parts.minute = Int(form.reminderMin)
         let date = Calendar.current.date(from: parts) ?? Date()
         return DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
     }
 
-    private var weekdaySummary: String {
-        let mask = Int(form.reminderDays)
-        let names = reminderWeekdayNames().enumerated().compactMap { index, name in
-            (mask & (1 << index)) != 0 ? name : nil
-        }
-        return names.isEmpty ? L("none", "None") : names.joined(separator: ", ")
-    }
-
     private func save() {
-        attempted = true
         let id = model.saveEditor(form: form)
         if id == -1 || id == -3 { return }
         model.editor = nil
@@ -141,16 +232,14 @@ struct EditorScreen: View {
         }
     }
 
-    private var nameShowsBlankError: Bool {
-        attempted && form.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    private var targetShowsBlankError: Bool {
-        guard attempted, form.type == 1 else { return false }
+    /// A habit needs a name, and a numerical one a target that is a number.
+    private var isValid: Bool {
+        guard !form.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        guard form.type == 1 else { return true }
         let text = form.targetText.trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: ",", with: ".")
-        guard let value = Double(text) else { return true }
-        return !value.isFinite
+        guard let value = Double(text) else { return false }
+        return value.isFinite
     }
 
     private var name: Binding<String> { Binding(get: { form.name }, set: { form = copy(name: $0) }) }
