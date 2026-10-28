@@ -286,37 +286,87 @@ struct DetailScreen: View {
     }
 }
 
+extension HistoryDay: @retroactive Identifiable {
+    public var id: Int32 { day }
+}
+
 struct HistoryEditor: View {
     @Bindable var model: SessionModel
     let habitId: Int64
     @Environment(\.dismiss) private var dismiss
+    // The days are kept in the view: reading them from the model on every draw gives nothing to observe, so a change was saved but not shown
+    @State private var days: [HistoryDay] = []
+    @State private var numberTarget: HistoryDay?
 
     var body: some View {
+        let detail = model.detail(id: habitId)
         NavigationStack {
             List {
                 ForEach(days, id: \.day) { day in
                     HStack {
                         Text(date(fromDaysSince2000: Int(day.day)), format: .dateTime.month().day())
                         Spacer()
-                        if day.number > 0 { Text(String(day.number)) }
-                        else if day.value == Int32(EntryValue.yesManual) || day.value == Int32(EntryValue.yesAuto) {
-                            Image(systemName: "checkmark")
-                        }
+                        entryMark(day, detail)
                     }
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        let next = day.value == Int32(EntryValue.yesManual) ? Int32(EntryValue.no) : Int32(EntryValue.yesManual)
-                        model.setEntry(habitId, day: day.day, value: next, notes: day.notes)
-                        model.reload()
-                    }
+                    .onTapGesture { select(day, detail) }
                 }
             }
             .navigationTitle(L("history", "History"))
             .toolbar { Button(L("done", "Done")) { dismiss() } }
         }
+        .onAppear { reloadDays() }
+        .sheet(item: $numberTarget) { target in
+            NumberPopup(
+                title: detail?.name ?? "",
+                day: target.day,
+                unit: detail?.unit ?? "",
+                notes: target.notes,
+                number: target.number,
+                skipEnabled: model.list?.skipEnabled == true,
+                unknownEnabled: model.list?.questionMarks == true
+            ) { value, notes in
+                save(target.day, value: value, notes: notes)
+            }
+        }
     }
 
-    private var days: [HistoryDay] {
-        model.history(id: habitId, days: 60)
+    @ViewBuilder
+    private func entryMark(_ day: HistoryDay, _ detail: DetailSnapshot?) -> some View {
+        if day.value == Int32(EntryValue.skip) {
+            Text("\u{2013}").foregroundStyle(.secondary)
+        } else if day.value == Int32(EntryValue.unknown) {
+            Text("?").foregroundStyle(.secondary)
+        } else if detail?.numerical == true {
+            if day.number > 0 {
+                let text = day.number == day.number.rounded() ? String(Int(day.number)) : String(day.number)
+                Text(detail?.unit.isEmpty == false ? "\(text) \(detail?.unit ?? "")" : text)
+            }
+        } else if isDone(day) {
+            Image(systemName: "checkmark")
+        }
+    }
+
+    private func isDone(_ day: HistoryDay) -> Bool {
+        day.value == Int32(EntryValue.yesManual) || day.value == Int32(EntryValue.yesAuto)
+    }
+
+    /// A yes or no day is toggled; a measurable day asks for its amount.
+    private func select(_ day: HistoryDay, _ detail: DetailSnapshot?) {
+        if detail?.numerical == true {
+            numberTarget = day
+        } else {
+            save(day.day, value: isDone(day) ? Int32(EntryValue.no) : Int32(EntryValue.yesManual), notes: day.notes)
+        }
+    }
+
+    private func save(_ day: Int32, value: Int32, notes: String) {
+        model.setEntry(habitId, day: day, value: value, notes: notes)
+        model.reload()
+        reloadDays()
+    }
+
+    private func reloadDays() {
+        days = model.history(id: habitId, days: 60)
     }
 }
