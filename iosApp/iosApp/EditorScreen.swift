@@ -255,7 +255,7 @@ struct EditorScreen: View {
         parts.hour = Int(form.reminderHour)
         parts.minute = Int(form.reminderMin)
         let date = Calendar.current.date(from: parts) ?? Date()
-        return DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
+        return appTimeText(date)
     }
 
     private func save() {

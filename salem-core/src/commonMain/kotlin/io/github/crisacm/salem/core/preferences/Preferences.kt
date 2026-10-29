@@ -108,6 +108,13 @@ open class Preferences(private val storage: Storage) {
             storage.putInt("pref_theme", theme)
         }
 
+    /** The language of the app as a tag ("en", "es"), or [LANGUAGE_SYSTEM] to follow the language of the device. */
+    open var language: String
+        get() = storage.getString("pref_language", LANGUAGE_SYSTEM)
+        set(language) {
+            storage.putString("pref_language", language)
+        }
+
     open fun incrementLaunchCount() {
         storage.putInt("launch_count", launchCount + 1)
     }
@@ -188,6 +195,9 @@ open class Preferences(private val storage: Storage) {
 
     companion object {
         const val MIDNIGHT_DELAY_HOURS = 3
+        const val LANGUAGE_SYSTEM = ""
+        const val LANGUAGE_ENGLISH = "en"
+        const val LANGUAGE_SPANISH = "es"
     }
 
     open fun updateLastHint(number: Int, date: LocalDate) {

@@ -40,6 +40,7 @@ import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.settings.SettingsContent
 import io.github.crisacm.salem.ui.settings.SettingsState
 import io.github.crisacm.salem.ui.settings.weekdayNamesFromSaturday
+import io.github.crisacm.salem.utils.applyAppLanguage
 import io.github.crisacm.salem.utils.startActivitySafely
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import java.util.Locale
@@ -92,6 +93,8 @@ class SettingsActivity : AppCompatActivity() {
                     onHelp = { openUrl(R.string.helpURL) },
                     onRate = { openUrl(R.string.playStoreURL) },
                     onAbout = { startActivity(component.intentFactory.startAboutActivity(this)) },
+                    onThemeChanged = { recreate() },
+                    onLanguageChanged = ::applyAppLanguage,
                     interfaceExtras = { WidgetOpacityRow(sharedPrefs) },
                     middleSections = { AndroidSettingsSections(state, sharedPrefs, androidActions) }
                 )

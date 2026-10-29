@@ -121,7 +121,7 @@ struct DetailHeader: View {
         components.hour = parts[0]
         components.minute = parts[1]
         guard let date = Calendar.current.date(from: components) else { return detail.reminder }
-        return DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
+        return appTimeText(date)
     }
 }
 

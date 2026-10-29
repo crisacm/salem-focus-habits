@@ -34,7 +34,9 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material.icons.outlined.StarBorder
@@ -48,6 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import io.github.crisacm.salem.core.preferences.Preferences
+import io.github.crisacm.salem.core.ui.ThemeSwitcher
 import io.github.crisacm.salem.ui.compose.ChoiceOption
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.about
@@ -55,8 +59,16 @@ import io.github.crisacm.salem.ui.resources.development
 import io.github.crisacm.salem.ui.resources.first_day_of_the_week
 import io.github.crisacm.salem.ui.resources.help
 import io.github.crisacm.salem.ui.resources.interface_preferences
+import io.github.crisacm.salem.ui.resources.language
+import io.github.crisacm.salem.ui.resources.language_english
+import io.github.crisacm.salem.ui.resources.language_spanish
+import io.github.crisacm.salem.ui.resources.language_system
 import io.github.crisacm.salem.ui.resources.links
 import io.github.crisacm.salem.ui.resources.pref_rate_this_app
+import io.github.crisacm.salem.ui.resources.theme
+import io.github.crisacm.salem.ui.resources.theme_automatic
+import io.github.crisacm.salem.ui.resources.theme_dark
+import io.github.crisacm.salem.ui.resources.theme_light
 import org.jetbrains.compose.resources.stringResource
 
 private val INTERFACE_SWITCHES = listOf(
@@ -71,7 +83,7 @@ private val INTERFACE_SWITCHES = listOf(
 
 /**
  * The Settings screen: the interface rows, the help and rate links, About and the developer switch, in cards by section.
- * A platform adds its own rows in [interfaceExtras] (after the switches, before the first day of the week) and its own
+ * A platform adds its own rows in [interfaceExtras] (after the switches, before the first day of the week); the theme and the language come first, and each tells the platform when it changes (the platform recreates its screens) and its own
  * sections, made of [SettingsGroup]s, in [middleSections] (between the interface and the links). [weekdayNames] start
  * at Saturday. The switch that turns the animations off is only shown when [showAnimationsSwitch] is on. The developer
  * section is shown while the developer mode is on. Back calls [onBack].
@@ -86,6 +98,8 @@ fun SettingsContent(
     onHelp: () -> Unit,
     onRate: () -> Unit,
     onAbout: () -> Unit,
+    onThemeChanged: () -> Unit = {},
+    onLanguageChanged: (String) -> Unit = {},
     interfaceExtras: @Composable ColumnScope.() -> Unit = {},
     middleSections: @Composable ColumnScope.() -> Unit = {}
 ) {
@@ -99,6 +113,8 @@ fun SettingsContent(
         ) {
             SettingsHeader(onBack)
             SettingsGroup(stringResource(Res.string.interface_preferences), SettingsTone.INTERFACE) {
+                ThemeRow(state, onThemeChanged)
+                LanguageRow(state, onLanguageChanged)
                 INTERFACE_SWITCHES
                     .filter { showAnimationsSwitch || it != SettingsSwitch.DISABLE_ANIMATION }
                     .forEach { SettingsSwitchRow(state, it) }
@@ -143,6 +159,47 @@ private fun iconOf(switch: SettingsSwitch): ImageVector = when (switch) {
     SettingsSwitch.DISABLE_ANIMATION -> Icons.Outlined.AutoAwesome
     SettingsSwitch.STICKY_NOTIFICATIONS -> Icons.Outlined.Notifications
     SettingsSwitch.DEVELOPER -> Icons.Outlined.Code
+}
+
+@Composable
+private fun ThemeRow(state: SettingsState, onChanged: () -> Unit) {
+    val options = listOf(
+        ChoiceOption(ThemeSwitcher.THEME_AUTOMATIC.toString(), stringResource(Res.string.theme_automatic)),
+        ChoiceOption(ThemeSwitcher.THEME_DARK.toString(), stringResource(Res.string.theme_dark)),
+        ChoiceOption(ThemeSwitcher.THEME_LIGHT.toString(), stringResource(Res.string.theme_light))
+    )
+    val selected = state.theme.toString()
+    SettingsChoiceRow(
+        icon = Icons.Outlined.Palette,
+        title = stringResource(Res.string.theme),
+        summary = options.firstOrNull { it.value == selected }?.label,
+        options = options,
+        selected = selected,
+        onSelect = {
+            state.selectTheme(it.toInt())
+            onChanged()
+        }
+    )
+}
+
+@Composable
+private fun LanguageRow(state: SettingsState, onChanged: (String) -> Unit) {
+    val options = listOf(
+        ChoiceOption(Preferences.LANGUAGE_SYSTEM, stringResource(Res.string.language_system)),
+        ChoiceOption(Preferences.LANGUAGE_ENGLISH, stringResource(Res.string.language_english)),
+        ChoiceOption(Preferences.LANGUAGE_SPANISH, stringResource(Res.string.language_spanish))
+    )
+    SettingsChoiceRow(
+        icon = Icons.Outlined.Language,
+        title = stringResource(Res.string.language),
+        summary = options.firstOrNull { it.value == state.language }?.label,
+        options = options,
+        selected = state.language,
+        onSelect = {
+            state.selectLanguage(it)
+            onChanged(it)
+        }
+    )
 }
 
 @Composable

@@ -47,6 +47,11 @@ struct SettingsScreen: View {
                         Text(L("theme_dark", "Dark")).tag(Int32(1))
                         Text(L("theme_light", "Light")).tag(Int32(2))
                     }
+                    Picker(L("language", "Language"), selection: language()) {
+                        Text(L("language_system", "System default")).tag("")
+                        Text("English").tag("en")
+                        Text("Espa\u{00F1}ol").tag("es")
+                    }
                     Button(L("import_data", "Import data")) { importer = true }
                     Button(L("export_full_backup", "Export full backup")) { exportDatabase() }
                     Button(L("export_to_csv", "Export as CSV")) { exportCsv() }
@@ -109,8 +114,15 @@ struct SettingsScreen: View {
         )
     }
 
+    private func language() -> Binding<String> {
+        Binding(
+            get: { model.settings?.language ?? "" },
+            set: { model.setLanguage(language: $0) }
+        )
+    }
+
     private func weekdayName(_ day: Int) -> String {
-        let symbols = Calendar.current.weekdaySymbols
+        let symbols = appCalendar().weekdaySymbols
         return symbols[min(day, symbols.count - 1)]
     }
 

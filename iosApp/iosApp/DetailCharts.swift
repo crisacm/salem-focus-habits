@@ -30,7 +30,7 @@ struct ChartPalette {
 /// The first day of each month that shows in the range, with its short name.
 private func monthMarks(from start: Int32, to end: Int32) -> [(day: Int32, text: String)] {
     let calendar = Calendar(identifier: .gregorian)
-    let formatter = DateFormatter()
+    let formatter = appDateFormatter()
     formatter.setLocalizedDateFormatFromTemplate("MMM")
     var marks: [(Int32, String)] = []
     var components = calendar.dateComponents([.year, .month], from: date(fromDaysSince2000: Int(start)))
@@ -265,7 +265,7 @@ struct StreakRowsChart: View {
     private func rangeText(_ streak: StreakItem) -> String {
         let first = date(fromDaysSince2000: Int(streak.start))
         let last = date(fromDaysSince2000: Int(streak.end))
-        let long = DateFormatter()
+        let long = appDateFormatter()
         long.setLocalizedDateFormatFromTemplate("MMMd")
         if streak.start == streak.end { return long.string(from: first) }
         let calendar = Calendar(identifier: .gregorian)
@@ -305,7 +305,7 @@ struct CalendarDotsChart: View {
                 Canvas { context, size in
                     let pitch = size.width / (CGFloat(weeks) + letterUnits)
                     let dot = pitch - 3.5
-                    let letters = Calendar.current.veryShortWeekdaySymbols
+                    let letters = appCalendar().veryShortWeekdaySymbols
                     for row in 0..<7 {
                         let symbol = (firstWeekday + row) % 7
                         context.draw(
@@ -381,7 +381,7 @@ struct CalendarDotsChart: View {
 
     private func monthMark(of week: Week) -> String? {
         let calendar = Calendar(identifier: .gregorian)
-        let formatter = DateFormatter()
+        let formatter = appDateFormatter()
         formatter.setLocalizedDateFormatFromTemplate("MMM")
         for row in 0..<7 {
             let date = date(fromDaysSince2000: Int(week.start) + row)

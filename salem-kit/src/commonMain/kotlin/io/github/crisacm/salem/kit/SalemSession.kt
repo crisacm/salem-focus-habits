@@ -73,13 +73,14 @@ class SalemSession(
     private val commandRunner: CommandRunner,
     val preferences: Preferences,
     private val database: Database?,
-    private val dateFormatter: LocalDateFormatter = EnglishDateFormatter(),
+    dateFormatter: LocalDateFormatter = EnglishDateFormatter(),
+    private val formatterFor: (String) -> LocalDateFormatter = { dateFormatter },
     private val onHabitsChanged: () -> Unit = {},
     private val clock: () -> LocalDate = { computeToday(preferences.midnightDelayHours, 0) }
 ) {
     private val listeners = mutableListOf<() -> Unit>()
     private val external = database?.let { ExternalChanges(it) }
-    private val charts = ChartRecorder(preferences, dateFormatter, ::theme)
+    private var charts = ChartRecorder(preferences, dateFormatter, ::theme)
     var hooks = SessionHooks()
     var systemIsDark: Boolean = false
     var pendingHabitId: Long = -1
@@ -389,6 +390,7 @@ class SalemSession(
         developer = preferences.isDeveloper,
         firstWeekday = preferences.firstWeekday.daysSinceSunday,
         theme = preferences.theme,
+        language = preferences.language,
         showArchived = preferences.showArchived,
         showCompleted = preferences.showCompleted
     )
@@ -417,6 +419,13 @@ class SalemSession(
 
     fun setTheme(theme: Int) {
         preferences.theme = theme.coerceIn(0, 2)
+        changed()
+    }
+
+    /** Writes the language of the app ("" follows the device) and writes the names of the days and months in it. */
+    fun setLanguage(language: String) {
+        preferences.language = language
+        charts = ChartRecorder(preferences, formatterFor(language), ::theme)
         changed()
     }
 

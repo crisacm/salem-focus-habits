@@ -18,9 +18,59 @@
 
 import SwiftUI
 
+/// The language of the app: "en", "es" or "" for the language of the device. It is observable, so the screens that
+/// wrote a text with [L] or a date with the helpers below are drawn again when it changes.
+@Observable
+final class AppLanguage: @unchecked Sendable {
+    static let shared = AppLanguage()
+
+    private(set) var tag = ""
+    /// The strings of the language, or nil when there is none for it (the texts then are the English ones of the code).
+    private(set) var bundle: Bundle? = Bundle.main
+    private(set) var locale = Locale.current
+
+    func apply(_ newTag: String) {
+        guard newTag != tag else { return }
+        tag = newTag
+        if newTag.isEmpty {
+            bundle = Bundle.main
+            locale = Locale.current
+        } else {
+            let folder = Bundle.main.localizations.first { $0 == newTag || $0.hasPrefix(newTag + "-") }
+            bundle = folder
+                .flatMap { Bundle.main.path(forResource: $0, ofType: "lproj") }
+                .flatMap { Bundle(path: $0) }
+            locale = Locale(identifier: newTag)
+        }
+    }
+}
+
 func L(_ key: String, _ fallback: String) -> String {
-    let value = Bundle.main.localizedString(forKey: key, value: fallback, table: nil)
+    guard let bundle = AppLanguage.shared.bundle else { return fallback }
+    let value = bundle.localizedString(forKey: key, value: fallback, table: nil)
     return value == key ? fallback : value
+}
+
+/// A date formatter in the language of the app; set the template after this call, as it depends on the locale.
+func appDateFormatter() -> DateFormatter {
+    let formatter = DateFormatter()
+    formatter.locale = AppLanguage.shared.locale
+    return formatter
+}
+
+/// The calendar of the device with the names of the days in the language of the app.
+func appCalendar() -> Calendar {
+    var calendar = Calendar.current
+    calendar.locale = AppLanguage.shared.locale
+    return calendar
+}
+
+/// The time of day the way the language of the app writes it.
+func appTimeText(_ date: Date) -> String {
+    let formatter = appDateFormatter()
+    formatter.dateStyle = .none
+    formatter.timeStyle = .short
+    return formatter.string(from: date)
 }
 
 func habitColor(_ argb: Int64) -> Color {

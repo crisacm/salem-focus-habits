@@ -20,7 +20,7 @@ import SalemKit
 import SwiftUI
 
 private func LF(_ key: String, _ fallback: String, _ args: CVarArg...) -> String {
-    String(format: L(key, fallback), locale: Locale.current, arguments: args)
+    String(format: L(key, fallback), locale: AppLanguage.shared.locale, arguments: args)
 }
 
 // MARK: - Sheet pieces
@@ -368,7 +368,7 @@ private struct RadioSelect: View {
 // MARK: - Weekdays
 
 func reminderWeekdayNames() -> [String] {
-    let symbols = DateFormatter().shortWeekdaySymbols ?? []
+    let symbols = appDateFormatter().shortWeekdaySymbols ?? []
     guard symbols.count == 7 else { return Array(repeating: "?", count: 7) }
     return [6, 0, 1, 2, 3, 4, 5].map { symbols[$0] }
 }
@@ -540,7 +540,7 @@ struct CheckmarkPopup: View {
     }
 
     private var dateText: String {
-        let formatter = DateFormatter()
+        let formatter = appDateFormatter()
         formatter.setLocalizedDateFormatFromTemplate("EEEEMMMd")
         return formatter.string(from: date(fromDaysSince2000: Int(day)))
     }
@@ -675,7 +675,7 @@ struct NumberPopup: View {
     }
 
     private var dateText: String {
-        let formatter = DateFormatter()
+        let formatter = appDateFormatter()
         formatter.setLocalizedDateFormatFromTemplate("EEEEMMMd")
         return formatter.string(from: date(fromDaysSince2000: Int(day)))
     }

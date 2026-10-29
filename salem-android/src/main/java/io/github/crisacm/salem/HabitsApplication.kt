@@ -30,6 +30,7 @@ import io.github.crisacm.salem.platform.time.computeToday
 import io.github.crisacm.salem.platform.time.setFirstWeekday
 import io.github.crisacm.salem.platform.time.setToday
 import io.github.crisacm.salem.utils.DatabaseUtils
+import io.github.crisacm.salem.utils.applyAppLanguage
 import io.github.crisacm.salem.widgets.WidgetUpdater
 import java.io.File
 
@@ -68,6 +69,8 @@ class HabitsApplication : Application() {
 
         val prefs = component.preferences
         prefs.lastAppVersion = BuildConfig.VERSION_CODE
+        // With the language of the device left alone, a language chosen in the settings of Android stays
+        if (prefs.language.isNotEmpty()) applyAppLanguage(prefs.language)
 
         setToday(computeToday(component.preferences.midnightDelayHours, 0))
         setFirstWeekday(prefs.firstWeekday)

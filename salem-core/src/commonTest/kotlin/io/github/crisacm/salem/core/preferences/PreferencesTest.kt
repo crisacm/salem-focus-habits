@@ -102,6 +102,15 @@ class PreferencesTest : BaseUnitTest() {
     }
 
     @Test
+    fun testLanguageFollowsTheSystemUntilItIsSet() {
+        assertEquals(Preferences.LANGUAGE_SYSTEM, prefs.language)
+        prefs.language = Preferences.LANGUAGE_SPANISH
+        assertEquals("es", prefs.language)
+        prefs.language = Preferences.LANGUAGE_SYSTEM
+        assertEquals("", prefs.language)
+    }
+
+    @Test
     fun testNotifications() {
         assertFalse(prefs.shouldMakeNotificationsSticky())
         prefs.setNotificationsSticky(true)

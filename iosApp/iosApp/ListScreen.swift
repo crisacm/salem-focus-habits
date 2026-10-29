@@ -404,7 +404,7 @@ struct ListScreen: View {
     }
 
     private func formatted(_ day: Int32, template: String) -> String {
-        let formatter = DateFormatter()
+        let formatter = appDateFormatter()
         formatter.setLocalizedDateFormatFromTemplate(template)
         return formatter.string(from: date(fromDaysSince2000: Int(day)))
     }

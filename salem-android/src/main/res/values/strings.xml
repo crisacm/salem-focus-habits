@@ -167,6 +167,14 @@
     <string name="use_pure_black">Use pure black in dark theme</string>
     <string name="pure_black_description">Replaces gray backgrounds with pure black in dark theme. Reduces battery usage in phones with AMOLED display.</string>
     <string name="interface_preferences">Interface</string>
+    <string name="theme">Theme</string>
+    <string name="theme_automatic">Automatic</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="language">Language</string>
+    <string name="language_system">System default</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_spanish" translatable="false">Español</string>
     <string name="reverse_days">Reverse order of days</string>
     <string name="reverse_days_description">Show days in reverse order on the main screen.</string>
     <string name="day">Day</string>
@@ -263,4 +271,37 @@
     <string name="pref_midnight_delay_description">Wait until 3:00 AM to show a new day. Useful if you typically go to sleep after midnight. Requires app restart.</string>
     <string name="pref_animations_title">Disable animations</string>
     <string name="pref_animations_description">Disable confetti animation after adding a checkmark.</string>
+    <string name="habits_done_of_total">%1$d of %2$d</string>
+    <string name="show_archived">Show archived</string>
+    <string name="show_completed">Show completed</string>
+    <string name="select">Select</string>
+    <string name="more">More</string>
+    <string name="done">Done</string>
+    <string name="delete_habit_title">Delete habit?</string>
+    <string name="delete_habits_title">Delete habits?</string>
+    <string name="delete_habit_message">The habit will be permanently deleted. This action cannot be undone.</string>
+    <string name="delete_habits_message">The habits will be permanently deleted. This action cannot be undone.</string>
+    <string name="reminder_time">Time</string>
+    <string name="message">Message</string>
+    <string name="first_weekday">First day of the week</string>
+    <string name="import_success">Imported</string>
+    <string name="import_failed">Could not import</string>
+    <string name="about_description">A habit tracker. Logic in Kotlin, this screen in SwiftUI.</string>
+    <string name="credits">Credits</string>
+    <string name="next">Next</string>
+    <string name="edit_history">Edit history</string>
+    <string name="range_3m">3M</string>
+    <string name="range_6m">6M</string>
+    <string name="range_1y">1Y</string>
+    <string name="now">Now</string>
+    <string name="this_week">This week</string>
+    <string name="this_month">This month</string>
+    <string name="no_streaks">No streaks yet</string>
+    <string name="missed">Missed</string>
+    <string name="total_per_week">Total per week</string>
+    <string name="total_per_month">Total per month</string>
+    <string name="days_done_per_week">Days done per week</string>
+    <string name="days_done_per_month">Days done per month</string>
+    <string name="day_one">day</string>
+    <string name="day_other">days</string>
 </resources>

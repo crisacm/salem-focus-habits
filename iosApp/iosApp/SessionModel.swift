@@ -171,6 +171,7 @@ final class SessionModel {
         guard let outcome else { return }
         list = outcome.0
         settings = outcome.1
+        AppLanguage.shared.apply(outcome.1.language)
         if let pending = outcome.2 { detailId = pending }
     }
 
@@ -323,6 +324,13 @@ final class SessionModel {
 
     func setTheme(theme: Int32) {
         withSession { $0.setTheme(theme: theme) }
+        reload()
+    }
+
+    /// The language changes at once: the texts and dates are drawn again with it, and the core writes its names in it.
+    func setLanguage(language: String) {
+        AppLanguage.shared.apply(language)
+        withSession { $0.setLanguage(language: language) }
         reload()
     }
 

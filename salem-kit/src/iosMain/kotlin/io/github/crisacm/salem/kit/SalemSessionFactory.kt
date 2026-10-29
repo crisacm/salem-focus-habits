@@ -47,7 +47,9 @@ import io.github.crisacm.salem.platform.io.SqliterDatabaseOpener
 import io.github.crisacm.salem.platform.time.AppleLocalDateFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import platform.Foundation.NSLocale
 import platform.Foundation.NSProcessInfo
+import platform.Foundation.currentLocale
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
 
@@ -83,7 +85,8 @@ object SalemSessionFactory {
             commandRunner = commandRunner,
             preferences = preferences,
             database = database,
-            dateFormatter = AppleLocalDateFormatter(),
+            dateFormatter = appleFormatterFor(preferences.language),
+            formatterFor = ::appleFormatterFor,
             onHabitsChanged = onHabitsChanged
         )
         val reminders = KitReminders.start(
@@ -132,6 +135,11 @@ object SalemSessionFactory {
         session
     }
 }
+
+/** The names of days and months in the language of the app: [language] is a tag such as "es", or "" for the device. */
+private fun appleFormatterFor(language: String) = AppleLocalDateFormatter(
+    if (language.isEmpty()) NSLocale.currentLocale else NSLocale(localeIdentifier = language)
+)
 
 @OptIn(ExperimentalNativeApi::class)
 private fun seedIfRequested(modelFactory: ModelFactory, habitList: HabitList) {
