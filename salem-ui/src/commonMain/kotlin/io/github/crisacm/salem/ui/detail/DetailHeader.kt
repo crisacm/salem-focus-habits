@@ -39,8 +39,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Shuffle
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,6 +61,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
+import io.github.crisacm.salem.ui.compose.ExpressiveMenu
+import io.github.crisacm.salem.ui.compose.ExpressiveMenuGap
+import io.github.crisacm.salem.ui.compose.ExpressiveMenuItem
 import io.github.crisacm.salem.ui.edit.ScallopShape
 import io.github.crisacm.salem.ui.list.HabitTones
 import io.github.crisacm.salem.ui.list.habitIconFor
@@ -98,32 +104,33 @@ fun HabitDetailHeader(session: HabitDetailSession, state: ShowHabitState, onBack
                     RoundButton(Icons.Filled.Edit, stringResource(Res.string.edit), tones, "action_edit_habit", menu::onEditHabit)
                     Box {
                         RoundButton(Icons.Filled.MoreVert, stringResource(Res.string.more_options), tones, "overflowMenu") { expanded = true }
-                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                            MenuItem(Res.string.export, "export") {
+                        ExpressiveMenu(expanded = expanded, onDismiss = { expanded = false }) {
+                            MenuItem(Res.string.export, Icons.Outlined.FileDownload, "export") {
                                 expanded = false
                                 session.onExport()
                             }
                             if (session.canArchive) {
-                                MenuItem(Res.string.archive, "action_archive_habit") {
+                                MenuItem(Res.string.archive, Icons.Outlined.Archive, "action_archive_habit") {
                                     expanded = false
                                     menu.onArchiveHabits()
                                 }
                             }
                             if (session.canUnarchive) {
-                                MenuItem(Res.string.unarchive, "action_unarchive_habit") {
+                                MenuItem(Res.string.unarchive, Icons.Outlined.Unarchive, "action_unarchive_habit") {
                                     expanded = false
                                     menu.onUnarchiveHabits()
                                 }
                             }
-                            MenuItem(Res.string.delete, "action_delete") {
-                                expanded = false
-                                menu.onDeleteHabit()
-                            }
                             if (session.isDeveloper) {
-                                MenuItem(Res.string.randomize, "action_randomize") {
+                                MenuItem(Res.string.randomize, Icons.Outlined.Shuffle, "action_randomize") {
                                     expanded = false
                                     menu.onRandomize()
                                 }
+                            }
+                            ExpressiveMenuGap()
+                            MenuItem(Res.string.delete, Icons.Outlined.Delete, "action_delete", destructive = true) {
+                                expanded = false
+                                menu.onDeleteHabit()
                             }
                         }
                     }
@@ -170,6 +177,6 @@ private fun RoundButton(icon: ImageVector, description: String, tones: HabitTone
 }
 
 @Composable
-private fun MenuItem(label: StringResource, tag: String, onClick: () -> Unit) {
-    DropdownMenuItem(text = { Text(stringResource(label)) }, onClick = onClick, modifier = Modifier.testTag(tag))
+private fun MenuItem(label: StringResource, icon: ImageVector, tag: String, destructive: Boolean = false, onClick: () -> Unit) {
+    ExpressiveMenuItem(stringResource(label), icon, onClick, Modifier.testTag(tag), destructive = destructive)
 }

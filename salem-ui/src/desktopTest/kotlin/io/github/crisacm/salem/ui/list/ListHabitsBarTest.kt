@@ -21,6 +21,7 @@ package io.github.crisacm.salem.ui.list
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -109,5 +110,15 @@ class ListHabitsBarTest : BaseUiTest() {
         verify { selectionScreen.showEditHabitsScreen(listOf(habit)) }
         onNodeWithTag("action_color").performClick()
         verify { selectionScreen.showColorPicker(habit.color, any()) }
+    }
+
+    @Test
+    fun editAndColourNeedASingleHabit() = runComposeUiTest {
+        every { selectionAdapter.getSelected() } returns listOf(habit, fixtures.createShortHabit())
+        showBar()
+        runOnIdle { selection.onSelectionStart() }
+        onNodeWithTag("selectionCount").assertIsDisplayed()
+        onNodeWithTag("action_edit_habit").assertDoesNotExist()
+        onNodeWithTag("action_color").assertDoesNotExist()
     }
 }
