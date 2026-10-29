@@ -297,6 +297,7 @@ struct HistoryEditor: View {
     // The days are kept in the view: reading them from the model on every draw gives nothing to observe, so a change was saved but not shown
     @State private var days: [HistoryDay] = []
     @State private var numberTarget: HistoryDay?
+    @State private var checkTarget: HistoryDay?
 
     var body: some View {
         let detail = model.detail(id: habitId)
@@ -316,6 +317,17 @@ struct HistoryEditor: View {
             .toolbar { Button(L("done", "Done")) { dismiss() } }
         }
         .onAppear { reloadDays() }
+        .sheet(item: $checkTarget) { target in
+            CheckmarkPopup(
+                title: detail?.name ?? "",
+                day: target.day,
+                notes: target.notes,
+                skipEnabled: model.list?.skipEnabled == true,
+                unknownEnabled: model.list?.questionMarks == true
+            ) { value, notes in
+                save(target.day, value: value, notes: notes)
+            }
+        }
         .sheet(item: $numberTarget) { target in
             NumberPopup(
                 title: detail?.name ?? "",
@@ -351,12 +363,12 @@ struct HistoryEditor: View {
         day.value == Int32(EntryValue.yesManual) || day.value == Int32(EntryValue.yesAuto)
     }
 
-    /// A yes or no day is toggled; a measurable day asks for its amount.
+    /// A yes or no day asks for its mark and note; a measurable day asks for its amount.
     private func select(_ day: HistoryDay, _ detail: DetailSnapshot?) {
         if detail?.numerical == true {
             numberTarget = day
         } else {
-            save(day.day, value: isDone(day) ? Int32(EntryValue.no) : Int32(EntryValue.yesManual), notes: day.notes)
+            checkTarget = day
         }
     }
 
