@@ -27,6 +27,7 @@ import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
+import io.github.crisacm.salem.platform.time.LocalDate
 
 /** Records what the session asks of the platform. */
 internal class RecordingDetailHooks : HabitDetailSession.Hooks {
@@ -56,7 +57,7 @@ internal class RecordingDetailHooks : HabitDetailSession.Hooks {
         historyEditorListener = listener
     }
 
-    override fun showNumberPopup(value: Double, notes: String, callback: NumberPickerCallback) {}
+    override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) {}
 
     override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) {}
 

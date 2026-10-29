@@ -30,6 +30,7 @@ import io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.list.ListOverlays
 
 /** The messages that the detail shows in a banner. */
@@ -86,8 +87,8 @@ class HabitDetailLayers(
 
     override fun showHistoryEditorDialog(listener: OnDateClickedListener) = historyEditor.show(listener)
 
-    override fun showNumberPopup(value: Double, notes: String, callback: NumberPickerCallback) =
-        overlays.showNumber(value, notes, callback)
+    override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
+        overlays.showNumber(habit, date, value, notes, callback)
 
     override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
         overlays.showCheckmark(selectedValue, notes, color, callback)

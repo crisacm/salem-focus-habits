@@ -19,6 +19,8 @@
 
 package io.github.crisacm.salem.ui.dialogs
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -95,10 +97,11 @@ class DialogContentTest {
     @Test
     fun numberSavesTheTypedValueWithTheNotes() = runComposeUiTest {
         val session = NotesSession("")
+        val info = NumberSheetInfo("Run", "Today", "miles", Color.Blue, Color.White, Icons.Filled.Check)
         var saved: Pair<Double, String>? = null
         setContent {
             MaterialTheme {
-                NumberPopup(session, 12.5, skipEnabled = false, unknownEnabled = false, '.', false, { v, n -> saved = v to n }, {})
+                NumberPopup(session, info, 12.5, skipEnabled = false, unknownEnabled = false, '.', false, { v, n -> saved = v to n }, {})
             }
         }
         onNodeWithContentDescription("Save").performClick()

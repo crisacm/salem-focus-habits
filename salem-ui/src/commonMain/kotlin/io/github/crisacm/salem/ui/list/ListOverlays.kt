@@ -24,12 +24,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import io.github.crisacm.salem.core.models.Habit
 import io.github.crisacm.salem.core.models.HabitType
 import io.github.crisacm.salem.core.models.PaletteColor
 import io.github.crisacm.salem.core.ui.callbacks.CheckMarkDialogCallback
 import io.github.crisacm.salem.core.ui.callbacks.NumberPickerCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnColorPickedCallback
 import io.github.crisacm.salem.core.ui.callbacks.OnConfirmedCallback
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.dialogs.NotesSession
 
 /**
@@ -58,7 +60,7 @@ sealed interface ListOverlay {
     }
 
     /** The popup of a numerical cell; [session] keeps the notes while it is open. */
-    class Number(val value: Double, notes: String, val callback: NumberPickerCallback) : ListOverlay {
+    class Number(val habit: Habit, val date: LocalDate, val value: Double, notes: String, val callback: NumberPickerCallback) : ListOverlay {
         val session = NotesSession(notes)
     }
 }
@@ -79,8 +81,8 @@ class ListOverlays {
     fun showCheckmark(value: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
         show(ListOverlay.Checkmark(value, notes, color, callback))
 
-    fun showNumber(value: Double, notes: String, callback: NumberPickerCallback) =
-        show(ListOverlay.Number(value, notes, callback))
+    fun showNumber(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
+        show(ListOverlay.Number(habit, date, value, notes, callback))
 
     /** Closes [overlay] if it is still the open one: a late callback of an older overlay must not close a newer one. */
     fun dismiss(overlay: ListOverlay) {

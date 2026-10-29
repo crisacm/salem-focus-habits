@@ -25,6 +25,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.backhandler.LocalCompatNavigationEventDispatcherOwner
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
@@ -216,6 +217,33 @@ class EditHabitScreenTest {
     fun aNewHabitStartsWithTheCursorInItsName() = runComposeUiTest {
         show()
         onNodeWithTag("nameInput").assertIsFocused()
+    }
+
+    @Test
+    fun changingTheTypeOfAnExistingHabitAsksFirst() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(name = "Meditate"), isEditing = true)
+        onNodeWithTag("typeMeasurable").performClick()
+        onNodeWithText("Change habit type?").assertIsDisplayed()
+        onNodeWithTag("targetInput").assertDoesNotExist()
+        onNodeWithTag("changeTypeConfirm").performClick()
+        onNodeWithTag("targetInput").assertIsDisplayed()
+    }
+
+    @Test
+    fun cancellingTheTypeChangeKeepsTheType() = runComposeUiTest {
+        show(EditHabitForm.new(HabitType.YES_NO).copy(name = "Meditate"), isEditing = true)
+        onNodeWithTag("typeMeasurable").performClick()
+        onNodeWithTag("changeTypeCancel").performClick()
+        onNodeWithText("Change habit type?").assertDoesNotExist()
+        onNodeWithTag("targetInput").assertDoesNotExist()
+    }
+
+    @Test
+    fun aNewHabitChangesTypeWithoutAsking() = runComposeUiTest {
+        show()
+        onNodeWithTag("typeMeasurable").performClick()
+        onNodeWithText("Change habit type?").assertDoesNotExist()
+        onNodeWithTag("targetInput").assertIsDisplayed()
     }
 
     @Test

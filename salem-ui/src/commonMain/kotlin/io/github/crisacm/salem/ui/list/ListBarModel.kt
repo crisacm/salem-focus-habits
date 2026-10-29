@@ -44,12 +44,13 @@ private fun directional(current: Order, ascending: Order, descending: Order) = w
     else -> SortMark.NONE
 }
 
-/** Which actions the selection bar offers; colour and delete are always there. */
+/** Which actions the selection bar offers; delete is always there. Edit and colour need a single habit selected. */
 data class SelectionActions(
     val canEdit: Boolean,
     val canArchive: Boolean,
     val canUnarchive: Boolean,
-    val showNotify: Boolean
+    val showNotify: Boolean,
+    val canColor: Boolean = canEdit
 ) {
     companion object {
         val NONE = SelectionActions(canEdit = false, canArchive = false, canUnarchive = false, showNotify = false)

@@ -56,7 +56,7 @@ open class ListHabitsBehavior(
         val entry = habit.computedEntries.get(date)
         if (habit.type == HabitType.NUMERICAL) {
             val oldValue = entry.value.toDouble() / 1000
-            screen.showNumberPopup(oldValue, entry.notes) { newValue: Double, newNotes: String ->
+            screen.showNumberPopup(habit, date, oldValue, entry.notes) { newValue: Double, newNotes: String ->
                 val value = (newValue * 1000).roundToInt()
                 if (newValue != oldValue && habit.targetType == AT_LEAST) {
                     screen.showConfetti(habit.color, x, y)
@@ -157,6 +157,8 @@ open class ListHabitsBehavior(
         fun showIntroScreen()
         fun showMessage(m: Message)
         fun showNumberPopup(
+            habit: Habit,
+            date: LocalDate,
             value: Double,
             notes: String,
             callback: NumberPickerCallback

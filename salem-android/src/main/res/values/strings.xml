@@ -175,6 +175,11 @@
     <string name="year">Year</string>
     <string name="total">Total</string>
     <string name="yes_or_no">Yes or No</string>
+    <string name="habit_type">Habit type</string>
+    <string name="habit_type_subtitle">How do you want to track it?</string>
+    <string name="change_type_title">Change habit type?</string>
+    <string name="change_type_message">The way this habit works will change. The entries you already recorded are not lost, but they will not be shown because they use a different format.</string>
+    <string name="change_type">Change type</string>
     <string name="every_x_days">Every %d days</string>
     <string name="every_x_weeks">Every %d weeks</string>
     <string name="score">Score</string>

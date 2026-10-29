@@ -56,14 +56,14 @@ class HabitDetailLayersTest : BaseUiTest() {
     @Test
     fun aPopupDoesNotCloseTheHistoryEditor() {
         layers.showHistoryEditorDialog(listener)
-        layers.showNumberPopup(2.5, "", NumberPickerCallback { _, _ -> })
+        layers.showNumberPopup(fixtures.createShortHabit(), LocalDate(2015, 1, 25), 2.5, "", NumberPickerCallback { _, _ -> })
         assertTrue(layers.historyEditor.isOpen)
         assertTrue(layers.overlays.current is ListOverlay.Number)
     }
 
     @Test
     fun theNumberAndCheckmarkPopupsOpenAsOverlays() {
-        layers.showNumberPopup(2.5, "note", NumberPickerCallback { _, _ -> })
+        layers.showNumberPopup(fixtures.createShortHabit(), LocalDate(2015, 1, 25), 2.5, "note", NumberPickerCallback { _, _ -> })
         assertEquals(2.5, (layers.overlays.current as ListOverlay.Number).value)
         layers.showCheckmarkPopup(Entry.YES_MANUAL, "", PaletteColor(3), CheckMarkDialogCallback { _, _ -> })
         assertEquals(Entry.YES_MANUAL, (layers.overlays.current as ListOverlay.Checkmark).value)

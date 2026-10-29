@@ -40,6 +40,7 @@ import io.github.crisacm.salem.ui.dialogs.ConfirmDeleteDialogContent
 import io.github.crisacm.salem.ui.dialogs.HabitTypeDialogContent
 import io.github.crisacm.salem.ui.dialogs.NumberPopup
 import io.github.crisacm.salem.ui.dialogs.paletteColors
+import io.github.crisacm.salem.ui.dialogs.rememberNumberSheetInfo
 import io.github.crisacm.salem.ui.edit.EditHabitScreen
 import io.github.crisacm.salem.ui.edit.PickerLabels
 import io.github.crisacm.salem.ui.edit.defaultPickerLabels
@@ -142,6 +143,7 @@ fun ListOverlayHost(
                 BackHandler(onBack = close)
                 NumberPopup(
                     session = overlay.session,
+                    info = rememberNumberSheetInfo(overlay.habit, overlay.date, dateFormatter),
                     originalValue = overlay.value,
                     skipEnabled = preferences.isSkipEnabled,
                     unknownEnabled = preferences.areQuestionMarksEnabled,
