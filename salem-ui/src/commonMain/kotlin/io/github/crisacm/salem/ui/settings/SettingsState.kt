@@ -69,6 +69,12 @@ class SettingsState(private val preferences: Preferences, private val onChanged:
     var firstWeekday by mutableStateOf(preferences.firstWeekday)
         private set
 
+    var theme by mutableStateOf(preferences.theme)
+        private set
+
+    var language by mutableStateOf(preferences.language)
+        private set
+
     init {
         refresh()
     }
@@ -77,6 +83,8 @@ class SettingsState(private val preferences: Preferences, private val onChanged:
     fun refresh() {
         SettingsSwitch.entries.forEach { switches[it] = read(it) }
         firstWeekday = preferences.firstWeekday
+        theme = preferences.theme
+        language = preferences.language
     }
 
     fun isOn(switch: SettingsSwitch): Boolean = switches.getValue(switch)
@@ -90,6 +98,18 @@ class SettingsState(private val preferences: Preferences, private val onChanged:
     fun selectFirstWeekday(day: DayOfWeek) {
         preferences.firstWeekday = day
         firstWeekday = day
+        onChanged()
+    }
+
+    fun selectTheme(value: Int) {
+        preferences.theme = value
+        theme = value
+        onChanged()
+    }
+
+    fun selectLanguage(value: String) {
+        preferences.language = value
+        language = value
         onChanged()
     }
 

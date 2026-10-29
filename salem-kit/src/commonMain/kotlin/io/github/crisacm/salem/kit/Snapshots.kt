@@ -133,7 +133,7 @@ class DetailCharts(
 /** One day in the history editor. */
 class HistoryDay(val day: Int, val value: Int, val number: Double, val notes: String)
 
-/** The switches and choices of Settings. [firstWeekday] is 0 for Sunday. [theme] is 0 automatic, 1 dark, 2 light. */
+/** The switches and choices of Settings. [firstWeekday] is 0 for Sunday. [theme] is 0 automatic, 1 dark, 2 light. [language] is "en", "es" or "" for the language of the device. */
 class SettingsSnapshot(
     val shortToggle: Boolean,
     val midnightDelay: Boolean,
@@ -146,6 +146,7 @@ class SettingsSnapshot(
     val developer: Boolean,
     val firstWeekday: Int,
     val theme: Int,
+    val language: String,
     val showArchived: Boolean,
     val showCompleted: Boolean
 )

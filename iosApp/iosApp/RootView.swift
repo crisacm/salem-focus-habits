@@ -42,6 +42,7 @@ struct RootView: View {
         }
         .onAppear { model.load() }
         .preferredColorScheme(scheme)
+        .environment(\.locale, AppLanguage.shared.locale)
     }
 
     private var scheme: ColorScheme? {

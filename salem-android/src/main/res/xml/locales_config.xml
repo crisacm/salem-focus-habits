@@ -32,7 +32,7 @@
     <locale android:name="ro-RO" /> <!-- Romanian -->
     <locale android:name="ru-RU" /> <!-- Russian -->
     <locale android:name="sk-SK" /> <!-- Slovak -->
-    <locale android:name="sl-SL" /> <!-- Slovenian -->
+    <locale android:name="sl-SI" /> <!-- Slovenian -->
     <locale android:name="sr-CS" /> <!-- Serbian (Latin) -->
     <locale android:name="sr-SP" /> <!-- Serbian (Cyrillic) -->
     <locale android:name="sv-SE" /> <!-- Swedish -->

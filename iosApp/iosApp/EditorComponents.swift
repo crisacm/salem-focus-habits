@@ -109,8 +109,8 @@ struct WeekdayCircles: View {
     private static let symbolIndex = [1, 2, 3, 4, 5, 6, 0]
 
     var body: some View {
-        let letters = Calendar.current.veryShortWeekdaySymbols
-        let names = Calendar.current.weekdaySymbols
+        let letters = appCalendar().veryShortWeekdaySymbols
+        let names = appCalendar().weekdaySymbols
         HStack(spacing: 0) {
             ForEach(0..<7, id: \.self) { position in
                 if position > 0 { Spacer(minLength: 0) }

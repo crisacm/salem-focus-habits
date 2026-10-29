@@ -214,9 +214,9 @@ struct DetailScreen: View {
         let calendar = Calendar(identifier: .gregorian)
         let first = date(fromDaysSince2000: Int(start))
         let last = date(fromDaysSince2000: Int(end))
-        let month = DateFormatter()
+        let month = appDateFormatter()
         month.setLocalizedDateFormatFromTemplate("MMM")
-        let withYear = DateFormatter()
+        let withYear = appDateFormatter()
         withYear.setLocalizedDateFormatFromTemplate("MMMy")
         if calendar.component(.year, from: first) == calendar.component(.year, from: last) {
             return "\(month.string(from: first)) – \(withYear.string(from: last))"
@@ -229,9 +229,9 @@ struct DetailScreen: View {
         let sunday = (Int(today) + 6) % 7
         let sinceWeekStart = (sunday - firstWeekday + 7) % 7
         let first = today - Int32(sinceWeekStart) - Int32((calendarWeeks - 1) * 7)
-        let short = DateFormatter()
+        let short = appDateFormatter()
         short.setLocalizedDateFormatFromTemplate("MMMd")
-        let full = DateFormatter()
+        let full = appDateFormatter()
         full.setLocalizedDateFormatFromTemplate("yMMMd")
         return "\(short.string(from: date(fromDaysSince2000: Int(first)))) – \(full.string(from: date(fromDaysSince2000: Int(today))))"
     }
@@ -268,7 +268,7 @@ struct DetailScreen: View {
     }
 
     private func weekdayNames(firstWeekday: Int) -> [String] {
-        let names = Calendar.current.shortWeekdaySymbols
+        let names = appCalendar().shortWeekdaySymbols
         return (0..<7).map { offset in
             let index = (firstWeekday + offset) % 7
             return names.indices.contains(index) ? names[index] : ""

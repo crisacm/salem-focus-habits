@@ -54,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
 
     var pureBlack: Boolean = false
+    private var themeAtCreate = 0
     lateinit var appComponent: HabitsApplicationComponent
     lateinit var component: HabitsActivityComponent
     lateinit var taskRunner: TaskRunner
@@ -93,6 +94,7 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         prefs = appComponent.preferences
         prefs.addListener(this)
         pureBlack = prefs.isPureBlackEnabled
+        themeAtCreate = prefs.theme
         midnightTimer = appComponent.midnightTimer
         host = component.listHabitsHost
         savedInstanceState?.let { host.restoreDataOffset(it.getInt(KEY_DATA_OFFSET)) }
@@ -159,7 +161,10 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
                 Log.e("ListHabitActivity", "TaskRunner failed", e)
             }
         }
-        if (prefs.theme == THEME_DARK && prefs.isPureBlackEnabled != pureBlack) {
+        // The theme and pure black can be changed in Settings
+        if (prefs.theme != themeAtCreate ||
+            prefs.theme == THEME_DARK && prefs.isPureBlackEnabled != pureBlack
+        ) {
             restartWithFade(ListHabitsActivity::class.java)
         }
         parseIntents()
