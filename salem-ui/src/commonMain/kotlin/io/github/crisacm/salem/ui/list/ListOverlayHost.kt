@@ -33,7 +33,6 @@ import io.github.crisacm.salem.core.ui.screens.habits.edit.HabitEditorSaver
 import io.github.crisacm.salem.core.ui.screens.habits.edit.SaveResult
 import io.github.crisacm.salem.core.ui.views.Theme
 import io.github.crisacm.salem.platform.time.LocalDateFormatter
-import io.github.crisacm.salem.ui.compose.toCompose
 import io.github.crisacm.salem.ui.dialogs.CheckmarkPopup
 import io.github.crisacm.salem.ui.dialogs.ColorPickerContent
 import io.github.crisacm.salem.ui.dialogs.ConfirmDeleteDialogContent
@@ -122,8 +121,8 @@ fun ListOverlayHost(
                 }
                 BackHandler(onBack = close)
                 CheckmarkPopup(
-                    habitColor = theme.color(overlay.color).toCompose(),
                     session = overlay.session,
+                    info = rememberNumberSheetInfo(overlay.habit, overlay.date, dateFormatter),
                     originalValue = overlay.value,
                     skipEnabled = preferences.isSkipEnabled,
                     unknownEnabled = preferences.areQuestionMarksEnabled,

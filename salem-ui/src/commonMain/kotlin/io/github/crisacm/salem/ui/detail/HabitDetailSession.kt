@@ -82,7 +82,14 @@ class HabitDetailSession(
 
         fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback)
 
-        fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback)
+        fun showCheckmarkPopup(
+            habit: Habit,
+            date: LocalDate,
+            selectedValue: Int,
+            notes: String,
+            color: PaletteColor,
+            callback: CheckMarkDialogCallback
+        )
 
         fun showEditHabitScreen(habit: Habit)
 
@@ -179,8 +186,14 @@ class HabitDetailSession(
     override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
         hooks.showNumberPopup(habit, date, value, notes, callback)
 
-    override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
-        hooks.showCheckmarkPopup(selectedValue, notes, color, callback)
+    override fun showCheckmarkPopup(
+        habit: Habit,
+        date: LocalDate,
+        selectedValue: Int,
+        notes: String,
+        color: PaletteColor,
+        callback: CheckMarkDialogCallback
+    ) = hooks.showCheckmarkPopup(habit, date, selectedValue, notes, color, callback)
 
     override fun showEditHabitScreen(habit: Habit) = hooks.showEditHabitScreen(habit)
 

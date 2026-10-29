@@ -95,7 +95,7 @@ internal fun SheetCloseButton(onClick: () -> Unit, modifier: Modifier = Modifier
         modifier
             .size(48.dp)
             .clip(CircleShape)
-            .background(if (isDarkScheme()) Color(0xFF36343B) else Color(0xFFE3E0E9))
+            .background(closeButtonColor())
             .clickable(onClick = onClick)
             .semantics {
                 contentDescription = label

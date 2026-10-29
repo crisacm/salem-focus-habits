@@ -291,16 +291,18 @@ class ListHabitsScreen(
     }
 
     override fun showCheckmarkPopup(
+        habit: Habit,
+        date: LocalDate,
         selectedValue: Int,
         notes: String,
         color: PaletteColor,
         callback: CheckMarkDialogCallback
     ) {
-        val theme = themeSwitcher.currentTheme!!
         val fm = (context as AppCompatActivity).supportFragmentManager
         val dialog = CheckmarkDialog()
         dialog.arguments = Bundle().apply {
-            putInt("color", theme.color(color).toInt())
+            putLong("habit", habit.id!!)
+            putInt("date", date.daysSince2000)
             putInt("value", selectedValue)
             putString("notes", notes)
         }

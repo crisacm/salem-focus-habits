@@ -91,6 +91,8 @@ class HistoryCardPresenter(
     private fun showCheckmarkPopup(date: LocalDate) {
         val entry = habit.computedEntries.get(date)
         screen.showCheckmarkPopup(
+            habit,
+            date,
             entry.value,
             entry.notes,
             habit.color
@@ -211,6 +213,8 @@ class HistoryCardPresenter(
         )
 
         fun showCheckmarkPopup(
+            habit: Habit,
+            date: LocalDate,
             selectedValue: Int,
             notes: String,
             color: PaletteColor,
