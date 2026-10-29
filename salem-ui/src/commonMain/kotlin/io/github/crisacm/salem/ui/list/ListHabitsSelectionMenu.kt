@@ -82,6 +82,7 @@ class ListHabitsSelectionMenu(
         selectedCount = listState.selectedIds.size
         actions = SelectionActions(
             canEdit = behavior.canEdit(),
+            canColor = behavior.canEdit(),
             canArchive = behavior.canArchive(),
             canUnarchive = behavior.canUnarchive(),
             showNotify = prefs.isDeveloper

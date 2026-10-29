@@ -67,6 +67,9 @@ class ListBarModelTest {
     fun theSelectionActionsFollowTheSelection() {
         val one = SelectionActions(canEdit = true, canArchive = true, canUnarchive = false, showNotify = false)
         assertTrue(one.canEdit)
+        assertTrue(one.canColor)
+        assertFalse(SelectionActions(canEdit = false, canArchive = true, canUnarchive = false, showNotify = false).canColor)
+        assertFalse(SelectionActions.NONE.canColor)
         assertFalse(one.canUnarchive)
         assertFalse(SelectionActions.NONE.canEdit)
         assertFalse(SelectionActions.NONE.canArchive)

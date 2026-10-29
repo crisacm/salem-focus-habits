@@ -77,6 +77,7 @@ import io.github.crisacm.salem.ui.compose.toExpressiveColorScheme
 import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.dialogs.ChoiceDialogContent
 import io.github.crisacm.salem.ui.dialogs.ColorPickerContent
+import io.github.crisacm.salem.ui.dialogs.ConfirmTypeChangeDialogContent
 import io.github.crisacm.salem.ui.dialogs.FrequencyPickerContent
 import io.github.crisacm.salem.ui.dialogs.TimePickerContent
 import io.github.crisacm.salem.ui.dialogs.paletteColors
@@ -132,6 +133,9 @@ private sealed interface EditPicker {
     data object Frequency : EditPicker
     data object NumericalFrequency : EditPicker
     data object Time : EditPicker
+
+    /** The warning before an existing habit changes to [type]. */
+    data class ChangeType(val type: HabitType) : EditPicker
 }
 
 /**
@@ -204,7 +208,11 @@ fun EditHabitScreen(
                     SegmentedChoice(
                         options = listOf(stringResource(Res.string.yes_no_option), stringResource(Res.string.measurable)),
                         selected = if (isNumerical) 1 else 0,
-                        onSelect = { form = form.withType(if (it == 1) HabitType.NUMERICAL else HabitType.YES_NO) },
+                        onSelect = {
+                            val chosen = if (it == 1) HabitType.NUMERICAL else HabitType.YES_NO
+                            // A new habit has nothing recorded yet; an existing one asks before its entries stop showing
+                            if (isEditing && chosen != form.type) picker = EditPicker.ChangeType(chosen) else form = form.withType(chosen)
+                        },
                         tags = listOf("typeYesNo", "typeMeasurable")
                     )
 
@@ -364,8 +372,15 @@ fun EditHabitScreen(
                 }
             }
 
-            when (picker) {
+            when (val current = picker) {
                 EditPicker.None -> {}
+                is EditPicker.ChangeType -> ConfirmTypeChangeDialogContent(
+                    onConfirm = {
+                        form = form.withType(current.type)
+                        close()
+                    },
+                    onDismiss = close
+                )
                 EditPicker.Color -> ColorPickerContent(
                     palette = remember(theme) { theme.paletteColors() },
                     selected = form.color.paletteIndex,
