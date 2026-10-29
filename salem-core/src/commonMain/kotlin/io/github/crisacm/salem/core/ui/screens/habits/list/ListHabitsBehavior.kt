@@ -65,6 +65,8 @@ open class ListHabitsBehavior(
             }
         } else {
             screen.showCheckmarkPopup(
+                habit,
+                date,
                 entry.value,
                 entry.notes,
                 habit.color
@@ -164,6 +166,8 @@ open class ListHabitsBehavior(
             callback: NumberPickerCallback
         )
         fun showCheckmarkPopup(
+            habit: Habit,
+            date: LocalDate,
             selectedValue: Int,
             notes: String,
             color: PaletteColor,

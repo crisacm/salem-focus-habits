@@ -83,10 +83,11 @@ class DialogContentTest {
     @Test
     fun checkmarkOffersSkipOnlyWhenEnabled() = runComposeUiTest {
         val session = NotesSession("")
+        val info = NumberSheetInfo("Meditate", "Today", "", Color.Blue, Color.White, Icons.Filled.Check)
         var chosen: Pair<Int, String>? = null
         setContent {
             MaterialTheme {
-                CheckmarkPopup(Color.Blue, session, Entry.NO, skipEnabled = true, unknownEnabled = false, { v, n -> chosen = v to n }, {})
+                CheckmarkPopup(session, info, Entry.NO, skipEnabled = true, unknownEnabled = false, { v, n -> chosen = v to n }, {})
             }
         }
         onNodeWithContentDescription("Skip").assertIsDisplayed()

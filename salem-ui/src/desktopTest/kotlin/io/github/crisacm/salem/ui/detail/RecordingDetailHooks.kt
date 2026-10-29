@@ -59,7 +59,14 @@ internal class RecordingDetailHooks : HabitDetailSession.Hooks {
 
     override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) {}
 
-    override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) {}
+    override fun showCheckmarkPopup(
+        habit: Habit,
+        date: LocalDate,
+        selectedValue: Int,
+        notes: String,
+        color: PaletteColor,
+        callback: CheckMarkDialogCallback
+    ) {}
 
     override fun showEditHabitScreen(habit: Habit) {
         edited = habit

@@ -51,6 +51,8 @@ sealed interface ListOverlay {
 
     /** The popup of a yes or no cell; [session] keeps the notes while it is open. */
     class Checkmark(
+        val habit: Habit,
+        val date: LocalDate,
         val value: Int,
         notes: String,
         val color: PaletteColor,
@@ -78,8 +80,8 @@ class ListOverlays {
 
     fun showColor(selected: PaletteColor, callback: OnColorPickedCallback) = show(ListOverlay.Color(selected, callback))
 
-    fun showCheckmark(value: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
-        show(ListOverlay.Checkmark(value, notes, color, callback))
+    fun showCheckmark(habit: Habit, date: LocalDate, value: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
+        show(ListOverlay.Checkmark(habit, date, value, notes, color, callback))
 
     fun showNumber(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
         show(ListOverlay.Number(habit, date, value, notes, callback))

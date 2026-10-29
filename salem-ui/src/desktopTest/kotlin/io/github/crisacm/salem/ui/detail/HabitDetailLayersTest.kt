@@ -65,7 +65,7 @@ class HabitDetailLayersTest : BaseUiTest() {
     fun theNumberAndCheckmarkPopupsOpenAsOverlays() {
         layers.showNumberPopup(fixtures.createShortHabit(), LocalDate(2015, 1, 25), 2.5, "note", NumberPickerCallback { _, _ -> })
         assertEquals(2.5, (layers.overlays.current as ListOverlay.Number).value)
-        layers.showCheckmarkPopup(Entry.YES_MANUAL, "", PaletteColor(3), CheckMarkDialogCallback { _, _ -> })
+        layers.showCheckmarkPopup(fixtures.createShortHabit(), LocalDate(2015, 1, 25), Entry.YES_MANUAL, "", PaletteColor(3), CheckMarkDialogCallback { _, _ -> })
         assertEquals(Entry.YES_MANUAL, (layers.overlays.current as ListOverlay.Checkmark).value)
     }
 

@@ -224,7 +224,7 @@ class ListOverlayHostTest {
         var result: Pair<Int, String>? = null
         show()
         runOnIdle {
-            overlays.showCheckmark(Entry.NO, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
+            overlays.showCheckmark(sampleHabit(), LocalDate(2015, 1, 25), Entry.NO, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
         }
         onNodeWithContentDescription("Yes").performClick()
         runOnIdle {
@@ -238,7 +238,7 @@ class ListOverlayHostTest {
         var result: Pair<Int, String>? = null
         show()
         runOnIdle {
-            overlays.showCheckmark(Entry.YES_MANUAL, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
+            overlays.showCheckmark(sampleHabit(), LocalDate(2015, 1, 25), Entry.YES_MANUAL, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
         }
         onNode(hasSetTextAction()).performTextInput("late")
         runOnIdle { sendBack() }
@@ -253,7 +253,7 @@ class ListOverlayHostTest {
         var result: Pair<Int, String>? = null
         show()
         runOnIdle {
-            overlays.showCheckmark(Entry.NO, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
+            overlays.showCheckmark(sampleHabit(), LocalDate(2015, 1, 25), Entry.NO, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> result = v to n })
         }
         runOnIdle { sendBack() }
         runOnIdle {
@@ -370,7 +370,7 @@ class ListOverlayHostTest {
         val results = mutableListOf<Pair<Int, String>>()
         show()
         runOnIdle {
-            overlays.showCheckmark(Entry.YES_MANUAL, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> results += v to n })
+            overlays.showCheckmark(sampleHabit(), LocalDate(2015, 1, 25), Entry.YES_MANUAL, "", PaletteColor(2), CheckMarkDialogCallback { v, n -> results += v to n })
         }
         onNode(hasSetTextAction()).performTextInput("late")
         onRoot().performTouchInput { click(Offset(2f, 2f)) }

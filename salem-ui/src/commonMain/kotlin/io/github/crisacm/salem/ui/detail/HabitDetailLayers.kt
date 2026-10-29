@@ -90,8 +90,14 @@ class HabitDetailLayers(
     override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
         overlays.showNumber(habit, date, value, notes, callback)
 
-    override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
-        overlays.showCheckmark(selectedValue, notes, color, callback)
+    override fun showCheckmarkPopup(
+        habit: Habit,
+        date: LocalDate,
+        selectedValue: Int,
+        notes: String,
+        color: PaletteColor,
+        callback: CheckMarkDialogCallback
+    ) = overlays.showCheckmark(habit, date, selectedValue, notes, color, callback)
 
     override fun showEditHabitScreen(habit: Habit) = overlays.showEditor(habit.id, habit.type)
 

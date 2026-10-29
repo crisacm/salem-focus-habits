@@ -44,7 +44,6 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitMenuPresente
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.intents.IntentFactory
-import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
 import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.compose.SalemTheme
@@ -184,15 +183,17 @@ class ShowHabitActivity : AppCompatActivity() {
         }
 
         override fun showCheckmarkPopup(
+            habit: Habit,
+            date: LocalDate,
             selectedValue: Int,
             notes: String,
             color: PaletteColor,
             callback: CheckMarkDialogCallback
         ) {
-            val theme = themeSwitcher.currentTheme
             val dialog = CheckmarkDialog()
             dialog.arguments = Bundle().apply {
-                putInt("color", theme.color(color).toInt())
+                putLong("habit", habit.id!!)
+                putInt("date", date.daysSince2000)
                 putInt("value", selectedValue)
                 putString("notes", notes)
             }

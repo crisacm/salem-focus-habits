@@ -22,13 +22,17 @@ package io.github.crisacm.salem.activities.common.dialogs
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import io.github.crisacm.salem.HabitsApplication
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
 import io.github.crisacm.salem.ui.dialogs.CheckmarkPopup
 import io.github.crisacm.salem.ui.dialogs.NotesSession
+import io.github.crisacm.salem.ui.dialogs.rememberNumberSheetInfo
+import java.util.Locale
 
 class CheckmarkDialog : ComposeDialogFragment() {
     var onToggle: (Int, String) -> Unit = { _, _ -> }
@@ -49,9 +53,18 @@ class CheckmarkDialog : ComposeDialogFragment() {
     override fun Content() {
         val context = LocalContext.current
         val prefs = remember { (context.applicationContext as HabitsApplication).component.preferences }
+        val args = requireArguments()
+        val habit = remember { (context.applicationContext as HabitsApplication).component.habitList.getById(args.getLong("habit")) }
+        if (habit == null) {
+            // The habit was deleted while the sheet was about to open.
+            LaunchedEffect(Unit) { dismissAllowingStateLoss() }
+            return
+        }
+        val formatter = remember { JavaLocalDateFormatter(Locale.getDefault()) }
+        val info = rememberNumberSheetInfo(habit, LocalDate(args.getInt("date")), formatter)
         CheckmarkPopup(
-            habitColor = Color(requireArguments().getInt("color")),
             session = session,
+            info = info,
             originalValue = originalValue,
             skipEnabled = prefs.isSkipEnabled,
             unknownEnabled = prefs.areQuestionMarksEnabled,
