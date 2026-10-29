@@ -63,6 +63,7 @@ import io.github.crisacm.salem.inject.ActivityScope
 import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.io.JavaUserFile
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.tasks.ExportDBTaskFactory
 import io.github.crisacm.salem.tasks.ImportDataTask
 import io.github.crisacm.salem.tasks.ImportDataTaskFactory
@@ -271,6 +272,8 @@ class ListHabitsScreen(
     }
 
     override fun showNumberPopup(
+        habit: Habit,
+        date: LocalDate,
         value: Double,
         notes: String,
         callback: NumberPickerCallback
@@ -278,6 +281,8 @@ class ListHabitsScreen(
         val fm = (context as AppCompatActivity).supportFragmentManager
         val dialog = NumberDialog()
         dialog.arguments = Bundle().apply {
+            putLong("habit", habit.id!!)
+            putInt("date", date.daysSince2000)
             putDouble("value", value)
             putString("notes", notes)
         }

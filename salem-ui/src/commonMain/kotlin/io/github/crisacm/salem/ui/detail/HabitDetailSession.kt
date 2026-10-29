@@ -37,6 +37,7 @@ import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitPresenter
 import io.github.crisacm.salem.core.ui.screens.habits.show.ShowHabitState
 import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.core.ui.views.Theme
+import io.github.crisacm.salem.platform.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -79,7 +80,7 @@ class HabitDetailSession(
 
         fun showHistoryEditorDialog(listener: OnDateClickedListener)
 
-        fun showNumberPopup(value: Double, notes: String, callback: NumberPickerCallback)
+        fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback)
 
         fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback)
 
@@ -175,8 +176,8 @@ class HabitDetailSession(
 
     override fun showHistoryEditorDialog(listener: OnDateClickedListener) = hooks.showHistoryEditorDialog(listener)
 
-    override fun showNumberPopup(value: Double, notes: String, callback: NumberPickerCallback) =
-        hooks.showNumberPopup(value, notes, callback)
+    override fun showNumberPopup(habit: Habit, date: LocalDate, value: Double, notes: String, callback: NumberPickerCallback) =
+        hooks.showNumberPopup(habit, date, value, notes, callback)
 
     override fun showCheckmarkPopup(selectedValue: Int, notes: String, color: PaletteColor, callback: CheckMarkDialogCallback) =
         hooks.showCheckmarkPopup(selectedValue, notes, color, callback)

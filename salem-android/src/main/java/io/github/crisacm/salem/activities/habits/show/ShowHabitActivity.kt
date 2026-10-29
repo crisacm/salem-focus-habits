@@ -46,6 +46,7 @@ import io.github.crisacm.salem.core.ui.views.OnDateClickedListener
 import io.github.crisacm.salem.intents.IntentFactory
 import io.github.crisacm.salem.platform.gui.toInt
 import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.compose.SalemTheme
 import io.github.crisacm.salem.ui.compose.usesDarkTones
 import io.github.crisacm.salem.ui.detail.HabitDetailScreen
@@ -165,12 +166,16 @@ class ShowHabitActivity : AppCompatActivity() {
         }
 
         override fun showNumberPopup(
+            habit: Habit,
+            date: LocalDate,
             value: Double,
             notes: String,
             callback: NumberPickerCallback
         ) {
             val dialog = NumberDialog()
             dialog.arguments = Bundle().apply {
+                putLong("habit", habit.id!!)
+                putInt("date", date.daysSince2000)
                 putDouble("value", value)
                 putString("notes", notes)
             }

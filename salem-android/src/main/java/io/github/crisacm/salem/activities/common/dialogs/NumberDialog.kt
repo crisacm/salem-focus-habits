@@ -23,13 +23,18 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import io.github.crisacm.salem.HabitsApplication
+import io.github.crisacm.salem.platform.time.JavaLocalDateFormatter
+import io.github.crisacm.salem.platform.time.LocalDate
 import io.github.crisacm.salem.ui.compose.ComposeDialogFragment
 import io.github.crisacm.salem.ui.dialogs.NotesSession
 import io.github.crisacm.salem.ui.dialogs.NumberPopup
+import io.github.crisacm.salem.ui.dialogs.rememberNumberSheetInfo
 import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class NumberDialog : ComposeDialogFragment() {
     var onToggle: (Double, String) -> Unit = { _, _ -> }
@@ -51,10 +56,20 @@ class NumberDialog : ComposeDialogFragment() {
         val context = LocalContext.current
         val prefs = remember { (context.applicationContext as HabitsApplication).component.preferences }
         val separator = remember { DecimalFormatSymbols.getInstance().decimalSeparator }
+        val args = requireArguments()
+        val habit = remember { (context.applicationContext as HabitsApplication).component.habitList.getById(args.getLong("habit")) }
+        if (habit == null) {
+            // The habit was deleted while the sheet was about to open.
+            LaunchedEffect(Unit) { dismissAllowingStateLoss() }
+            return
+        }
+        val formatter = remember { JavaLocalDateFormatter(Locale.getDefault()) }
+        val info = rememberNumberSheetInfo(habit, LocalDate(args.getInt("date")), formatter)
         // https://github.com/flutter/flutter/issues/61175
         val textKeyboard = remember { usesTextKeyboardWorkaround(context) }
         NumberPopup(
             session = session,
+            info = info,
             originalValue = originalValue,
             skipEnabled = prefs.isSkipEnabled,
             unknownEnabled = prefs.areQuestionMarksEnabled,

@@ -175,6 +175,8 @@
     <string name="year">Year</string>
     <string name="total">Total</string>
     <string name="yes_or_no">Yes or No</string>
+    <string name="habit_type">Habit type</string>
+    <string name="habit_type_subtitle">How do you want to track it?</string>
     <string name="every_x_days">Every %d days</string>
     <string name="every_x_weeks">Every %d weeks</string>
     <string name="score">Score</string>

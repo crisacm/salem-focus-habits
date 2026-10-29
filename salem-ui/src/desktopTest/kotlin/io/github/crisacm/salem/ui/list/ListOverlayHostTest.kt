@@ -97,6 +97,8 @@ class ListOverlayHostTest {
     private val dispatcher = NavigationEventDispatcher()
     private val input = DirectNavigationEventInput().also { dispatcher.addInput(it) }
 
+    private fun sampleHabit() = HabitFixtures(factory, habits).createShortHabit().also { habits.add(it) }
+
     @Before
     fun fixToday() = setToday(LocalDate(2015, 1, 25))
 
@@ -264,7 +266,7 @@ class ListOverlayHostTest {
     fun theNumberPopupSavesTheTypedValue() = runComposeUiTest {
         var result: Pair<Double, String>? = null
         show()
-        runOnIdle { overlays.showNumber(12.5, "", NumberPickerCallback { v, n -> result = v to n }) }
+        runOnIdle { overlays.showNumber(sampleHabit(), LocalDate(2015, 1, 25), 12.5, "", NumberPickerCallback { v, n -> result = v to n }) }
         onNodeWithContentDescription("Save").performClick()
         runOnIdle {
             assertEquals(12.5 to "", result)
@@ -338,8 +340,9 @@ class ListOverlayHostTest {
     fun backFromTheNumberPopupWithNewNotesSavesThemWithTheOriginalValue() = runComposeUiTest {
         var result: Pair<Double, String>? = null
         show()
-        runOnIdle { overlays.showNumber(7.5, "", NumberPickerCallback { v, n -> result = v to n }) }
-        onAllNodes(hasSetTextAction())[0].performTextInput("late")
+        runOnIdle { overlays.showNumber(sampleHabit(), LocalDate(2015, 1, 25), 7.5, "", NumberPickerCallback { v, n -> result = v to n }) }
+        // The notes are the second field of the sheet, after the value
+        onAllNodes(hasSetTextAction())[1].performTextInput("late")
         runOnIdle { sendBack() }
         runOnIdle {
             assertEquals(7.5 to "late", result)
@@ -381,8 +384,8 @@ class ListOverlayHostTest {
     fun aTapOutsideTheNumberPopupSavesChangedNotesOnce() = runComposeUiTest {
         val results = mutableListOf<Pair<Double, String>>()
         show()
-        runOnIdle { overlays.showNumber(7.5, "", NumberPickerCallback { v, n -> results += v to n }) }
-        onAllNodes(hasSetTextAction())[0].performTextInput("late")
+        runOnIdle { overlays.showNumber(sampleHabit(), LocalDate(2015, 1, 25), 7.5, "", NumberPickerCallback { v, n -> results += v to n }) }
+        onAllNodes(hasSetTextAction())[1].performTextInput("late")
         onRoot().performTouchInput { click(Offset(2f, 2f)) }
         runOnIdle {
             assertEquals(listOf(7.5 to "late"), results)
