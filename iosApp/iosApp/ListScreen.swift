@@ -80,9 +80,9 @@ struct ListScreen: View {
                 }
             } else {
                 CheckmarkPopup(
-                    habitColor: habitColor(target.row.colorArgb),
+                    title: target.row.name,
+                    day: target.cell.day,
                     notes: target.cell.notes,
-                    value: target.cell.value,
                     skipEnabled: skip,
                     unknownEnabled: unknown
                 ) { value, notes in
@@ -245,8 +245,8 @@ struct ListScreen: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         guard !selecting else { return }
-                        if row.numerical && model.list?.shortToggle != true {
-                            entryPopup = EntryPopupTarget(row: row, cell: cell, numerical: true)
+                        if model.list?.shortToggle != true {
+                            entryPopup = EntryPopupTarget(row: row, cell: cell, numerical: row.numerical)
                         } else {
                             model.toggle(row.id, day: cell.day)
                         }

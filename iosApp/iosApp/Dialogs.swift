@@ -454,9 +454,8 @@ struct TimePickerDialog: View {
 // MARK: - Entry popups
 
 struct CheckmarkPopup: View {
-    let habitColor: Color
-    let notes: String
-    let value: Int32
+    let title: String
+    let day: Int32
     let skipEnabled: Bool
     let unknownEnabled: Bool
     let onChoose: (Int32, String) -> Void
@@ -464,16 +463,15 @@ struct CheckmarkPopup: View {
     @State private var draftNotes: String
 
     init(
-        habitColor: Color,
+        title: String,
+        day: Int32,
         notes: String,
-        value: Int32,
         skipEnabled: Bool,
         unknownEnabled: Bool,
         onChoose: @escaping (Int32, String) -> Void
     ) {
-        self.habitColor = habitColor
-        self.notes = notes
-        self.value = value
+        self.title = title
+        self.day = day
         self.skipEnabled = skipEnabled
         self.unknownEnabled = unknownEnabled
         self.onChoose = onChoose
@@ -481,38 +479,70 @@ struct CheckmarkPopup: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                TextField(L("notes", "Notes"), text: $draftNotes, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
+        VStack(spacing: 0) {
+            ZStack {
+                VStack(spacing: 2) {
+                    Text(L("notes", "Notes")).font(.system(size: 17, weight: .semibold))
+                    Text("\(title) \u{00B7} \(dateText)")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                .padding(.horizontal, 76)
                 HStack {
-                    popupButton(L("yes", "Yes"), color: habitColor) {
-                        choose(Int32(EntryValue.yesManual))
-                    }
-                    popupButton(L("no", "No"), color: .secondary) {
-                        choose(Int32(EntryValue.no))
-                    }
+                    SheetCloseButton { dismiss() }
+                    Spacer()
+                }
+            }
+            .frame(height: 44)
+            .padding(.top, 23)
+            .padding(.horizontal, 16)
+            TextField("", text: $draftNotes, prompt: Text(L("notes", "Notes")).foregroundStyle(Color.secondary), axis: .vertical)
+                .font(.system(size: 17))
+                .padding(.horizontal, 17)
+                .padding(.top, 16)
+                .frame(maxWidth: .infinity, minHeight: 148, maxHeight: 148, alignment: .topLeading)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            HStack(spacing: 12) {
+                pill(
+                    symbol: "checkmark",
+                    label: L("yes", "Yes"),
+                    fill: dynamicColor(light: 0x5856D6, dark: 0x7D7AFF),
+                    icon: dynamicColor(light: 0xFFFFFF, dark: 0x0B0B14)
+                ) { choose(Int32(EntryValue.yesManual)) }
+                pill(
+                    symbol: "xmark",
+                    label: L("no", "No"),
+                    fill: dynamicColor(light: 0xDEDEE4, dark: 0x3D3D41),
+                    icon: Color.primary
+                ) { choose(Int32(EntryValue.no)) }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 14)
+            if skipEnabled || unknownEnabled {
+                HStack(spacing: 24) {
                     if skipEnabled {
-                        popupButton(L("skip_day", "Skip"), color: habitColor) {
-                            choose(Int32(EntryValue.skip))
-                        }
+                        Button(L("skip_day", "Skip")) { choose(Int32(EntryValue.skip)) }
                     }
                     if unknownEnabled {
-                        popupButton(L("unknown", "Unknown"), color: .secondary) {
-                            choose(Int32(EntryValue.unknown))
-                        }
+                        Button(L("unknown", "Unknown")) { choose(Int32(EntryValue.unknown)) }
                     }
                 }
-                .padding(.horizontal)
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .padding(.top, 12)
             }
-            .padding(.vertical)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button(L("cancel", "Cancel")) { dismiss() } }
-            }
+            Spacer().frame(height: 24)
         }
-        .presentationDetents([.medium])
+        .fittedSheet()
+    }
+
+    private var dateText: String {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEEEMMMd")
+        return formatter.string(from: date(fromDaysSince2000: Int(day)))
     }
 
     private func choose(_ newValue: Int32) {
@@ -520,11 +550,24 @@ struct CheckmarkPopup: View {
         dismiss()
     }
 
-    private func popupButton(_ title: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func pill(
+        symbol: String,
+        label: String,
+        fill: Color,
+        icon: Color,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
-            Text(title).font(.caption).foregroundStyle(color).frame(maxWidth: .infinity)
+            Image(systemName: symbol)
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(icon)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(fill, in: Capsule())
+                .contentShape(Capsule())
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 }
 
