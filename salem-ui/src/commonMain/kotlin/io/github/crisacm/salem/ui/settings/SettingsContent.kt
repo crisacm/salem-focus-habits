@@ -21,21 +21,34 @@ package io.github.crisacm.salem.ui.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.QuestionMark
+import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import io.github.crisacm.salem.ui.compose.CategoryHeader
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import io.github.crisacm.salem.ui.compose.ChoiceOption
-import io.github.crisacm.salem.ui.compose.ChoiceRow
-import io.github.crisacm.salem.ui.compose.ClickRow
-import io.github.crisacm.salem.ui.compose.SalemTopAppBar
-import io.github.crisacm.salem.ui.compose.SwitchRow
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.about
 import io.github.crisacm.salem.ui.resources.development
@@ -44,7 +57,6 @@ import io.github.crisacm.salem.ui.resources.help
 import io.github.crisacm.salem.ui.resources.interface_preferences
 import io.github.crisacm.salem.ui.resources.links
 import io.github.crisacm.salem.ui.resources.pref_rate_this_app
-import io.github.crisacm.salem.ui.resources.settings
 import org.jetbrains.compose.resources.stringResource
 
 private val INTERFACE_SWITCHES = listOf(
@@ -58,11 +70,11 @@ private val INTERFACE_SWITCHES = listOf(
 )
 
 /**
- * The Settings screen: the interface rows, the help and rate links, About and the developer switch. A platform adds its
- * own rows in [interfaceExtras] (after the switches, before the first day of the week) and [middleSections] (between
- * the interface and the links). [weekdayNames] start at Saturday. The switch that turns the animations off is only
- * shown when [showAnimationsSwitch] is on. The developer section is shown while the developer mode is on. Back calls
- * [onBack].
+ * The Settings screen: the interface rows, the help and rate links, About and the developer switch, in cards by section.
+ * A platform adds its own rows in [interfaceExtras] (after the switches, before the first day of the week) and its own
+ * sections, made of [SettingsGroup]s, in [middleSections] (between the interface and the links). [weekdayNames] start
+ * at Saturday. The switch that turns the animations off is only shown when [showAnimationsSwitch] is on. The developer
+ * section is shown while the developer mode is on. Back calls [onBack].
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -78,30 +90,33 @@ fun SettingsContent(
     middleSections: @Composable ColumnScope.() -> Unit = {}
 ) {
     BackHandler(onBack = onBack)
-    Scaffold(
-        topBar = { SalemTopAppBar(stringResource(Res.string.settings), onBack) },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
         ) {
-            CategoryHeader(stringResource(Res.string.interface_preferences))
-            INTERFACE_SWITCHES
-                .filter { showAnimationsSwitch || it != SettingsSwitch.DISABLE_ANIMATION }
-                .forEach { SettingsSwitchRow(state, it) }
-            interfaceExtras()
-            FirstWeekdayRow(state, weekdayNames)
-            middleSections()
-            CategoryHeader(stringResource(Res.string.links))
-            ClickRow(stringResource(Res.string.help), onClick = onHelp)
-            ClickRow(stringResource(Res.string.pref_rate_this_app), onClick = onRate)
-            ClickRow(stringResource(Res.string.about), onClick = onAbout)
-            if (state.isOn(SettingsSwitch.DEVELOPER)) {
-                CategoryHeader(stringResource(Res.string.development))
-                SettingsSwitchRow(state, SettingsSwitch.DEVELOPER)
+            SettingsHeader(onBack)
+            SettingsGroup(stringResource(Res.string.interface_preferences), SettingsTone.INTERFACE) {
+                INTERFACE_SWITCHES
+                    .filter { showAnimationsSwitch || it != SettingsSwitch.DISABLE_ANIMATION }
+                    .forEach { SettingsSwitchRow(state, it) }
+                interfaceExtras()
+                FirstWeekdayRow(state, weekdayNames)
             }
+            middleSections()
+            SettingsGroup(stringResource(Res.string.links), SettingsTone.LINKS) {
+                SettingsClickRow(Icons.Outlined.QuestionMark, stringResource(Res.string.help), onClick = onHelp)
+                SettingsClickRow(Icons.Outlined.StarBorder, stringResource(Res.string.pref_rate_this_app), onClick = onRate)
+                SettingsClickRow(Icons.Outlined.Info, stringResource(Res.string.about), onClick = onAbout)
+            }
+            if (state.isOn(SettingsSwitch.DEVELOPER)) {
+                SettingsGroup(stringResource(Res.string.development), SettingsTone.TROUBLESHOOTING) {
+                    SettingsSwitchRow(state, SettingsSwitch.DEVELOPER)
+                }
+            }
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
@@ -109,7 +124,8 @@ fun SettingsContent(
 /** The row of one on/off setting. */
 @Composable
 fun SettingsSwitchRow(state: SettingsState, switch: SettingsSwitch) {
-    SwitchRow(
+    SettingsToggleRow(
+        icon = iconOf(switch),
         title = stringResource(switch.title),
         summary = switch.summary?.let { stringResource(it) },
         checked = state.isOn(switch),
@@ -117,10 +133,23 @@ fun SettingsSwitchRow(state: SettingsState, switch: SettingsSwitch) {
     )
 }
 
+private fun iconOf(switch: SettingsSwitch): ImageVector = when (switch) {
+    SettingsSwitch.SHORT_TOGGLE -> Icons.Outlined.TouchApp
+    SettingsSwitch.MIDNIGHT_DELAY -> Icons.Outlined.Bedtime
+    SettingsSwitch.SKIP -> Icons.Outlined.SkipNext
+    SettingsSwitch.UNKNOWN -> Icons.Outlined.QuestionMark
+    SettingsSwitch.REVERSE_DAYS -> Icons.Outlined.SwapVert
+    SettingsSwitch.PURE_BLACK -> Icons.Outlined.Contrast
+    SettingsSwitch.DISABLE_ANIMATION -> Icons.Outlined.AutoAwesome
+    SettingsSwitch.STICKY_NOTIFICATIONS -> Icons.Outlined.Notifications
+    SettingsSwitch.DEVELOPER -> Icons.Outlined.Code
+}
+
 @Composable
 private fun FirstWeekdayRow(state: SettingsState, weekdayNames: List<String>) {
     val current = state.firstWeekday.daysSinceSunday + 1
-    ChoiceRow(
+    SettingsChoiceRow(
+        icon = Icons.Outlined.CalendarToday,
         title = stringResource(Res.string.first_day_of_the_week),
         summary = firstWeekdaySummary(weekdayNames, current),
         options = firstWeekdayOptions(weekdayNames).map { ChoiceOption(it.value, it.name) },

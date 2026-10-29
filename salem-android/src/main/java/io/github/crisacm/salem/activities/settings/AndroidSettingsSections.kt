@@ -33,14 +33,16 @@ import io.github.crisacm.salem.activities.habits.list.RESULT_EXPORT_CSV
 import io.github.crisacm.salem.activities.habits.list.RESULT_EXPORT_DB
 import io.github.crisacm.salem.activities.habits.list.RESULT_IMPORT_DATA
 import io.github.crisacm.salem.activities.habits.list.RESULT_REPAIR_DB
-import io.github.crisacm.salem.ui.compose.CategoryHeader
 import io.github.crisacm.salem.ui.compose.ChoiceOption
-import io.github.crisacm.salem.ui.compose.ChoiceRow
-import io.github.crisacm.salem.ui.compose.ClickRow
 import io.github.crisacm.salem.ui.compose.rememberPrefString
+import io.github.crisacm.salem.ui.settings.SettingsChoiceRow
+import io.github.crisacm.salem.ui.settings.SettingsClickRow
+import io.github.crisacm.salem.ui.settings.SettingsGroup
+import io.github.crisacm.salem.ui.settings.SettingsIcons
 import io.github.crisacm.salem.ui.settings.SettingsState
 import io.github.crisacm.salem.ui.settings.SettingsSwitch
 import io.github.crisacm.salem.ui.settings.SettingsSwitchRow
+import io.github.crisacm.salem.ui.settings.SettingsTone
 
 const val PREF_WIDGET_OPACITY = "pref_widget_opacity"
 const val PREF_PUBLIC_BACKUP_FOLDER = "publicBackupFolder"
@@ -59,7 +61,8 @@ fun WidgetOpacityRow(sharedPrefs: SharedPreferences) {
     val opacity by rememberPrefString(sharedPrefs, PREF_WIDGET_OPACITY, "255")
     val opacityLabels = stringArrayResource(R.array.widget_opacity_entries)
     val opacityValues = stringArrayResource(R.array.widget_opacity_values)
-    ChoiceRow(
+    SettingsChoiceRow(
+        icon = SettingsIcons.WidgetOpacity,
         title = stringResource(R.string.widget_opacity_title),
         summary = stringResource(R.string.widget_opacity_description),
         options = opacityValues.zip(opacityLabels) { value, label -> ChoiceOption(value, label) },
@@ -71,37 +74,45 @@ fun WidgetOpacityRow(sharedPrefs: SharedPreferences) {
 /** The reminder, database and troubleshooting sections: notifications, backups and the files of the device. */
 @Composable
 fun AndroidSettingsSections(state: SettingsState, sharedPrefs: SharedPreferences, actions: AndroidSettingsActions) {
-    CategoryHeader(stringResource(R.string.reminder))
-    SettingsSwitchRow(state, SettingsSwitch.STICKY_NOTIFICATIONS)
-    ClickRow(
-        stringResource(R.string.customize_notification),
-        stringResource(R.string.customize_notification_summary),
-        actions.onCustomizeNotification
-    )
+    SettingsGroup(stringResource(R.string.reminders), SettingsTone.REMINDERS) {
+        SettingsSwitchRow(state, SettingsSwitch.STICKY_NOTIFICATIONS)
+        SettingsClickRow(
+            SettingsIcons.Customize,
+            stringResource(R.string.customize_notification),
+            stringResource(R.string.customize_notification_summary),
+            actions.onCustomizeNotification
+        )
+    }
 
-    CategoryHeader(stringResource(R.string.database))
-    ClickRow(
-        stringResource(R.string.export_full_backup),
-        stringResource(R.string.export_full_backup_summary)
-    ) { actions.onResult(RESULT_EXPORT_DB) }
-    ClickRow(
-        stringResource(R.string.export_to_csv),
-        stringResource(R.string.export_as_csv_summary)
-    ) { actions.onResult(RESULT_EXPORT_CSV) }
-    ClickRow(
-        stringResource(R.string.import_data),
-        stringResource(R.string.import_data_summary)
-    ) { actions.onResult(RESULT_IMPORT_DATA) }
-    val folder by rememberPrefString(sharedPrefs, PREF_PUBLIC_BACKUP_FOLDER)
-    ClickRow(
-        stringResource(R.string.select_public_backup_folder),
-        folder?.let { publicFolderDescription(it) } ?: stringResource(R.string.no_public_backup_folder_selected),
-        actions.onPickBackupFolder
-    )
+    SettingsGroup(stringResource(R.string.database), SettingsTone.DATABASE) {
+        SettingsClickRow(
+            SettingsIcons.ExportBackup,
+            stringResource(R.string.export_full_backup),
+            stringResource(R.string.export_full_backup_summary)
+        ) { actions.onResult(RESULT_EXPORT_DB) }
+        SettingsClickRow(
+            SettingsIcons.ExportCsv,
+            stringResource(R.string.export_to_csv),
+            stringResource(R.string.export_as_csv_summary)
+        ) { actions.onResult(RESULT_EXPORT_CSV) }
+        SettingsClickRow(
+            SettingsIcons.Import,
+            stringResource(R.string.import_data),
+            stringResource(R.string.import_data_summary)
+        ) { actions.onResult(RESULT_IMPORT_DATA) }
+        val folder by rememberPrefString(sharedPrefs, PREF_PUBLIC_BACKUP_FOLDER)
+        SettingsClickRow(
+            SettingsIcons.Folder,
+            stringResource(R.string.select_public_backup_folder),
+            folder?.let { publicFolderDescription(it) } ?: stringResource(R.string.no_public_backup_folder_selected),
+            actions.onPickBackupFolder
+        )
+    }
 
-    CategoryHeader(stringResource(R.string.troubleshooting))
-    ClickRow(stringResource(R.string.generate_bug_report)) { actions.onResult(RESULT_BUG_REPORT) }
-    ClickRow(stringResource(R.string.repair_database)) { actions.onResult(RESULT_REPAIR_DB) }
+    SettingsGroup(stringResource(R.string.troubleshooting), SettingsTone.TROUBLESHOOTING) {
+        SettingsClickRow(SettingsIcons.BugReport, stringResource(R.string.generate_bug_report)) { actions.onResult(RESULT_BUG_REPORT) }
+        SettingsClickRow(SettingsIcons.Repair, stringResource(R.string.repair_database)) { actions.onResult(RESULT_REPAIR_DB) }
+    }
 }
 
 private fun publicFolderDescription(uriString: String): String = runCatching {
