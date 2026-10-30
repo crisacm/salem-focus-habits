@@ -21,6 +21,7 @@ package io.github.crisacm.salem.ui.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -82,6 +83,8 @@ import io.github.crisacm.salem.ui.compose.ExpressiveMenuItem
 import io.github.crisacm.salem.ui.resources.Res
 import io.github.crisacm.salem.ui.resources.about
 import io.github.crisacm.salem.ui.resources.action_settings
+import io.github.crisacm.salem.ui.resources.app_name
+import io.github.crisacm.salem.ui.resources.app_tagline
 import io.github.crisacm.salem.ui.resources.archive
 import io.github.crisacm.salem.ui.resources.by_color
 import io.github.crisacm.salem.ui.resources.by_name
@@ -96,7 +99,6 @@ import io.github.crisacm.salem.ui.resources.help
 import io.github.crisacm.salem.ui.resources.hide_archived
 import io.github.crisacm.salem.ui.resources.hide_completed
 import io.github.crisacm.salem.ui.resources.hide_entered
-import io.github.crisacm.salem.ui.resources.main_activity_title
 import io.github.crisacm.salem.ui.resources.manually
 import io.github.crisacm.salem.ui.resources.more_options
 import io.github.crisacm.salem.ui.resources.night_mode
@@ -166,13 +168,20 @@ private fun MainBar(menu: ListHabitsMenu) {
             .windowInsetsPadding(barInsets())
             .padding(start = 24.dp, end = 16.dp, top = 12.dp, bottom = 16.dp)
     ) {
-        Text(
-            stringResource(Res.string.main_activity_title),
-            fontSize = 44.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = (-1).sp,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                stringResource(Res.string.app_name),
+                fontSize = 44.sp,
+                fontWeight = FontWeight.Black,
+                letterSpacing = (-1).sp
+            )
+            Text(
+                stringResource(Res.string.app_tagline),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
         FilterMenu(menu)
         OverflowMenu(menu)
     }

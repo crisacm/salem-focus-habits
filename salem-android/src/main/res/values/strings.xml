@@ -23,7 +23,8 @@
     tools:ignore="MissingTranslation">
 
     <string name="app_name" >Salem</string>
-    <string name="main_activity_title">Salem: Focus &amp; Habits</string>
+    <string name="main_activity_title">Habits</string>
+    <string name="app_tagline">Focus &amp; Habits</string>
     <string name="action_settings">Settings</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
