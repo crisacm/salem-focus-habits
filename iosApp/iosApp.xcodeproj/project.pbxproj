@@ -34,6 +34,7 @@
 		D10000000000000000000008 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000008 /* DetailScreen.swift */; };
 		D10000000000000000000009 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000009 /* ChartView.swift */; };
 		D1000000000000000000000A /* SettingsAboutIntro.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000A /* SettingsAboutIntro.swift */; };
+		D1000000000000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000C /* Assets.xcassets */; };
 		D1000000000000000000000B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000B /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
@@ -110,6 +111,7 @@
 		D20000000000000000000008 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
 		D20000000000000000000009 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		D2000000000000000000000A /* SettingsAboutIntro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAboutIntro.swift; sourceTree = "<group>"; };
+		D2000000000000000000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D2000000000000000000000B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -169,6 +171,7 @@
 				D2000000000000000000000A /* SettingsAboutIntro.swift */,
 				B20000000000000000000008 /* iosApp.entitlements */,
 				D2000000000000000000000B /* Localizable.xcstrings */,
+				D2000000000000000000000C /* Assets.xcassets */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -308,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1000000000000000000000B /* Localizable.xcstrings in Resources */,
+				D1000000000000000000000C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -520,6 +524,7 @@
 		A90000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -554,6 +559,7 @@
 		A90000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
